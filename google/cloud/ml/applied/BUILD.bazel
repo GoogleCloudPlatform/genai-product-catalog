@@ -1,0 +1,25 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+load("@python_deps//:requirements.bzl", "requirement")
+
+py_library(
+    name = "applied",
+    srcs = [
+        "__init__.py",
+        "config.py",
+        "gapic_version.py",
+    ],
+    data = [
+        "//conf:config",
+    ],
+    imports = ["."],
+    srcs_version = "PY3",
+    visibility = ["//visibility:public"],
+)
+
+py_test(
+    name = "config_test",
+    size = "small",
+    srcs = ["config_test.py"],
+    imports = ["."],
+    deps = [":applied"],
+)

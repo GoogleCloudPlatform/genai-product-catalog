@@ -1,0 +1,14 @@
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+exports_files(
+    ["copy_file_groups.bzl"],
+    ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "config",
+    srcs = [
+        "app.toml",
+    ],
+    visibility = ["//:__subpackages__"],
+)

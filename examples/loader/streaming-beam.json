@@ -1,0 +1,31 @@
+{
+    "defaultEnvironment": {},
+    "image": "gcr.io/customermod-genai-sa/dataflow/streaming-beam:latest",
+    "metadata": {
+        "description": "Streaming beam example for python flex template.",
+        "name": "Streaming beam Python flex template",
+        "parameters": [
+            {
+                "helpText": "Name of the input PubSub subscription to consume from.",
+                "label": "Input PubSub subscription.",
+                "name": "input_subscription",
+                "regexes": [
+                    "projects/[^/]+/subscriptions/[a-zA-Z][-_.~+%a-zA-Z0-9]{2,}"
+                ]
+            },
+            {
+                "helpText": "GCS Bucket name for storing product images and information.",
+                "label": "GCS Bucket name for storing product images and information.",
+                "name": "bucket"
+            },
+            {
+                "helpText": "BigQuery Fully qualified table id in <DATASET>.<TABLE> format.",
+                "label": "BigQuery Fully qualified table id in <DATASET>.<TABLE> format.",
+                "name": "bq-table-id"
+            }
+        ]
+    },
+    "sdkInfo": {
+        "language": "PYTHON"
+    }
+}

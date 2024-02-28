@@ -1,0 +1,20 @@
+load("@python_deps//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_binary")
+
+
+PY_DEPS = [
+    requirement("google-cloud-aiplatform"),
+    requirement("fastapi"),
+    requirement("uvicorn"),
+]
+
+py_binary(
+    name = "run",
+    srcs = [
+        "main.py",
+        "run.py",
+    ],
+    imports = [".", "..", "../..", "../../third_party"],
+    visibility = ["//visibility:public"],
+    deps = PY_DEPS + ["//google"],
+)
