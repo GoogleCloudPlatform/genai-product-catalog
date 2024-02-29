@@ -35,7 +35,6 @@ COPY ./dataflow_loader.py /template/
 COPY ./__init__.py /template/
 COPY ./__init__.py /template/models/
 COPY ./setup.py /template/
-COPY ./schema/bq-pdc.json /template/schema/
 
 # Since we already downloaded all the dependencies, there's no need to rebuild everything.
 ENV PIP_NO_DEPS=True
