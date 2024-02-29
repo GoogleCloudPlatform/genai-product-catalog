@@ -135,6 +135,7 @@ class CallEmbeddingAPI(beam.DoFn):
         try:
             product = element  # Assuming element is a tuple (status, product)
             image_path = product.headers[0].images[0].url
+            log(f"Embedding image: {image_path}")
             contextual_text = (
                 product.headers[0].name
                 + product.headers[0].long_description

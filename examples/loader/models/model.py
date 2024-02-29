@@ -16,7 +16,7 @@ import math
 import os.path
 import random
 import re
-from typing import List, Union
+from typing import List, Optional, Union
 
 import pandas as pd
 import spacy
@@ -44,27 +44,25 @@ PROC_PIPELINE = spacy_cleaner.Pipeline(
     removers.remove_stopword_token,
 )
 
-FILE_COLUMNS = {
-    "uniq_id": "string",
-    "crawl_timestamp": "string",
-    "product_url": "string",
-    "product_name": "string",
-    "product_category_tree": "string",
-    "pid": "string",
-    "retail_price": "Int32",
-    "discounted_price": "Int32",
-    "image": "string",
-    "is_FK_Advantage_product": "string",
-    "description": "string",
-    "product_rating": "string",
-    "overall_rating": "string",
-    "brand": "string",
-    "product_specifications": "string",
-}
+FILE_COLUMNS = {'uniq_id': 'string',
+                'crawl_timestamp': 'string',
+                'product_url': 'string',
+                'product_name': 'string',
+                'product_category_tree': 'string',
+                'pid': 'string',
+                'retail_price': 'Int32',
+                'discounted_price': 'Int32',
+                'image': 'string',
+                'is_FK_Advantage_product': 'string',
+                'description': 'string',
+                'product_rating': 'string',
+                'overall_rating': 'string',
+                'brand': 'string',
+                'product_specifications': 'string'}
 
 
 class RoundingRule:
-    """Represents the rules used for rounding decimal numbers"""
+    """ Represents the rules used for rounding decimal numbers """
 
     def __init__(self):
         self.relevant_decimal = 5
@@ -72,8 +70,7 @@ class RoundingRule:
 
 
 class Numeric:
-    """Numeric is a decimal value split to ensure consistent multi-platform storage"""
-
+    """ Numeric is a decimal value split to ensure consistent multi-platform storage """
     def __init__(self, whole: int, decimal: int):
         self.whole = whole
         self.decimal = decimal
@@ -97,13 +94,13 @@ class Currency:
 
 
 class Image:
-    """The simplest object structure for an image"""
+    """ The simplest object structure for an image """
 
     def __init__(self, url):
         url = url.strip()
         self.origin_url = url
-        if url.startswith("http"):
-            self.url = url[url.index("/image") :]
+        if url.startswith('http'):
+            self.url = url[url.index('/image'):]
 
 
 class BusinessKey:
@@ -114,8 +111,8 @@ class BusinessKey:
 
 class Category:
     def __init__(self, name: str):
-        _id = ID_CLEANER.sub("", name)
-        _id = SPACE_CLEANER.sub("_", _id)
+        _id = ID_CLEANER.sub('', name)
+        _id = SPACE_CLEANER.sub('_', _id)
         self.id = _id.lower()
         self.name = name
         self.children: List["Category"] = []
@@ -144,61 +141,50 @@ class ProductHeaderAttributeValue:
 
 
 class ProductHeader:
-    def __init__(
-        self,
-        locale: str,
-        name: str,
-        brand: str,
-        short_description: str,
-        long_description: str,
-        images: List[Image],
-        attribute_values: List[ProductHeaderAttributeValue],
-    ):
+    def __init__(self,
+                 locale: str,
+                 name: str,
+                 brand: str,
+                 short_description: str,
+                 long_description: str,
+                 images: List[Image],
+                 attribute_values: List[ProductHeaderAttributeValue]):
+
         if isinstance(long_description, str):
             long_description = re.sub("[\t|\r|\n|\\s+]", " ", long_description)
-            long_description = long_description.replace("\u2022", "")
+            long_description = long_description.replace('\u2022', '')
 
         self.locale = locale
-        self.name = name if name is not None and isinstance(name, str) else ""
-        self.brand = brand if brand is not None and isinstance(brand, str) else ""
-        self.short_description = (
-            short_description
-            if short_description is not None and isinstance(short_description, str)
-            else ""
-        )
-        self.long_description = (
-            long_description
-            if long_description is not None and isinstance(long_description, str)
-            else ""
-        )
+        self.name = name if name is not None and isinstance(name, str) else ''
+        self.brand = brand if brand is not None and isinstance(brand, str) else ''
+        self.short_description = short_description if short_description is not None and isinstance(short_description,
+                                                                                                   str) else ''
+        self.long_description = long_description if long_description is not None and isinstance(long_description,
+                                                                                                str) else ''
         self.nlp_description = ""
         self.images: List[Image] = images if images is not None else []
         self.attribute_values: List[ProductHeaderAttributeValue] = attribute_values
 
 
 class Product:
-    def __init__(
-        self, header: ProductHeader, base_price: int, category: Category, rating: str
-    ):
+    def __init__(self, header: ProductHeader, base_price: int, category: Category, rating: str):
         self.headers: List[ProductHeader] = []
         self.base_price: Currency = Currency(base_price)
         self.categories: List[Category] = [category]
         self.business_keys: List[BusinessKey] = []
         self.headers.append(header)
         self.image_embedding = List = None
-        self.text_embedding = List = None  # noqa: F841
+        self.text_embedding = List = None
 
     def add_business_key(self, key: str, value: str):
         self.business_keys.append(BusinessKey(key, value))
 
 
-def parse_category(
-    value: str, brand_info: List[str]
-) -> Union[Category, None]:  # Category | None:
+def parse_category(value: str, brand_info: List[str]) -> Union[Category, None]: # Category | None:
     if isinstance(value, str):
         clean_value = value.replace("[\"", "").replace("\"]", "")
         clean_values = [x.strip() for x in clean_value.split(" >> ")]
-        parent = Category("")
+        parent = Category('')
         current = parent
         for i, v in enumerate(clean_values):
             if not any(x in brand_info for x in v.split(" ")):
@@ -215,19 +201,17 @@ def parse_category(
     return None
 
 
-def get_product_header_attributes(
-    specification: str,
-) -> List[ProductHeaderAttributeValue]:
+def get_product_header_attributes(specification: str) -> List[ProductHeaderAttributeValue]:
     m = SPEC_MATCH_ONE.match(specification)
     out: List[ProductHeaderAttributeValue] = []
     if m is not None and m.group(2) is not None:
-        phrase = ""
+        phrase = ''
         for c in m.group(2):
-            if c == "}":
+            if c == '}':
                 m2 = SPEC_MATCH_TWO.match(phrase)
                 if m2 and m2.group(2) is not None and m2.group(4) is not None:
                     out.append(ProductHeaderAttributeValue(m2.group(2), m2.group(4)))
-                phrase = ""
+                phrase = ''
             else:
                 phrase += c
     return out
@@ -252,33 +236,33 @@ def parse_nlp_description(description) -> str:
 
 def get_image_uri(name: str) -> str:
     if isinstance(name, str) and name is not None:
-        uri = name[name.index("/image") :] if name.find("/image") > 0 else name
+        uri = name[name.index('/image'):] if name.find('/image') > 0 else name
         return uri
-    return "undefined"
+    return 'undefined'
 
 
 def file_exists(name: str):
-    path = "/tmp" + name
+    path = '/tmp' + name
     return os.path.isfile(path)
 
 
 def parse_row(r: pd.DataFrame, pre_process: bool = False) -> Product:
-    id = r["uniq_id"]
-    name = r["product_name"]
-    description = r["description"]
-    brand = r["brand"]
-    categories = r["product_category_tree"]
-    sku = r["pid"]
+    id = r['uniq_id']
+    name = r['product_name']
+    description = r['description']
+    brand = r['brand']
+    categories = r['product_category_tree']
+    sku = r['pid']
 
-    base_price = pd.to_numeric(r["retail_price"], errors="coerce")
-    images_raw = r["image"]
+    base_price = pd.to_numeric(r['retail_price'], errors='coerce')
+    images_raw = r['image']
     images = []
     rating = random.randint(1, 5)
 
     c_overall = random.randint(1, 5)
     overall_rating = c_overall if c_overall >= rating else rating
 
-    base_url = r["product_url"]
+    base_url = r['product_url']
 
     if isinstance(images_raw, str):
         images_raw = images_raw.replace("[", "").replace("]", "").replace("\"", '')
@@ -288,7 +272,7 @@ def parse_row(r: pd.DataFrame, pre_process: bool = False) -> Product:
     if len(images) == 0:
         return None
 
-    product_specifications = r["product_specifications"]
+    product_specifications = r['product_specifications']
 
     if not pd.isnull(product_specifications):
         attribute_values = get_product_header_attributes(product_specifications)
@@ -298,9 +282,7 @@ def parse_row(r: pd.DataFrame, pre_process: bool = False) -> Product:
     brand_split = [] if pd.isnull(brand) else brand.split(" ")
 
     cat = parse_category(categories, brand_split)
-    header = ProductHeader(
-        "EN_US", name, brand, "", description, images, attribute_values
-    )
+    header = ProductHeader('EN_US', name, brand, '', description, images, attribute_values)
 
     if pre_process:
         header.nlp_description = parse_nlp_description(description)
