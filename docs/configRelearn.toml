@@ -1,17 +1,17 @@
-baseURL = 'http://localhost/'
+baseURL = 'https://googlecloudplatform.github.io/genai-product-catalog/'
 canonifyURLs = false
 relativeURLs = false
 languageCode = "en"
 defaultContentLanguage = "en"
-title = 'Google Applied ML'
+title = 'Google - GenAI Product Catalog'
 
 themesdir = "themes"
 theme = "hugo-theme-relearn"
 
 [params]
-  editURL = "https://github.com/rmcguinness/applied-ai/blob/content/"
-  description = "Google Applied GenAI"
-  author = "Google"
+  editURL = "https://googlecloudplatform.github.io/genai-product-catalog/blob/content/"
+  description = "Google - GenAI Product Catalog"
+  author = "Google LLC"
   showVisitedLinks = true
   collapsibleMenu = true
   disableBreadcrumb = false
