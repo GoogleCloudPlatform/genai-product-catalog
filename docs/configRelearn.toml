@@ -9,7 +9,7 @@ themesdir = "themes"
 theme = "hugo-theme-relearn"
 
 [params]
-  editURL = "https://googlecloudplatform.github.io/genai-product-catalog/blob/content/"
+  editURL = "https://github.com/GoogleCloudPlatform/genai-product-catalog/blob/content/"
   description = "Google - GenAI Product Catalog"
   author = "Google LLC"
   showVisitedLinks = true
