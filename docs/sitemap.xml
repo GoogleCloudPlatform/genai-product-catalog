@@ -2,42 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost/contributing/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/contributing/</loc>
     <lastmod>2022-08-25T23:12:09-04:00</lastmod>
   </url><url>
-    <loc>http://localhost/contributing/contributors/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/contributing/contributors/</loc>
   </url><url>
-    <loc>http://localhost/contributing/code_style_guide/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/contributing/code_style_guide/</loc>
     <lastmod>2022-08-25T23:12:09-04:00</lastmod>
   </url><url>
-    <loc>http://localhost/contributing/code_of_conduct/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/contributing/code_of_conduct/</loc>
     <lastmod>2022-08-25T23:11:46-04:00</lastmod>
   </url><url>
-    <loc>http://localhost/modules/applied/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/applied/</loc>
   </url><url>
-    <loc>http://localhost/modules/attributes/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/attributes/</loc>
   </url><url>
-    <loc>http://localhost/modules/categories/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/categories/</loc>
   </url><url>
-    <loc>http://localhost/modules/embeddings/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/embeddings/</loc>
   </url><url>
-    <loc>http://localhost/modules/images/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/images/</loc>
   </url><url>
-    <loc>http://localhost/modules/marketing/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/marketing/</loc>
   </url><url>
-    <loc>http://localhost/modules/model/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/model/</loc>
   </url><url>
-    <loc>http://localhost/modules/nearest_neighbors/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/nearest_neighbors/</loc>
   </url><url>
-    <loc>http://localhost/modules/utilities/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/utilities/</loc>
   </url><url>
-    <loc>http://localhost/toolchain/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/toolchain/</loc>
   </url><url>
-    <loc>http://localhost/modules/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/modules/</loc>
   </url><url>
-    <loc>http://localhost/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/</loc>
     <lastmod>2022-08-25T23:12:09-04:00</lastmod>
   </url><url>
-    <loc>http://localhost/tags/</loc>
+    <loc>https://googlecloudplatform.github.io/genai-product-catalog/tags/</loc>
   </url>
 </urlset>
