@@ -26,7 +26,7 @@ geekdocTagsToMenu: true
 geekdocLogo: "logo.png"
 
 # TODO - CHANGE ONCE SETTLED
-geekdocRepo: https://github.com/rrmcguinness/applied-ai
+geekdocRepo: https://github.com/GoogleCloudPlatform/genai-product-catalog
 geekdocEditPath: edit/main/docs
 
 geekdocSearch: true
