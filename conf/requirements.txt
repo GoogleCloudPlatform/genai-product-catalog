@@ -4,13 +4,14 @@
 #
 #    pip-compile requirements.in
 #
-absl-py==2.1.0
-    # via mediapipe
-anyio==4.2.0
+anyio==4.3.0
     # via
+    #   httpx
     #   jupyter-server
     #   starlette
-appnope==0.1.3
+apache-beam[gcp]==2.51.0
+    # via -r requirements.in
+appnope==0.1.4
     # via ipykernel
 argon2-cffi==23.1.0
     # via jupyter-server
@@ -25,7 +26,6 @@ async-lru==2.0.4
 attrs==23.2.0
     # via
     #   jsonschema
-    #   mediapipe
     #   referencing
 babel==2.14.0
     # via jupyterlab-server
@@ -37,21 +37,24 @@ bleach==6.1.0
     # via nbconvert
 blis==0.7.11
     # via thinc
-build==1.0.3
+build==1.1.1
     # via pip-tools
-cachetools==5.3.2
-    # via google-auth
+cachetools==5.3.3
+    # via
+    #   apache-beam
+    #   google-auth
 catalogue==2.0.10
     # via
     #   spacy
     #   srsly
     #   thinc
-certifi==2023.11.17
-    # via requests
-cffi==1.16.0
+certifi==2024.2.2
     # via
-    #   argon2-cffi-bindings
-    #   sounddevice
+    #   httpcore
+    #   httpx
+    #   requests
+cffi==1.16.0
+    # via argon2-cffi-bindings
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
@@ -61,14 +64,14 @@ click==8.1.7
     #   pydoc-markdown
     #   typer
     #   uvicorn
+cloudpickle==2.2.1
+    # via apache-beam
 comm==0.2.1
     # via ipykernel
 confection==0.1.4
     # via thinc
-contourpy==1.2.0
-    # via matplotlib
-cycler==0.12.1
-    # via matplotlib
+crcmod==1.7
+    # via apache-beam
 cymem==2.0.8
     # via
     #   preshed
@@ -83,7 +86,7 @@ databind-json==4.4.0
     # via
     #   docspec
     #   pydoc-markdown
-debugpy==1.8.0
+debugpy==1.8.1
     # via ipykernel
 decorator==5.1.1
     # via ipython
@@ -93,7 +96,14 @@ deprecated==1.2.14
     # via
     #   databind-core
     #   docspec
+    #   google-cloud-spanner
     #   nr-util
+dill==0.3.1.1
+    # via apache-beam
+dnspython==2.6.1
+    # via pymongo
+docopt==0.6.2
+    # via hdfs
 docspec==2.2.1
     # via
     #   docspec-python
@@ -106,53 +116,122 @@ en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_
     # via -r requirements.in
 executing==2.0.1
     # via stack-data
-fastapi==0.109.0
+fastapi==0.110.0
     # via -r requirements.in
+fastavro==1.9.4
+    # via apache-beam
+fasteners==0.19
+    # via
+    #   apache-beam
+    #   google-apitools
 fastjsonschema==2.19.1
     # via nbformat
-flatbuffers==23.5.26
-    # via mediapipe
-fonttools==4.47.2
-    # via matplotlib
 fqdn==1.5.1
     # via jsonschema
 gcloud==0.18.3
     # via -r requirements.in
-google-api-core[grpc]==2.10.2
+google-api-core[grpc]==2.17.1
     # via
+    #   apache-beam
     #   google-api-python-client
     #   google-cloud-aiplatform
+    #   google-cloud-appengine-logging
     #   google-cloud-bigquery
+    #   google-cloud-bigquery-storage
+    #   google-cloud-bigtable
     #   google-cloud-core
+    #   google-cloud-datastore
+    #   google-cloud-dlp
+    #   google-cloud-language
+    #   google-cloud-logging
+    #   google-cloud-pubsub
+    #   google-cloud-pubsublite
+    #   google-cloud-recommendations-ai
     #   google-cloud-resource-manager
+    #   google-cloud-spanner
     #   google-cloud-storage
-google-api-python-client==2.115.0
+    #   google-cloud-videointelligence
+    #   google-cloud-vision
+google-api-python-client==2.120.0
     # via -r requirements.in
-google-auth==2.26.2
+google-apitools==0.5.31
+    # via apache-beam
+google-auth==2.28.1
     # via
+    #   apache-beam
     #   google-api-core
     #   google-api-python-client
     #   google-auth-httplib2
+    #   google-cloud-aiplatform
+    #   google-cloud-appengine-logging
     #   google-cloud-core
+    #   google-cloud-dlp
+    #   google-cloud-language
+    #   google-cloud-pubsub
+    #   google-cloud-recommendations-ai
+    #   google-cloud-resource-manager
     #   google-cloud-storage
-google-auth-httplib2==0.2.0
-    # via google-api-python-client
-google-cloud-aiplatform==1.39.0
-    # via -r requirements.in
-google-cloud-bigquery==3.16.0
+    #   google-cloud-videointelligence
+    #   google-cloud-vision
+google-auth-httplib2==0.1.1
+    # via
+    #   apache-beam
+    #   google-api-python-client
+google-cloud-aiplatform==1.43.0
     # via
     #   -r requirements.in
+    #   apache-beam
+google-cloud-appengine-logging==1.4.2
+    # via google-cloud-logging
+google-cloud-audit-log==0.2.5
+    # via google-cloud-logging
+google-cloud-bigquery==3.17.2
+    # via
+    #   -r requirements.in
+    #   apache-beam
     #   google-cloud-aiplatform
+google-cloud-bigquery-storage==2.24.0
+    # via apache-beam
+google-cloud-bigtable==2.23.0
+    # via apache-beam
 google-cloud-core==2.4.1
     # via
+    #   apache-beam
     #   google-cloud-bigquery
+    #   google-cloud-bigtable
+    #   google-cloud-datastore
+    #   google-cloud-logging
+    #   google-cloud-spanner
     #   google-cloud-storage
-google-cloud-resource-manager==1.6.3
+google-cloud-datastore==2.19.0
+    # via apache-beam
+google-cloud-dlp==3.15.2
+    # via apache-beam
+google-cloud-language==2.13.2
+    # via apache-beam
+google-cloud-logging==3.9.0
+    # via -r requirements.in
+google-cloud-pubsub==2.19.7
+    # via
+    #   -r requirements.in
+    #   apache-beam
+    #   google-cloud-pubsublite
+google-cloud-pubsublite==1.9.0
+    # via apache-beam
+google-cloud-recommendations-ai==0.10.9
+    # via apache-beam
+google-cloud-resource-manager==1.12.2
     # via google-cloud-aiplatform
+google-cloud-spanner==3.42.0
+    # via apache-beam
 google-cloud-storage==2.14.0
     # via
     #   -r requirements.in
     #   google-cloud-aiplatform
+google-cloud-videointelligence==2.13.2
+    # via apache-beam
+google-cloud-vision==3.7.1
+    # via apache-beam
 google-crc32c==1.5.0
     # via
     #   google-cloud-storage
@@ -165,45 +244,71 @@ googleapis-common-protos[grpc]==1.62.0
     # via
     #   gcloud
     #   google-api-core
+    #   google-cloud-audit-log
     #   grpc-google-iam-v1
     #   grpcio-status
 grpc-google-iam-v1==0.13.0
-    # via google-cloud-resource-manager
-grpcio==1.60.0
+    # via
+    #   google-cloud-bigtable
+    #   google-cloud-logging
+    #   google-cloud-pubsub
+    #   google-cloud-resource-manager
+    #   google-cloud-spanner
+grpc-interceptor==0.15.4
+    # via google-cloud-spanner
+grpcio==1.62.0
     # via
     #   -r requirements.in
+    #   apache-beam
     #   google-api-core
+    #   google-cloud-pubsub
+    #   google-cloud-pubsublite
     #   googleapis-common-protos
     #   grpc-google-iam-v1
+    #   grpc-interceptor
     #   grpcio-status
-grpcio-status==1.48.2
-    # via google-api-core
+grpcio-status==1.62.0
+    # via
+    #   google-api-core
+    #   google-cloud-pubsub
+    #   google-cloud-pubsublite
 grpclib==0.4.7
     # via -r requirements.in
 h11==0.14.0
-    # via uvicorn
+    # via
+    #   httpcore
+    #   uvicorn
 h2==4.1.0
     # via grpclib
+hdfs==2.7.3
+    # via apache-beam
 hpack==4.0.0
     # via h2
+httpcore==1.0.4
+    # via httpx
 httplib2==0.22.0
     # via
+    #   apache-beam
     #   gcloud
     #   google-api-python-client
+    #   google-apitools
     #   google-auth-httplib2
     #   oauth2client
+httpx==0.27.0
+    # via jupyterlab
 hyperframe==6.0.1
     # via h2
 idna==3.6
     # via
     #   anyio
+    #   httpx
     #   jsonschema
     #   requests
 importlib-metadata==7.0.1
     # via yapf
-ipykernel==6.29.0
+ipykernel==6.29.3
     # via jupyterlab
-ipython==8.20.0
+ipython==8.22.1
     # via ipykernel
 isoduration==20.11.0
     # via jsonschema
@@ -217,9 +322,11 @@ jinja2==3.1.3
     #   nbconvert
     #   pydoc-markdown
     #   spacy
-json5==0.9.14
+js2py==0.74
+    # via apache-beam
+json5==0.9.18
     # via jupyterlab-server
-jsonpickle==3.0.2
+jsonpickle==3.0.3
     # via -r requirements.in
 jsonpointer==2.4
     # via jsonschema
@@ -246,7 +353,7 @@ jupyter-core==5.7.1
     #   nbformat
 jupyter-events==0.9.0
     # via jupyter-server
-jupyter-lsp==2.2.2
+jupyter-lsp==2.2.3
     # via jupyterlab
 jupyter-server==2.12.5
     # via
@@ -256,31 +363,25 @@ jupyter-server==2.12.5
     #   notebook-shim
 jupyter-server-terminals==0.5.2
     # via jupyter-server
-jupyterlab==4.0.11
+jupyterlab==4.1.2
     # via -r requirements.in
 jupyterlab-pygments==0.3.0
     # via nbconvert
-jupyterlab-server==2.25.2
+jupyterlab-server==2.25.3
     # via jupyterlab
-kiwisolver==1.4.5
-    # via matplotlib
 langcodes==3.3.0
     # via spacy
-markupsafe==2.1.4
+markupsafe==2.1.5
     # via
     #   jinja2
     #   nbconvert
-matplotlib==3.8.2
-    # via mediapipe
 matplotlib-inline==0.1.6
     # via
     #   ipykernel
     #   ipython
-mediapipe==0.10.9
-    # via -r requirements.in
 mistune==3.0.2
     # via nbconvert
-multidict==6.0.4
+multidict==6.0.5
     # via grpclib
 murmurhash==1.0.10
     # via
@@ -291,7 +392,7 @@ mypy-extensions==1.0.0
     # via black
 nbclient==0.9.0
     # via nbconvert
-nbconvert==7.14.2
+nbconvert==7.16.1
     # via jupyter-server
 nbformat==5.9.2
     # via
@@ -300,7 +401,7 @@ nbformat==5.9.2
     #   nbconvert
 nest-asyncio==1.6.0
     # via ipykernel
-notebook-shim==0.2.3
+notebook-shim==0.2.4
     # via jupyterlab
 nr-date==2.1.0
     # via
@@ -312,27 +413,32 @@ nr-util==0.8.12
     # via
     #   docspec-python
     #   pydoc-markdown
-numpy==1.26.3
+numpy==1.24.4
     # via
     #   -r requirements.in
+    #   apache-beam
     #   blis
-    #   contourpy
-    #   matplotlib
-    #   mediapipe
-    #   opencv-contrib-python
     #   pandas
+    #   pyarrow
     #   scipy
     #   shapely
     #   spacy
     #   thinc
 oauth2client==4.1.3
-    # via gcloud
-opencv-contrib-python==4.9.0.80
-    # via mediapipe
-overrides==7.6.0
-    # via jupyter-server
+    # via
+    #   gcloud
+    #   google-apitools
+objsize==0.6.1
+    # via apache-beam
+orjson==3.9.15
+    # via apache-beam
+overrides==7.7.0
+    # via
+    #   google-cloud-pubsublite
+    #   jupyter-server
 packaging==23.2
     # via
+    #   apache-beam
     #   black
     #   build
     #   google-cloud-aiplatform
@@ -341,11 +447,10 @@ packaging==23.2
     #   jupyter-server
     #   jupyterlab
     #   jupyterlab-server
-    #   matplotlib
     #   nbconvert
     #   spacy
     #   thinc
-pandas==2.2.0
+pandas==2.2.1
     # via -r requirements.in
 pandocfilters==1.5.1
     # via nbconvert
@@ -359,11 +464,9 @@ pathy==0.11.0
     # via spacy
 pexpect==4.9.0
     # via ipython
-pillow==10.2.0
-    # via matplotlib
-pip-tools==7.3.0
+pip-tools==7.4.0
     # via -r requirements.in
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via
     #   black
     #   jupyter-core
@@ -372,24 +475,50 @@ preshed==3.0.9
     # via
     #   spacy
     #   thinc
-prometheus-client==0.19.0
+prometheus-client==0.20.0
     # via jupyter-server
 prompt-toolkit==3.0.43
     # via ipython
 proto-plus==1.23.0
     # via
+    #   apache-beam
     #   google-cloud-aiplatform
+    #   google-cloud-appengine-logging
+    #   google-cloud-bigquery-storage
+    #   google-cloud-bigtable
+    #   google-cloud-datastore
+    #   google-cloud-dlp
+    #   google-cloud-language
+    #   google-cloud-logging
+    #   google-cloud-pubsub
+    #   google-cloud-recommendations-ai
     #   google-cloud-resource-manager
-protobuf==3.20.3
+    #   google-cloud-spanner
+    #   google-cloud-videointelligence
+    #   google-cloud-vision
+protobuf==4.24.4
     # via
+    #   apache-beam
     #   gcloud
     #   google-api-core
     #   google-cloud-aiplatform
+    #   google-cloud-appengine-logging
+    #   google-cloud-audit-log
+    #   google-cloud-bigquery-storage
+    #   google-cloud-bigtable
+    #   google-cloud-datastore
+    #   google-cloud-dlp
+    #   google-cloud-language
+    #   google-cloud-logging
+    #   google-cloud-pubsub
+    #   google-cloud-recommendations-ai
     #   google-cloud-resource-manager
+    #   google-cloud-spanner
+    #   google-cloud-videointelligence
+    #   google-cloud-vision
     #   googleapis-common-protos
     #   grpc-google-iam-v1
     #   grpcio-status
-    #   mediapipe
     #   proto-plus
 psutil==5.9.8
     # via ipykernel
@@ -399,6 +528,8 @@ ptyprocess==0.7.0
     #   terminado
 pure-eval==0.2.2
     # via stack-data
+pyarrow==11.0.0
+    # via apache-beam
 pyasn1==0.5.1
     # via
     #   oauth2client
@@ -418,27 +549,37 @@ pydantic==1.10.14
     #   thinc
 pydoc-markdown==4.8.2
     # via -r requirements.in
+pydot==1.4.2
+    # via apache-beam
 pygments==2.17.2
     # via
     #   ipython
     #   nbconvert
+pyjsparser==2.7.1
+    # via js2py
+pymongo==4.6.2
+    # via apache-beam
 pyparsing==3.1.1
     # via
     #   httplib2
-    #   matplotlib
+    #   pydot
 pyproject-hooks==1.0.0
-    # via build
-python-dateutil==2.8.2
     # via
+    #   build
+    #   pip-tools
+python-dateutil==2.9.0.post0
+    # via
+    #   apache-beam
     #   arrow
     #   google-cloud-bigquery
     #   jupyter-client
-    #   matplotlib
     #   pandas
 python-json-logger==2.0.7
     # via jupyter-events
-pytz==2023.3.post1
-    # via pandas
+pytz==2024.1
+    # via
+    #   apache-beam
+    #   pandas
 pyyaml==6.0.1
     # via
     #   jupyter-events
@@ -448,17 +589,21 @@ pyzmq==25.1.2
     #   ipykernel
     #   jupyter-client
     #   jupyter-server
-referencing==0.32.1
+referencing==0.33.0
     # via
     #   jsonschema
     #   jsonschema-specifications
     #   jupyter-events
+regex==2023.12.25
+    # via apache-beam
 requests==2.31.0
     # via
     #   -r requirements.in
+    #   apache-beam
     #   google-api-core
     #   google-cloud-bigquery
     #   google-cloud-storage
+    #   hdfs
     #   jupyterlab-server
     #   pydoc-markdown
     #   spacy
@@ -470,7 +615,7 @@ rfc3986-validator==0.1.1
     # via
     #   jsonschema
     #   jupyter-events
-rpds-py==0.17.1
+rpds-py==0.18.0
     # via
     #   jsonschema
     #   referencing
@@ -482,13 +627,16 @@ scipy==1.12.0
     # via -r requirements.in
 send2trash==1.8.2
     # via jupyter-server
-shapely==2.0.2
+shapely==2.0.3
     # via google-cloud-aiplatform
 six==1.16.0
     # via
     #   asttokens
     #   bleach
     #   gcloud
+    #   google-apitools
+    #   hdfs
+    #   js2py
     #   oauth2client
     #   python-dateutil
     #   rfc3339-validator
@@ -496,10 +644,10 @@ smart-open==6.4.0
     # via
     #   pathy
     #   spacy
-sniffio==1.3.0
-    # via anyio
-sounddevice==0.4.6
-    # via mediapipe
+sniffio==1.3.1
+    # via
+    #   anyio
+    #   httpx
 soupsieve==2.5
     # via beautifulsoup4
 spacy==3.4.4
@@ -515,6 +663,8 @@ spacy-loggers==1.0.5
     # via spacy
 spacy-lookups-data==1.0.5
     # via spacy-cleaner
+sqlparse==0.4.4
+    # via google-cloud-spanner
 srsly==2.4.8
     # via
     #   confection
@@ -522,7 +672,7 @@ srsly==2.4.8
     #   thinc
 stack-data==0.6.3
     # via ipython
-starlette==0.35.1
+starlette==0.36.3
     # via fastapi
 terminado==0.18.0
     # via
@@ -563,7 +713,7 @@ traitlets==5.14.1
     #   nbclient
     #   nbconvert
     #   nbformat
-typeapi==2.1.1
+typeapi==2.1.2
     # via
     #   databind-core
     #   databind-json
@@ -573,29 +723,32 @@ typer==0.7.0
     #   spacy
 types-python-dateutil==2.8.19.20240106
     # via arrow
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
+    #   apache-beam
     #   databind-core
     #   databind-json
     #   fastapi
     #   nr-util
     #   pydantic
     #   typeapi
-tzdata==2023.4
+tzdata==2024.1
     # via pandas
+tzlocal==5.2
+    # via js2py
 uri-template==1.3.0
     # via jsonschema
 uritemplate==4.1.1
     # via google-api-python-client
-urllib3==2.1.0
+urllib3==2.2.1
     # via requests
-uvicorn==0.27.0
+uvicorn==0.27.1
     # via -r requirements.in
 wasabi==0.10.1
     # via
     #   spacy
     #   thinc
-watchdog==3.0.0
+watchdog==4.0.0
     # via pydoc-markdown
 wcwidth==0.2.13
     # via prompt-toolkit
@@ -615,7 +768,9 @@ yapf==0.40.2
     # via pydoc-markdown
 zipp==3.17.0
     # via importlib-metadata
+zstandard==0.22.0
+    # via apache-beam
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
-# setuptools
+setuptools==69.1.1
