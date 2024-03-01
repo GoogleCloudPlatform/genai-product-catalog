@@ -12,4 +12,5 @@ __pycache__/
 node_modules/
 .terraform/
 terraform.tfstate
+terraform.tfstate.backup
 variables.tfvars

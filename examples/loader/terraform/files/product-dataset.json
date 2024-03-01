@@ -1,0 +1,241 @@
+[
+  {
+    "fields": [
+      {
+        "mode": "NULLABLE",
+        "name": "value",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "name",
+        "type": "STRING"
+      }
+    ],
+    "mode": "REPEATED",
+    "name": "business_keys",
+    "type": "RECORD"
+  },
+  {
+    "mode": "REPEATED",
+    "name": "image_embedding",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "REPEATED",
+    "name": "text_embedding",
+    "type": "FLOAT"
+  },
+  {
+    "fields": [
+      {
+        "fields": [
+          {
+            "fields": [
+              {
+                "fields": [
+                  {
+                    "mode": "REPEATED",
+                    "name": "children",
+                    "type": "STRING"
+                  },
+                  {
+                    "mode": "NULLABLE",
+                    "name": "name",
+                    "type": "STRING"
+                  },
+                  {
+                    "mode": "NULLABLE",
+                    "name": "id",
+                    "type": "STRING"
+                  }
+                ],
+                "mode": "REPEATED",
+                "name": "children",
+                "type": "RECORD"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "name",
+                "type": "STRING"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "id",
+                "type": "STRING"
+              }
+            ],
+            "mode": "REPEATED",
+            "name": "children",
+            "type": "RECORD"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "name",
+            "type": "STRING"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "id",
+            "type": "STRING"
+          }
+        ],
+        "mode": "REPEATED",
+        "name": "children",
+        "type": "RECORD"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "name",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "id",
+        "type": "STRING"
+      }
+    ],
+    "mode": "REPEATED",
+    "name": "categories",
+    "type": "RECORD"
+  },
+  {
+    "fields": [
+      {
+        "fields": [
+          {
+            "mode": "NULLABLE",
+            "name": "trim_insignificant_digits",
+            "type": "BOOLEAN"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "relevant_decimal",
+            "type": "INTEGER"
+          }
+        ],
+        "mode": "NULLABLE",
+        "name": "rounding_rule",
+        "type": "RECORD"
+      },
+      {
+        "fields": [
+          {
+            "mode": "NULLABLE",
+            "name": "decimal",
+            "type": "INTEGER"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "whole",
+            "type": "INTEGER"
+          }
+        ],
+        "mode": "NULLABLE",
+        "name": "value",
+        "type": "RECORD"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "code",
+        "type": "STRING"
+      }
+    ],
+    "mode": "NULLABLE",
+    "name": "base_price",
+    "type": "RECORD"
+  },
+  {
+    "fields": [
+      {
+        "fields": [
+          {
+            "mode": "NULLABLE",
+            "name": "string_value",
+            "type": "STRING"
+          },
+          {
+            "fields": [
+              {
+                "mode": "NULLABLE",
+                "name": "required",
+                "type": "BOOLEAN"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "field_type",
+                "type": "STRING"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "allow_overrides",
+                "type": "BOOLEAN"
+              },
+              {
+                "mode": "NULLABLE",
+                "name": "name",
+                "type": "STRING"
+              }
+            ],
+            "mode": "NULLABLE",
+            "name": "template_attribute_rule",
+            "type": "RECORD"
+          }
+        ],
+        "mode": "REPEATED",
+        "name": "attribute_values",
+        "type": "RECORD"
+      },
+      {
+        "fields": [
+          {
+            "mode": "NULLABLE",
+            "name": "url",
+            "type": "STRING"
+          },
+          {
+            "mode": "NULLABLE",
+            "name": "origin_url",
+            "type": "STRING"
+          }
+        ],
+        "mode": "REPEATED",
+        "name": "images",
+        "type": "RECORD"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "nlp_description",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "locale",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "long_description",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "short_description",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "brand",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "name",
+        "type": "STRING"
+      }
+    ],
+    "mode": "REPEATED",
+    "name": "headers",
+    "type": "RECORD"
+  }
+]
