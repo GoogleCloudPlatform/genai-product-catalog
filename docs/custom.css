@@ -1,0 +1,172 @@
+/*
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Global customization */
+
+:root {
+    --code-max-height: 60rem;
+}
+
+/* Light mode theming */
+:root,
+:root[color-theme="light"] {
+    --header-background: #FEFEFE;
+    --header-font-color: #ffffff;
+
+    --body-background: #ffffff;
+    --body-font-color: #343a40;
+
+    --mark-color: #ffab00;
+
+    --button-background: #62cb97;
+    --button-border-color: #4ec58a;
+
+    --link-color: #518169;
+    --link-color-visited: #c54e8a;
+
+    --code-background: #f5f6f8;
+    --code-accent-color: #e3e7eb;
+    --code-accent-color-lite: #eff1f3;
+    --code-font-color: #5f5f5f;
+
+    --code-copy-background: #f5f6f8;
+    --code-copy-font-color: #6b7784;
+    --code-copy-border-color: #adb4bc;
+    --code-copy-success-color: #00c853;
+
+    --accent-color: #e9ecef;
+    --accent-color-lite: #f8f9fa;
+
+    --control-icons: #b2bac1;
+
+    --footer-background: #2f333e;
+    --footer-font-color: #ffffff;
+    --footer-link-color: #ffcc5c;
+    --footer-link-color-visited: #ffcc5c;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --header-background: #2571ff;
+        --header-font-color: #ffffff;
+
+        --body-background: #ffffff;
+        --body-font-color: #343a40;
+
+        --mark-color: #ffb927;
+
+        --button-background: #62cb97;
+        --button-border-color: #4ec58a;
+
+        --link-color: #518169;
+        --link-color-visited: #c54e8a;
+
+        --code-background: #f5f6f8;
+        --code-accent-color: #e3e7eb;
+        --code-accent-color-lite: #eff1f3;
+        --code-font-color: #5f5f5f;
+
+        --code-copy-background: #f5f6f8;
+        --code-copy-font-color: #6b7784;
+        --code-copy-border-color: #adb4bc;
+        --code-copy-success-color: #0F9D58;
+
+        --accent-color: #e9ecef;
+        --accent-color-lite: #f8f9fa;
+
+        --control-icons: #b2bac1;
+
+        --footer-background: #2f333e;
+        --footer-font-color: #ffffff;
+        --footer-link-color: #ffcc5c;
+        --footer-link-color-visited: #ffcc5c;
+    }
+}
+
+/* Dark mode theming */
+:root[color-theme="dark"] {
+    --header-background: #2571ff;
+    --header-font-color: #F4B400;
+
+    --body-background: #343a40;
+    --body-font-color: #ced3d8;
+
+    --mark-color: #ffab00;
+
+    --button-background: #2571ff;
+    --button-border-color: #F4B400;
+
+    --link-color: #0F9D58;
+    --link-color-visited: #DB4437;
+
+    --code-background: #2f353a;
+    --code-accent-color: #262b2f;
+    --code-accent-color-lite: #2b3035;
+    --code-font-color: #b9b9b9;
+
+    --code-copy-background: #343a40;
+    --code-copy-font-color: #6b7784;
+    --code-copy-border-color: #6b7784;
+    --code-copy-success-color: #37905c;
+
+    --accent-color: #2b3035;
+    --accent-color-lite: #2f353a;
+
+    --control-icons: #b2bac1;
+
+    --footer-background: #2f333e;
+    --footer-font-color: #ffffff;
+    --footer-link-color: #ffcc5c;
+    --footer-link-color-visited: #ffcc5c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --header-background: #4285F4;
+        --header-font-color: #FEFEFE;
+
+        --body-background: #343a40;
+        --body-font-color: #FEFEFE;
+
+        --mark-color: #ffab00;
+
+        --button-background: #4285F4;
+        --button-border-color: #F4B400;
+
+        --link-color: #F4B400;
+        --link-color-visited: #F4B400;
+
+        --code-background: #2f353a;
+        --code-accent-color: #262b2f;
+        --code-accent-color-lite: #2b3035;
+        --code-font-color: #b9b9b9;
+
+        --code-copy-background: #343a40;
+        --code-copy-font-color: #6b7784;
+        --code-copy-border-color: #6b7784;
+        --code-copy-success-color: #37905c;
+
+        --accent-color: #2b3035;
+        --accent-color-lite: #2f353a;
+
+        --control-icons: #b2bac1;
+
+        --footer-background: #2f333e;
+        --footer-font-color: #ffffff;
+        --footer-link-color: #ffcc5c;
+        --footer-link-color-visited: #ffcc5c;
+    }
+}
