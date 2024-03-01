@@ -25,3 +25,24 @@ jobs:
 
       - name: "Build"
         run: bazel build //...
+
+      - name: Checkout Go Branch
+        if: github.ref == 'refs/heads/main'
+        uses: actions/checkout@v3
+        with:
+          ref: 'docs'
+          clean: 'false'
+
+      - name: Expand Docs
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Unzipping Docs Site"
+          tar -zxf "${GITHUB_WORKSPACE}/bazel-out/*-fastbuild/bin/docs/docs_archive.tar" -C ./
+
+      - name: Check-in Latest Docs
+        if: github.ref == 'refs/heads/main'
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: "Build Robot"
+
+      

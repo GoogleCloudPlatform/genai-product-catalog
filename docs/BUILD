@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@bazel_skylib//rules:run_binary.bzl", "run_binary")
 load("@build_stack_rules_hugo//hugo:rules.bzl", "hugo_serve", "hugo_site", "hugo_theme")
 load("@python_deps//:requirements.bzl", "requirement")
 load("@rules_python//python:defs.bzl", "py_binary")
 load("//docs:docs.bzl", "doc_gen")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 
 hugo_theme(
@@ -121,4 +121,11 @@ hugo_serve(
     dep = [
         ":docs",
     ],
+)
+
+# Create a tgz package
+pkg_tar(
+    name = "docs_archive",
+    srcs = [":docs"],
+    package_file_name = "docs.tgz",
 )
