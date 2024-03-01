@@ -17,7 +17,7 @@ from concurrent import futures
 from google.cloud import pubsub_v1
 from typing import Callable
 import pandas as pd
-from model import FILE_COLUMNS
+from models.model import FILE_COLUMNS
 import json
 
 
