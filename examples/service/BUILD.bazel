@@ -16,5 +16,5 @@ py_binary(
     ],
     imports = [".", "..", "../..", "../../third_party"],
     visibility = ["//visibility:public"],
-    deps = PY_DEPS + ["//google"],
+    deps = PY_DEPS + ["//google/cloud/ml/applied"],
 )
