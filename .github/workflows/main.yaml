@@ -26,7 +26,7 @@ jobs:
       - name: "Build"
         run: bazel build //...
 
-      - name: Checkout Go Branch
+      - name: Checkout Docs Branch
         if: github.ref == 'refs/heads/main'
         uses: actions/checkout@v4
         with:
@@ -37,7 +37,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           echo "Unzipping Docs Site"
-          tar -xf "${GITHUB_WORKSPACE}/bazel-out/k8-fastbuild/bin/docs/docs.tgz" -C ./
+          tar -xf "${GITHUB_WORKSPACE}/bazel-out/k8-fastbuild/bin/docs/docs.tar" -C ./
 
       - name: Check-in Latest Docs
         if: github.ref == 'refs/heads/main'
