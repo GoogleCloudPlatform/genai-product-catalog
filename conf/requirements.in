@@ -3,7 +3,6 @@ pip-tools
 requests
 scipy
 numpy
-mediapipe
 pandas
 en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.0/en_core_web_sm-3.4.0-py3-none-any.whl
 spacy
@@ -13,21 +12,21 @@ jsonpickle
 jupyterlab
 
 # Required Google and Protobuf APIs
+gcloud
 google-api-python-client
-google-cloud-aiplatform==1.42.1
+google-cloud-aiplatform==1.43.0
 google-cloud-storage
 google-cloud-bigquery
-gcloud
+google-cloud-pubsub
+google-cloud-logging
 
 grpclib
 grpcio
 
 fastapi
 uvicorn
-
 pydoc-markdown
 
 # Dataflow
-apache_beam
-google.cloud.pubsub
-apache_beam[gcp]
+apache-beam==2.51.0 #2.53.0
+apache-beam[gcp]==2.51.0 #2.53.0

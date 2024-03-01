@@ -1,5 +1,5 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 load("@python_deps//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
 
 PY_DEPS = [
     requirement("requests"),
@@ -17,9 +17,8 @@ py_library(
     name = "loader_library",
     srcs = [
         "__init__.py",
-        "chain.py",
-        "model.py",
-        "//examples/loader/commands",
+        "publish_csv.py",
+        "//examples/loader/models",
     ],
     imports = [".."],
     srcs_version = "PY3",
@@ -28,9 +27,9 @@ py_library(
 )
 
 py_binary(
-    name = "loader",
+    name = "dataflow_loader",
     srcs = [
-        "loader.py",
+        "dataflow_loader.py",
     ],
     data = [
         "//conf:config",
@@ -42,14 +41,14 @@ py_binary(
     ] + PY_DEPS,
 )
 
-py_test(
-    name = "chain_test",
-    size = "small",
-    srcs = [
-        "chain_test.py",
-    ],
-    imports = [".."],
-    deps = [
-        ":loader_library",
-    ] + PY_DEPS,
-)
+# py_test(
+#     name = "chain_test",
+#     size = "small",
+#     srcs = [
+#         "chain_test.py",
+#     ],
+#     imports = [".."],
+#     deps = [
+#         ":loader_library",
+#     ] + PY_DEPS,
+# )
