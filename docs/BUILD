@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@build_stack_rules_hugo//hugo:rules.bzl", "hugo_serve", "hugo_site", "hugo_theme")
-load("//conf:copy_file_groups.bzl", "copy_file_groups")
-load("@rules_python//python:defs.bzl", "py_binary")
-load("@python_deps//:requirements.bzl", "requirement")
 load("@bazel_skylib//rules:run_binary.bzl", "run_binary")
+load("@build_stack_rules_hugo//hugo:rules.bzl", "hugo_serve", "hugo_site", "hugo_theme")
+load("@python_deps//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_binary")
 load("//docs:docs.bzl", "doc_gen")
+
 
 hugo_theme(
     name = "hugo_theme_geekdoc",
@@ -26,13 +26,6 @@ hugo_theme(
     ],
     theme_name = "hugo-geekdoc",
 )
-
-#genrule(
-#    name = "copy_gen_files",
-#    srcs = ["//api:api_documents_tar"],
-#    outs = ["content/en/model"],
-#    cmd = "mkdir -p $(RULEDIR)/content/en/model && tar -C $(RULEDIR)/content/en/model -zxf $(SRCS)",
-#)
 
 py_binary(
     name = "gen_docs",
