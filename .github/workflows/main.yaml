@@ -37,7 +37,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           echo "Unzipping Docs Site"
-          tar -xf "${GITHUB_WORKSPACE}/bazel-out/k8-fastbuild/bin/docs/docs.tar" -C ./
+          tar -xf "${GITHUB_WORKSPACE}/bazel-out/k8-fastbuild/bin/docs/docs.tar"
 
       - name: Check-in Latest Docs
         if: github.ref == 'refs/heads/main'
