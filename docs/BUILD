@@ -127,5 +127,5 @@ hugo_serve(
 pkg_tar(
     name = "docs_archive",
     srcs = [":docs"],
-    package_file_name = "docs.tgz",
+    package_file_name = "docs.tar",
 )
