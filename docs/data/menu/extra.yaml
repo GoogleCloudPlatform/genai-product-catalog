@@ -16,6 +16,6 @@
 ---
 header:
   - name: GitHub
-    ref: https://github.com/rrmcguinness/applied-ai
+    ref: https://github.com/GoogleCloudPlatform/genai-product-catalog
     icon: github
     external: true

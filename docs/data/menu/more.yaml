@@ -19,10 +19,10 @@ more:
     ref: "/posts"
     icon: "notification"
   - name: Releases
-    ref: "https://github.com/rrmcguinness/applied-ai/releases"
+    ref: "https://github.com/GoogleCloudPlatform/genai-product-catalog/releases"
     external: true
     icon: "download"
   - name: View Source
-    ref: "https://github.com/rrmcguinness/applied-ai"
+    ref: "https://github.com/GoogleCloudPlatform/genai-product-catalog"
     external: true
     icon: "github"
