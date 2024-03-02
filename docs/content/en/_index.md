@@ -4,6 +4,9 @@ title: "Google - GenAI Product Catalog"
 
 # GenAI for Product Catalog Enrichment
 
+
+[Documentation Site](https://googlecloudplatform.github.io/genai-product-catalog)
+
 This repository showcases the application of Google Cloud's Generative AI for product cataloging. The solution will:
 
 - Suggest product category given a sparse description and (optionally) a product image
