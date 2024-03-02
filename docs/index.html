@@ -43,7 +43,7 @@
 
 
   <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Google Applied ML" />
+<meta name="twitter:title" content="Google - GenAI Product Catalog" />
   <meta property="twitter:image" content="https://googlecloudplatform.github.io/genai-product-catalog/socialmedia2.png" />
   <meta name="twitter:description" content="Geekdoc is a simple Hugo theme for documentations. It is intentionally designed as a fast and lean theme and may not fit the requirements of complex projects. If a more feature-complete theme is required there are a lot of good alternatives out there." />
 
@@ -1090,7 +1090,7 @@
         
   
   
-    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Google Applied ML</span><meta itemprop='position' content='2' /></li>
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Google - GenAI Product Catalog</span><meta itemprop='position' content='2' /></li>
   
 
       </ol>
@@ -1115,15 +1115,156 @@
   <article
     class="gdoc-markdown gdoc-markdown__align--left"
   >
-    <h1>Google Applied ML</h1>
+    <h1>Google - GenAI Product Catalog</h1>
     <div class="gdoc-page__anchorwrap">
-    <h2 id="welcome">
-        Welcome
-        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#welcome" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Welcome" aria-label="Anchor to: Welcome" href="#welcome">
+    <h1 id="genai-for-product-catalog-enrichment">
+        GenAI for Product Catalog Enrichment
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#genai-for-product-catalog-enrichment" class="gdoc-page__anchor clip flex align-center" title="Anchor to: GenAI for Product Catalog Enrichment" aria-label="Anchor to: GenAI for Product Catalog Enrichment" href="#genai-for-product-catalog-enrichment">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h1>
+</div>
+<p><a
+  class="gdoc-markdown__link"
+  href="https://googlecloudplatform.github.io/genai-product-catalog"
+>Documentation Site</a></p>
+<p>This repository showcases the application of Google Cloud&rsquo;s Generative AI for product cataloging. The solution will:</p>
+<ul>
+<li>Suggest product category given a sparse description and (optionally) a product image</li>
+<li>Generate product attributes</li>
+<li>Generate detailed marketing copy for these products</li>
+</ul>
+<p>These results are grounded using a customer provided product catalog, enabling more specific and relevant results than a purely generative approach would provide.</p>
+<div class="gdoc-page__anchorwrap">
+    <h2 id="data-scientist--developer-setup">
+        Data Scientist / Developer Setup
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#data-scientist--developer-setup" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Data Scientist / Developer Setup" aria-label="Anchor to: Data Scientist / Developer Setup" href="#data-scientist--developer-setup">
             <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
         </a>
     </h2>
 </div>
+<p>Download and install the following utilities to make the most of this project.</p>
+<div class="gdoc-page__anchorwrap">
+    <h3 id="prerequisits">
+        Prerequisits
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#prerequisits" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Prerequisits" aria-label="Anchor to: Prerequisits" href="#prerequisits">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h3>
+</div>
+<ul>
+<li>Google Cloud CLI
+<ul>
+<li><a
+  class="gdoc-markdown__link"
+  href="https://cloud.google.com/sdk/docs/install"
+>Download</a></li>
+</ul>
+<blockquote>
+<p>It&rsquo;s recommended that you download and run the install script from your $HOME/bin directory.</p>
+</blockquote>
+</li>
+<li>Python 3.11+
+<ul>
+<li><a
+  class="gdoc-markdown__link"
+  href="https://www.python.org/downloads/"
+>Downloads</a></li>
+</ul>
+</li>
+</ul>
+<div class="gdoc-page__anchorwrap">
+    <h2 id="setup">
+        Setup
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#setup" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Setup" aria-label="Anchor to: Setup" href="#setup">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h2>
+</div>
+<div class="gdoc-page__anchorwrap">
+    <h3 id="setup-a-virtual-environment">
+        Setup a Virtual Environment
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#setup-a-virtual-environment" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Setup a Virtual Environment" aria-label="Anchor to: Setup a Virtual Environment" href="#setup-a-virtual-environment">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h3>
+</div>
+<p>This example uses <code>pip</code> as it&rsquo;s installed with Python3</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Create a development environment in the directory</span>
+</span></span><span class="line"><span class="cl">python3 -m venv venv
+</span></span><span class="line"><span class="cl"><span class="c1"># Activate the virtual environment</span>
+</span></span><span class="line"><span class="cl"><span class="nb">source</span> ./venv/bin/activate
+</span></span><span class="line"><span class="cl"><span class="c1"># Update PIP</span>
+</span></span><span class="line"><span class="cl">pip install --upgrade pip
+</span></span><span class="line"><span class="cl"><span class="c1"># Install dependencies</span>
+</span></span><span class="line"><span class="cl">pip install -r conf/requirements.txt
+</span></span></code></pre></div><div class="gdoc-page__anchorwrap">
+    <h3 id="setup-google-cloud-development-tools">
+        Setup Google Cloud Development Tools
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#setup-google-cloud-development-tools" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Setup Google Cloud Development Tools" aria-label="Anchor to: Setup Google Cloud Development Tools" href="#setup-google-cloud-development-tools">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h3>
+</div>
+<p>Add and ensure the following lines exist in your $HOME/.zshrc or $HOME/.bashrc
+respective to your terminal preferences.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># Sets the default Python SDK for Google Cloud</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">CLOUDSDK_PYTHON</span><span class="o">=</span>.venv
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># These lines SHOULD HAVE been added by the Google Cloud CLI Setup:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># The next line updates PATH for the Google Cloud SDK.</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -f <span class="s1">&#39;$HOME/bin/google-cloud-sdk/path.zsh.inc&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> . <span class="s1">&#39;$HOME/bin/google-cloud-sdk/path.zsh.inc&#39;</span><span class="p">;</span> <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># The next line enables shell command completion for gcloud.</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -f <span class="s1">&#39;$HOME/bin/google-cloud-sdk/completion.zsh.inc&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> . <span class="s1">&#39;$HOME/bin/google-cloud-sdk/completion.zsh.inc&#39;</span><span class="p">;</span> <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Adds utilities to path:</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$HOME</span>/bin
+</span></span></code></pre></div><div class="gdoc-page__anchorwrap">
+    <h2 id="contributors">
+        Contributors
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#contributors" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Contributors" aria-label="Anchor to: Contributors" href="#contributors">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h2>
+</div>
+<div class="gdoc-page__anchorwrap">
+    <h3 id="installing-java">
+        Installing Java
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#installing-java" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Installing Java" aria-label="Anchor to: Installing Java" href="#installing-java">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h3>
+</div>
+<p>Install Java JDK 17 and ensure it&rsquo;s on your path.</p>
+<div class="gdoc-page__anchorwrap">
+    <h3 id="installing-nodejs">
+        Installing NodeJS
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#installing-nodejs" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Installing NodeJS" aria-label="Anchor to: Installing NodeJS" href="#installing-nodejs">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h3>
+</div>
+<p>Install the latest Node JS and make sure it&rsquo;s on your path; this is used to manage the build environment.</p>
+<div class="gdoc-page__anchorwrap">
+    <h3 id="installing-bazel">
+        Installing Bazel
+        <a data-clipboard-text="https://googlecloudplatform.github.io/genai-product-catalog/#installing-bazel" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Installing Bazel" aria-label="Anchor to: Installing Bazel" href="#installing-bazel">
+            <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+        </a>
+    </h3>
+</div>
+<p>Once Java and Node JS are installed, run the following commands from the terminal.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># May require sudo</span>
+</span></span><span class="line"><span class="cl">npm install -g @bazel/bazelisk
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npm install -g @bazel/ibazel
+</span></span></code></pre></div><p>Now you can use the the bazel build utility to run, test, and add confidently to the repository.
+Please see the <a
+  class="gdoc-markdown__link"
+  href="https://googlecloudplatform.github.io/genai-product-catalog/toolchain/"
+>development tool chain</a> for more information.</p>
 
   </article>
 
