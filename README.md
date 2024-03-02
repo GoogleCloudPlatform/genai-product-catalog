@@ -12,6 +12,7 @@ These results are grounded using a customer provided product catalog, enabling m
 
 Download and install the following utilities to make the most of this project.
 
+### Prerequisits
 
 * Google Cloud CLI
   * [Download](https://cloud.google.com/sdk/docs/install)
@@ -19,7 +20,23 @@ Download and install the following utilities to make the most of this project.
 * Python 3.11+
   * [Downloads](https://www.python.org/downloads/)
 
-## Setup your Terminal Environment
+## Setup
+
+### Setup a Virtual Environment
+
+This example uses `pip` as it's installed with Python3
+```shell
+# Create a development environment in the directory
+python3 -m venv venv
+# Activate the virtual environment
+source ./venv/bin/activate
+# Update PIP
+pip install --upgrade pip
+# Install dependencies
+pip install -r conf/requirements.txt
+```
+
+### Setup Google Cloud Development Tools
 
 Add and ensure the following lines exist in your $HOME/.zshrc or $HOME/.bashrc
 respective to your terminal preferences.
@@ -39,27 +56,32 @@ if [ -f '$HOME/bin/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/bin/goo
 export PATH=$PATH:$JAVA_HOME/bin:$HOME/bin
 ```
 
-## Setup your virtual environment
-
-This example uses `pip` as it's installed with Python3
-```shell
-# Create a development environment in the directory
-python3 -m venv venv
-# Activate the virtual environment
-source ./venv/bin/activate
-# Update PIP
-pip install --upgrade pip
-# Install dependencies
-pip install -r build/requirements.txt
-```
-
-## Tooling Installation
+## Contributors
 
 ### Installing Java
 
+Install Java JDK 17 and ensure it's on your path.
+
 ### Installing NodeJS
 
+Install the latest Node JS and make sure it's on your path; this is used to manage the build environment.
+
 ### Installing Bazel
+
+Once Java and Node JS are installed, run the following commands from the terminal.
+
+```shell
+
+# May require sudo
+npm install -g @bazel/bazelisk
+
+npm install -g @bazel/ibazel
+
+```
+
+Now you can use the the bazel build utility to run, test, and add confidently to the repository.
+Please see the [development tool chain](https://googlecloudplatform.github.io/genai-product-catalog/toolchain/) for more information.
+
 
 
 
