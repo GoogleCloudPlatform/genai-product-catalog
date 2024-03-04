@@ -29,6 +29,7 @@ resource "google_project_service" "google-cloud-apis" {
     "monitoring.googleapis.com",
     "networkmanagement.googleapis.com",
     "pubsub.googleapis.com",
+    "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
     "storage.googleapis.com"

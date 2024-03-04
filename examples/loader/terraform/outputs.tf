@@ -26,3 +26,21 @@ output "dataflow_bucket_name" {
     description = "Bucket name for Dataflow Jobs"
     value       = module.dataflow_bucket.name
 }
+
+output "google_vertex_ai_index_endpoint_id" {
+    description = "Deployed Index Id"
+    value       = google_vertex_ai_index_endpoint.index_endpoint.id
+}
+
+output "google_vertex_ai_index_endpoint_public_url" {
+    description = "Deployed Index Public Domain Name"
+    value       = google_vertex_ai_index_endpoint.index_endpoint.public_endpoint_domain_name
+}
+
+output "notice" {
+  value = <<EOF
+=========================================================================
+Index deployment job submitted, it can take up to 60 minutes to complete.
+=========================================================================
+EOF
+}
