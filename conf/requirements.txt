@@ -11,8 +11,6 @@ anyio==4.3.0
     #   starlette
 apache-beam[gcp]==2.51.0
     # via -r requirements.in
-appnope==0.1.4
-    # via ipykernel
 argon2-cffi==23.1.0
     # via jupyter-server
 argon2-cffi-bindings==21.2.0
@@ -48,7 +46,7 @@ catalogue==2.0.10
     #   spacy
     #   srsly
     #   thinc
-certifi==2024.2.2
+certifi==2024.7.4
     # via
     #   httpcore
     #   httpx
@@ -772,5 +770,11 @@ zstandard==0.22.0
     # via apache-beam
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
+pip==24.1.1
+    # via pip-tools
 setuptools==69.1.1
+    # via
+    #   pip-tools
+    #   spacy
+    #   spacy-lookups-data
+    #   thinc
