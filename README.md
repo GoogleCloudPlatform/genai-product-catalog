@@ -1,88 +1,26 @@
-# GenAI for Product Catalog Enrichment
+<!--
+ Copyright 2024 Google, LLC
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+     https://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+# Generative AI Product Catalog
 
-This repository showcases the application of Google Cloud's Generative AI for product cataloging. The solution will:
+> NOTE: This repository has been refactored into two distinct
+> sections, experiments and demos. In the **experiments** directory
+> you'll find Python notebooks and data sets that show
+> much of the evolution prior to the Gemini and Gemma Era.
+> In the **demos** directory you'll find working end-to-end
+> demonstration artifacts.
 
-- Suggest product category given a sparse description and (optionally) a product image
-- Generate product attributes
-- Generate detailed marketing copy for these products
-
-These results are grounded using a customer provided product catalog, enabling more specific and relevant results than a purely generative approach would provide.
-
-## Data Scientist / Developer Setup
-
-Download and install the following utilities to make the most of this project.
-
-### Prerequisits
-
-* Google Cloud CLI
-  * [Download](https://cloud.google.com/sdk/docs/install)
-  > It's recommended that you download and run the install script from your $HOME/bin directory.
-* Python 3.11+
-  * [Downloads](https://www.python.org/downloads/)
-
-## Setup
-
-### Setup a Virtual Environment
-
-This example uses `pip` as it's installed with Python3
-```shell
-# Create a development environment in the directory
-python3 -m venv venv
-# Activate the virtual environment
-source ./venv/bin/activate
-# Update PIP
-pip install --upgrade pip
-# Install dependencies
-pip install -r conf/requirements.txt
-```
-
-### Setup Google Cloud Development Tools
-
-Add and ensure the following lines exist in your $HOME/.zshrc or $HOME/.bashrc
-respective to your terminal preferences.
-
-```shell
-# Sets the default Python SDK for Google Cloud
-export CLOUDSDK_PYTHON=.venv
-
-# These lines SHOULD HAVE been added by the Google Cloud CLI Setup:
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '$HOME/bin/google-cloud-sdk/path.zsh.inc' ]; then . '$HOME/bin/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '$HOME/bin/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/bin/google-cloud-sdk/completion.zsh.inc'; fi
-
-# Adds utilities to path:
-export PATH=$PATH:$JAVA_HOME/bin:$HOME/bin
-```
-
-## Contributors
-
-### Installing Java
-
-Install Java JDK 17 and ensure it's on your path.
-
-### Installing NodeJS
-
-Install the latest Node JS and make sure it's on your path; this is used to manage the build environment.
-
-### Installing Bazel
-
-Once Java and Node JS are installed, run the following commands from the terminal.
-
-```shell
-
-# May require sudo
-npm install -g @bazel/bazelisk
-
-npm install -g @bazel/ibazel
-
-```
-
-Now you can use the the bazel build utility to run, test, and add confidently to the repository.
-Please see the [development tool chain](https://googlecloudplatform.github.io/genai-product-catalog/toolchain/) for more information.
-
-
-
-
-
+Please use the README files in each module to determine how to best
+use, build, and run the artifacts.

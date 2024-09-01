@@ -1,0 +1,10 @@
+{
+    "name": "api",
+    "scripts": {
+        "start": "node main.js"
+    },
+    "dependencies": {
+        "tslib": "2.6.3",
+        "dotenv": "16.4.5"
+    }
+}
