@@ -1,0 +1,17 @@
+{
+    "folders": [
+        {
+            "name": "Experiments",
+            "path": "./experiments"
+        },
+        {
+            "name": "Digital Commerce Demo",
+            "path": "./demos/digital-commerce"
+        },
+        {
+            "name": "Root",
+            "path": "."
+        }
+    ],
+    "settings": {}
+}
