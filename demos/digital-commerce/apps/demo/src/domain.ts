@@ -11,13 +11,24 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import {Config, languages, NewGenerativeConfig, Product} from 'model';
+import { GridRowsProp } from '@mui/x-data-grid';
+import {BatchProduct, Config, languages, NewGenerativeConfig, Product} from 'model';
 import {Socket} from 'socket.io-client';
 
 export const CONFIG_KEY = '__RET_CFG_KeY__';
 
+export interface BatchProductGridItem extends BatchProduct, GridRowsProp {
+
+}
+
+export interface BatchState {
+    socket: Socket;
+    setProducts: (products: Product[]) => void;
+    products: Product[];
+}
+
 export interface SessionIDState {
-    sessionID: string
+    sessionID: string;
     setSessionID: (value: string) => void;
 }
 

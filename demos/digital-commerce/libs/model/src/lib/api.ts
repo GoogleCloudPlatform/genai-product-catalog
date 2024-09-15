@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Config, Image } from './model';
+import { BatchProduct, Config, Image } from './model';
 
 export interface ErrorResponse {
   code?: number;
@@ -57,3 +57,8 @@ export interface VideoPromptRequest extends SessionPromptPayloadRequest<string> 
   categoryPrompt: string
   productDetailPrompt: string
 }
+
+export interface BatchPromptRequest {
+  sessionID: string
+  values: BatchProduct[]
+};

@@ -98,7 +98,7 @@ const Step2 = () => {
             <Grid container spacing={2}>
                 <Grid item xs={2}>
                     <Paper elevation={1} sx={{borderRadius: '7px'}}>
-                        {product.images.map((image, idx) => (
+                        {product.images?.map((image, idx) => (
                             <img key={`product_image_${idx}`} src={image.uri}
                                  style={{width: '100%', objectFit: 'contain'}}/>
                         ))}
@@ -135,7 +135,7 @@ const Step2 = () => {
                                     <CardContent>
                                         <List>
                                             {selectedCategory > -1 ? (
-                                                categories[selectedCategory].attributes.map((attr, attrIdx) => (
+                                                categories[selectedCategory].attributes?.map((attr, attrIdx) => (
                                                     <ListItem key={`cat_attr_li_${attrIdx}`}>
                                                         <Box>
                                                             {attr.name} - {attr.description}

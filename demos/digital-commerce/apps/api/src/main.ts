@@ -24,7 +24,11 @@ import registrationHandler from './routes/register';
 import imageHandlers from './routes/images';
 import textHandlers from './routes/text';
 import videoHandlers from './routes/video';
+import batchHandlers from './routes/batch';
+
 import voiceStream from './events/voice-prompt';
+import batchStream from './events/batch-stream';
+
 
 config()
 
@@ -54,11 +58,13 @@ app.use('/api/registration', registrationHandler);
 app.use('/api/text', textHandlers);
 app.use('/api/images', imageHandlers);
 app.use('/api/video', videoHandlers);
+app.use('/api/batch', batchHandlers);
 
 
 io.on('connection', (socket: Socket) => {
     console.log(`Connected: ${socket.id}`);
     socket.on('voice:request', voiceStream(socket));
+    socket.on('batch:request', batchStream(socket));
 });
 
 const port = process.env.PORT || 3000;
