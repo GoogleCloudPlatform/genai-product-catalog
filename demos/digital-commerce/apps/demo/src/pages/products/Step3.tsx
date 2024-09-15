@@ -25,21 +25,19 @@ import {
     SelectChangeEvent,
     Stack,
     Typography,
+    Tab,
+    Tabs,
 } from '@mui/material';
 
+import AddIcon from '@mui/icons-material/Add';
+import GoogleBackdrop from '../../components/GoogleBackdrop';
 import {api, Attribute, BaseProduct, languages, Product, ProductAttributeValue} from 'model';
 import {ConfigurationContext, ProductContext, SessionIDContext} from '../../contexts';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL_BASE
 
-const Tab = React.lazy(() => import('@mui/material/Tab'));
-const Tabs = React.lazy(() => import('@mui/material/Tabs'));
-const AddIcon = React.lazy(() => import('@mui/icons-material/Add'));
-const GoogleBackdrop = React.lazy(() => import('../../components/GoogleBackdrop'));
 const ProductDetail = React.lazy(() => import('../../components/ProductDetail'));
-
-
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -81,7 +79,9 @@ const Step3 = () => {
         if (newValue === 0) {
             setLanguage(product.base.language);
         } else {
-            setLanguage(product.alternatives[newValue - 1].base.language);
+            if (product.alternatives) {
+                setLanguage(product.alternatives[newValue - 1].base.language);
+            }
         }
         setSelectedTab(newValue);
     };
@@ -92,7 +92,7 @@ const Step3 = () => {
 
     const addLanguage = () => {
         setBackdrop(true);
-        if (product.alternatives.filter((p) => p.base.language === language).length === 0) {
+        if (product.alternatives && product.alternatives.filter((p) => p.base.language === language).length === 0) {
             let prompt = config.promptTranslateProductDetail;
 
             prompt = prompt.replace('${base_language}', product.base.language);
@@ -107,11 +107,16 @@ const Step3 = () => {
                         const newProduct = {} as Product;
                         newProduct.base = newBase;
                         newProduct.category = product.category;
-                        newProduct.images = [...product.images];
-                        newProduct.alternatives = new Array<Product>();
+                        if (product.images) {
+                            newProduct.images = [...product.images];
+                        }
 
-                        setProduct({...product, alternatives: [...product.alternatives, newProduct]});
-                        setSelectedTab(product.alternatives.length + 1);
+                        newProduct.alternatives = new Array<Product>();
+                        if (product.alternatives) {
+                            setProduct({...product, alternatives: [...product.alternatives, newProduct]});
+                            setSelectedTab(product.alternatives.length + 1);
+                        }
+                        
                         setBackdrop(false);
                     }
                 })
@@ -177,7 +182,7 @@ const Step3 = () => {
                                     <MenuItem
                                         key={`lng_${idx}`}
                                         value={l.value}
-                                        disabled={product.alternatives.filter((p) => p.base.language === l.value).length > 0}>
+                                        disabled={(product.alternatives) ? product.alternatives?.filter((p) => p.base.language === l.value).length > 0 : true}>
                                         {l.name}
                                     </MenuItem>
                                 ))}
@@ -194,7 +199,7 @@ const Step3 = () => {
 
             <Tabs value={selectedTab} onChange={handleTabChange}>
                 <Tab key="selected_tab_0" label={product.base.language} {...a11yProps(0)} />
-                {product.alternatives.map((entry, idx) => (
+                {product.alternatives?.map((entry, idx) => (
                     <Tab key={`selected_tab_${idx + 1}`} label={entry.base.language} {...a11yProps(idx + 1)} />
                 ))}
             </Tabs>
@@ -205,7 +210,7 @@ const Step3 = () => {
                         <ProductDetail product={product}/>
                     </ProductTabPanel>
 
-                    {product.alternatives.map((entry, idx) => (
+                    {product.alternatives?.map((entry, idx) => (
                         <ProductTabPanel key={`product_panel_${idx + 1}`} value={selectedTab} index={idx + 1}>
                             <ProductDetail product={entry}/>
                         </ProductTabPanel>

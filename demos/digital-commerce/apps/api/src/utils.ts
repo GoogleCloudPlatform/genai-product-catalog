@@ -18,7 +18,9 @@ import {api} from 'model';
 
 export const extractTextCandidates = (result: GenerateContentResult): string => {
     if (result.response.candidates) {
-        return result.response.candidates[0].content.parts[0].text;
+        const text = result.response.candidates[0].content.parts[0].text;
+        const cleanedString = text.replace(/\\(?!["\\\/bfnrt])/g, "\\\\");
+        return cleanedString;
     } else {
         return 'no content';
     }

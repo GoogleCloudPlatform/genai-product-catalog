@@ -70,6 +70,17 @@ const Header = () => {
                             disabled={!config || !config.customerName || config.customerName === ''}>
                             Products
                         </Button>
+                        <Button 
+                            sx={{
+                                my: 2,
+                                display: 'block',
+                                color: '#333333',
+                                fontFamily: 'Google Sans',
+                            }}
+                            onClick={() => nav('/batch', {replace: true})}
+                            disabled={!config || !config.customerName || config.customerName === ''}>
+                            Batch
+                        </Button>
                         <Button
                             sx={{
                                 my: 2,

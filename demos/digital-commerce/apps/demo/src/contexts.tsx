@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {createContext} from 'react';
-import {ConfigState, ConversationState, ProductState, SessionIDState} from './domain';
+import {BatchState, ConfigState, ConversationState, ProductState, SessionIDState} from './domain';
 
 export const ConfigurationContext = createContext<ConfigState>(null!);
 
@@ -22,3 +22,5 @@ export const ProductContext = createContext<ProductState>(null!);
 export const SessionIDContext = createContext<SessionIDState>(null!);
 
 export const ConversationContext = createContext<ConversationState>(null!);
+
+export const BatchContext = createContext<BatchState>(null!);

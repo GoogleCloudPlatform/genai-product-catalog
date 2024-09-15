@@ -22,7 +22,7 @@ export interface Attribute {
 
 export interface Category {
   name: string;
-  attributes: Attribute[];
+  attributes?: Attribute[];
 }
 
 export interface ProductAttributeValue {
@@ -31,9 +31,17 @@ export interface ProductAttributeValue {
 }
 
 export interface Image {
-  uri: string;
+  uri?: string;
   base64: string;
   type: string;
+}
+
+export interface BatchProduct {
+  id?: number,
+  isNew?: boolean,
+  gtin?: string, 
+  name: string, 
+  short_description: string,
 }
 
 export interface BaseProduct {
@@ -48,7 +56,7 @@ export interface Product {
   base: BaseProduct;
   category: Category;
   images: Image[];
-  alternatives: Product[];
+  alternatives?: Product[];
 }
 
 export enum HarmCategory {
