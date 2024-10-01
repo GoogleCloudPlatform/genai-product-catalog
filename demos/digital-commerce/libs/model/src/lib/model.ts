@@ -135,7 +135,7 @@ export const ProductAsJsonString = () => {
 
 export const NewGenerativeConfig = (instructions: string) => {
   return {
-    modelName: 'gemini-1.5-flash',
+    modelName: 'gemini-1.5-flash-001',
     genAIToken: '',
     instructions: instructions,
     temperature: 0.2,
