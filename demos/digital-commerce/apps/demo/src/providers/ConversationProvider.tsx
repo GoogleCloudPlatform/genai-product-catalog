@@ -34,7 +34,7 @@ const ConversationProvider = ({children}: { children: ReactElement | ReactElemen
             role: 'user',
             value: message
         }]));
-        socket.on('voice:response', (v) => {
+        socket.on('agent:response', (v) => {
             const r = JSON.parse(v) as { prompt: string; response: string };
             setConversation([...conversation, {role: 'system', value: r.response}]);
         });

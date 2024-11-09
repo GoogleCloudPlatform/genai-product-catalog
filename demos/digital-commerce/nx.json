@@ -34,7 +34,8 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
-      }
+      },
+      "exclude": ["api-e2e/**/*", "apps/api-e2e/**/*"]
     },
     {
       "plugin": "@nx/webpack/plugin",
@@ -67,5 +68,6 @@
         "linter": "eslint"
       }
     }
-  }
+  },
+  "useLegacyCache": true
 }

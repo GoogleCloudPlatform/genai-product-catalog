@@ -21,9 +21,9 @@ import { BaseProduct, BatchProduct, Category, Image, Product } from 'model';
 import axios from 'axios';
 import { GenerativeModel } from '@google-cloud/vertexai';
 
-const GCP_IMAGE_MODEL=process.env.GCP_IMAGE_MODEL
-const GCP_PROJECT_ID=process.env.GCP_PROJECT_ID
-const GCP_LOCATION=process.env.GCP_LOCATION
+const GCP_IMAGE_MODEL = process.env.GCP_IMAGE_MODEL;
+const GCP_PROJECT_ID = process.env.GCP_PROJECT_ID;
+const GCP_LOCATION = process.env.GCP_LOCATION;
 
 interface SimpleProduct {
   language: string;
@@ -70,6 +70,7 @@ const generate_image = (product: Product, socket: Socket) => {
           headers: {
             Authorization: `Bearer ${token}`,
             'X-Goog-User-Project': GCP_PROJECT_ID,
+            'User-Agent': 'cloud-solutions/digital-commerce-deploy',
           },
         })
         .then((resp) => {
@@ -123,11 +124,18 @@ const generate_product = ({
         category: { name: obj.category } as Category,
       } as Product;
       generate_image(product, socket);
-      incrementor()
+      incrementor();
     } catch (e) {
       if (count < 3) {
         socket.emit('batch:warn', { message: `Retrying process for item: ${value.name}` });
-        generate_product({ model: model, socket: socket, value: value, prompt: prompt, incrementor: incrementor, count: count + 1 });
+        generate_product({
+          model: model,
+          socket: socket,
+          value: value,
+          prompt: prompt,
+          incrementor: incrementor,
+          count: count + 1,
+        });
       } else {
         socket.emit('batch:error', { message: `Failed to process: ${value.name}` });
       }
@@ -155,11 +163,11 @@ export default (socket: Socket) =>
     let processed = 0;
 
     const incrementProcessed = (): void => {
-        processed = processed +1;
-        if (processed === processRequestCount) {
-            socket.emit('batch:complete', { message: `Processed: ${processed} of ${processRequestCount}` });
-        }
-    }
+      processed = processed + 1;
+      if (processed === processRequestCount) {
+        socket.emit('batch:complete', { message: `Processed: ${processed} of ${processRequestCount}` });
+      }
+    };
 
     values.forEach((value) => {
       const prompt =
@@ -177,6 +185,13 @@ Short description: ${value.short_description}
 Example Output:
 ${example}
 `.trim();
-      generate_product({ model: model, socket: socket, value: value, prompt: prompt, incrementor: incrementProcessed, count: 0 });
+      generate_product({
+        model: model,
+        socket: socket,
+        value: value,
+        prompt: prompt,
+        incrementor: incrementProcessed,
+        count: 0,
+      });
     });
   };
