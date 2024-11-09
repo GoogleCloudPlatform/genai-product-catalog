@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React, {useContext, useRef} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {
     BottomNavigation,
     BottomNavigationAction,
@@ -28,7 +28,7 @@ import {
 } from '@mui/material';
 import {ConversationContext, ProductContext, SessionIDContext} from '../contexts';
 import RecordRTC from 'recordrtc';
-import {AudioPromptRequest} from 'libs/model/src/lib/api';
+import {AudioPromptRequest, ChatPromptRequest} from 'libs/model/src/lib/api';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -43,6 +43,8 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
     const {product} = useContext(ProductContext);
 
     const {conversation, setConversation, socket} = useContext(ConversationContext);
+
+    const [textValue, setTextValue] = useState<string>(null!);
 
     const stopRecording = useRef(() => {
     });
@@ -71,13 +73,25 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
                             value: dataUrl,
                             prompt: JSON.stringify(product.base),
                         } as AudioPromptRequest;
-                        socket.emit('voice:request', data);
+                        socket.emit('agent:voice', data);
                         mic.getTracks().forEach((track) => track.stop());
                     });
                 });
             };
         });
     };
+
+    const textAgent = () => {
+        if (textValue && textValue.trim().length > 0) {
+            const data = {
+                sessionID: sessionID,
+                value: textValue,
+                prompt: JSON.stringify(product.base),
+            } as ChatPromptRequest;
+            socket.emit('agent:text', data);
+            setTextValue(null!);
+        }
+    }
 
     return (
         <Drawer
@@ -146,12 +160,15 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
 
                 <FormControl variant='outlined' sx={{mt: 2, mb: 1, p: 0}}>
                     <InputLabel htmlFor='chatInput'>Chat</InputLabel>
-                    <OutlinedInput id='chatInput' type='text' fullWidth sx={{
+                    <OutlinedInput id='chatInput'
+                        type='text'
+                        onChange={e => setTextValue(e.target.value)}
+                                   value={textValue} fullWidth sx={{
                         borderRadius: '10px',
                         backgroundColor: '#FFFFFF'
                     }} endAdornment={
                         <InputAdornment position='end'>
-                            <IconButton><SendIcon/></IconButton>
+                            <IconButton onClick={textAgent}><SendIcon/></IconButton>
                         </InputAdornment>
                     }/>
                 </FormControl>

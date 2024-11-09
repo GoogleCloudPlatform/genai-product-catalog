@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { config } from 'dotenv'
-import {createServer} from 'http';
-import express, {Express, json} from 'express';
+import { config } from 'dotenv';
+import { createServer } from 'http';
+import express, { Express, json } from 'express';
 import cors from 'cors';
 
-import {Server, Socket} from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 import defaults from './routes/defaults';
 import registrationHandler from './routes/register';
@@ -26,28 +26,28 @@ import textHandlers from './routes/text';
 import videoHandlers from './routes/video';
 import batchHandlers from './routes/batch';
 
-import voiceStream from './events/voice-prompt';
+import textAgent from './events/text-agent';
+import voiceAgent from './events/voice-agent';
 import batchStream from './events/batch-stream';
 
-
-config()
+config();
 
 const app: Express = express();
 
-app.use(json({limit: '50mb'}));
+app.use(json({ limit: '50mb' }));
 const corsOptions = {
-    origin: "*",
-    methods: ["GET", "PUT", "POST", "DELETE"],
-    optionsSuccessStatus: 200
-}
+  origin: '*',
+  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  optionsSuccessStatus: 200,
+};
 
 app.use(cors(corsOptions));
 
 const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
-    cors: {origin: '*', methods: ["GET", "PUT", "POST", "DELETE"]},
-    maxHttpBufferSize: 2e7,
+  cors: { origin: '*', methods: ['GET', 'PUT', 'POST', 'DELETE'] },
+  maxHttpBufferSize: 2e7,
 });
 
 app.use('/', defaults);
@@ -60,14 +60,14 @@ app.use('/api/images', imageHandlers);
 app.use('/api/video', videoHandlers);
 app.use('/api/batch', batchHandlers);
 
-
 io.on('connection', (socket: Socket) => {
-    console.log(`Connected: ${socket.id}`);
-    socket.on('voice:request', voiceStream(socket));
-    socket.on('batch:request', batchStream(socket));
+  console.log(`Connected: ${socket.id}`);
+  socket.on('agent:text', textAgent(socket));
+  socket.on('agent:voice', voiceAgent(socket));
+  socket.on('batch:request', batchStream(socket));
 });
 
 const port = process.env.PORT || 3000;
 httpServer.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
+  console.log(`[server]: Server is running at http://localhost:${port}`);
 });

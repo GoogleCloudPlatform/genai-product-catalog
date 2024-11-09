@@ -14,7 +14,7 @@ module.exports = {
       assets: ['./src/assets', './src/app.yaml'],
       optimization: false,
       outputHashing: 'none',
-      generatePackageJson: true
+      generatePackageJson: true,
     }),
   ],
 };

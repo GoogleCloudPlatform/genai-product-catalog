@@ -49,3 +49,5 @@ Thumbs.db
 
 app.yaml
 dispatch.yaml
+
+vite.config.*.timestamp*

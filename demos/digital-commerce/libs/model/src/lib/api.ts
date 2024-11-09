@@ -47,6 +47,9 @@ export interface AudioPromptRequest extends SessionPromptPayloadRequest<string> 
   size: number;
 }
 
+export interface ChatPromptRequest extends SessionPromptPayloadRequest<string> {}
+
+
 export interface AudioResponse {
   transcript: string;
   value: unknown;
