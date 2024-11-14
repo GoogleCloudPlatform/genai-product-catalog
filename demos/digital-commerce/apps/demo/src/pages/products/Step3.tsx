@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import React, { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, Suspense, useContext, useEffect, useMemo, useState } from 'react';
 
 import {
   Box,
@@ -202,29 +202,29 @@ const Step3 = () => {
         </Grid>
       </Grid>
 
-      <Tabs value={selectedTab} onChange={handleTabChange}>
-        <Tab key="selected_tab_0" label={product.base.language} {...a11yProps(0)} />
-        {product.alternatives?.map((entry, idx) => (
-          <Tab key={`selected_tab_${idx + 1}`} label={entry.base.language} {...a11yProps(idx + 1)} />
-        ))}
-      </Tabs>
-
-      {product && product.base && product.base.name ? (
-        <React.Fragment>
-          <ProductTabPanel key="product_panel_0" value={selectedTab} index={0}>
-            <ProductDetail product={product} />
-          </ProductTabPanel>
-
+      <Suspense>
+        <Tabs value={selectedTab} onChange={handleTabChange}>
+          <Tab key="selected_tab_0" label={product.base.language} {...a11yProps(0)} />
           {product.alternatives?.map((entry, idx) => (
-            <ProductTabPanel key={`product_panel_${idx + 1}`} value={selectedTab} index={idx + 1}>
-              <ProductDetail product={entry} />
-            </ProductTabPanel>
+            <Tab key={`selected_tab_${idx + 1}`} label={entry.base.language} {...a11yProps(idx + 1)} />
           ))}
-        </React.Fragment>
-      ) : (
-        <></>
-      )}
+        </Tabs>
+        {product && product.base && product.base.name ? (
+          <React.Fragment>
+            <ProductTabPanel key="product_panel_0" value={selectedTab} index={0}>
+              <ProductDetail product={product} />
+            </ProductTabPanel>
 
+            {product.alternatives?.map((entry, idx) => (
+              <ProductTabPanel key={`product_panel_${idx + 1}`} value={selectedTab} index={idx + 1}>
+                <ProductDetail product={entry} />
+              </ProductTabPanel>
+            ))}
+          </React.Fragment>
+        ) : (
+          <></>
+        )}
+      </Suspense>
       <GoogleBackdrop backdrop={backdrop} setBackdrop={setBackdrop} />
     </React.Fragment>
   );
