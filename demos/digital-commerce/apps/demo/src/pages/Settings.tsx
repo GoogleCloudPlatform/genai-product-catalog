@@ -60,7 +60,7 @@ const Settings = () => {
     initialValues: config,
     validationSchema: SettingSchema,
     onSubmit: async (values: Config) => {
-      AxiosInstance.post(`/registration`, { sessionID: sessionID, config: values } as api.ConfigurationRequest)
+      AxiosInstance.post('/registration', { sessionID: sessionID, config: values } as api.ConfigurationRequest)
         .then((resp) => {
           if (resp.status === 201 || resp.status === 202) {
             const reg = resp.data as api.ConfigurationResponse;
