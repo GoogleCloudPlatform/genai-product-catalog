@@ -27,21 +27,91 @@ import ConversationProvider from '../providers/ConversationProvider';
 import './app.css';
 
 const themeOptions: ThemeOptions = {
-    palette: {
-        mode: 'light',
-        primary: {
-            main: '#1565c0',
-        },
-        secondary: {
-            main: '#37474f',
-        },
-        error: {
-            main: '#b71c1c',
-        },
-        warning: {
-            main: '#f4511e',
-        },
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#CF0731',
     },
+    secondary: {
+      main: '#9F0021',
+    },
+    error: {
+      main: '#B51C1C',
+    },
+    warning: {
+      main: '#F4C436',
+    },
+    success: {
+      main: '#28956E',
+    },
+    info: {
+      main: '#823A5C',
+    },
+  },
+  typography: {
+    h1: {
+      fontSize: '80pt',
+      fontFamily: 'DM Sans',
+    },
+    h2: {
+      fontFamily: 'DM Sans',
+      fontSize: '60pt',
+    },
+    h3: {
+      fontFamily: 'DM Sans',
+      fontSize: '48pt',
+    },
+    h4: {
+      fontFamily: 'DM Sans',
+      fontSize: '30pt',
+      fontWeight: 600,
+    },
+    h5: {
+      fontFamily: 'DM Sans',
+      fontSize: '24pt',
+      fontWeight: 600,
+    },
+    h6: {
+      fontFamily: 'DM Sans',
+      fontSize: '20pt',
+      fontWeight: 600,
+    },
+    subtitle1: {
+      fontFamily: 'DM Sans',
+      fontSize: '16pt',
+      fontWeight: 500,
+    },
+    subtitle2: {
+      fontFamily: 'DM Sans',
+      fontSize: '14pt',
+    },
+    body1: {
+      fontFamily: 'DM Sans',
+      fontSize: '14pt',
+      fontWeight: 500,
+    },
+    body2: {
+      fontFamily: 'DM Sans',
+      fontSize: '14pt',
+      fontWeight: 500,
+    },
+    button: {
+      fontFamily: 'DM Sans',
+      fontSize: '12pt',
+      fontWeight: 600,
+    },
+    caption: {
+      fontFamily: 'DM Sans',
+      fontSize: '12pt',
+    },
+    overline: {
+      fontFamily: 'DM Sans',
+      fontSize: '12pt',
+      fontWeight: 600,
+    },
+    fontFamily: 'DM Sans',
+    fontSize: 12,
+  },
 };
 
 const theme = createTheme(themeOptions);

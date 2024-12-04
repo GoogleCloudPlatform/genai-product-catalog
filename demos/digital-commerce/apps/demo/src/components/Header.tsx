@@ -14,8 +14,10 @@
 
 import {useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {AppBar, Box, Button, Toolbar, Typography} from '@mui/material';
+import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/material';
 import {ConfigurationContext} from '../contexts';
+import pageLogo from '../assets/cymbol/LogoCircle.svg';
+import cymbolText from '../assets/cymbol/Retail.svg';
 
 const Header = () => {
     const {config} = useContext(ConfigurationContext);
@@ -23,37 +25,19 @@ const Header = () => {
 
     return (
         <Box component={'nav'}>
-            <AppBar position="sticky" color="transparent">
+          <Box sx={{backgroundColor: '#000', height: '5px'}}>
+            <Container maxWidth="xl" sx={{display: 'flex', justifyContent: 'left', alignItems: 'center'}}>
+              <Typography sx={{fontSize: '11pt', pl: 5}} color={'primary'}></Typography>
+            </Container>
+          </Box>
+            <AppBar position="sticky" sx={{backgroundColor: '#333'}}>
                 <Toolbar sx={{p: 0}}>
-                    <Typography variant="h4" sx={{fontFamily: 'Google Sans'}}>
-                        <Typography variant="inherit" component={'span'} sx={{color: '#4285F4'}}>
-                            G
-                        </Typography>
-                        <Typography variant="inherit" component={'span'} sx={{color: '#DB4437'}}>
-                            o
-                        </Typography>
-                        <Typography variant="inherit" component={'span'} sx={{color: '#F4B400'}}>
-                            o
-                        </Typography>
-                        <Typography variant="inherit" component={'span'} sx={{color: '#4285F4'}}>
-                            g
-                        </Typography>
-                        <Typography variant="inherit" component={'span'} sx={{color: '#0F9D58'}}>
-                            l
-                        </Typography>
-                        <Typography variant="inherit" component={'span'} sx={{color: '#DB4437'}}>
-                            e
-                        </Typography>{' '}
-                        <Typography variant="inherit" component={'span'} sx={{color: '#666666'}}>
-                            Cloud
-                        </Typography>
-                    </Typography>
                     <Box sx={{ml: 4, flexGrow: 1, display: 'flex'}}>
                         <Button
                             sx={{
                                 my: 2,
                                 display: 'block',
-                                color: '#333333',
+                                color: '#FFFFFF',
                                 fontFamily: 'Google Sans',
                             }}
                             onClick={() => nav('/')}>
@@ -62,36 +46,38 @@ const Header = () => {
                         <Button
                             sx={{
                                 my: 2,
-                                display: 'block',
-                                color: '#333333',
+                                display: (!config || !config.customerName || config.customerName === '') ? 'none' : 'block',
+                                color: '#FFFFFF',
                                 fontFamily: 'Google Sans',
                             }}
-                            onClick={() => nav('/product-reset', {replace: true})}
-                            disabled={!config || !config.customerName || config.customerName === ''}>
+                            onClick={() => nav('/product-reset', {replace: true})}>
                             Products
                         </Button>
                         <Button 
                             sx={{
                                 my: 2,
-                                display: 'block',
-                                color: '#333333',
+                                display: (!config || !config.customerName || config.customerName === '') ? 'none' : 'block',
+                                color: '#FFFFFF',
                                 fontFamily: 'Google Sans',
                             }}
-                            onClick={() => nav('/batch', {replace: true})}
-                            disabled={!config || !config.customerName || config.customerName === ''}>
+                            onClick={() => nav('/batch', {replace: true})}>
                             Batch
                         </Button>
                         <Button
                             sx={{
                                 my: 2,
                                 display: 'block',
-                                color: '#333333',
+                                color: '#FFFFFF',
                                 fontFamily: 'Google Sans',
                             }}
                             onClick={() => nav('/settings', {replace: true})}>
                             Settings
                         </Button>
                     </Box>
+                  <Box>
+                    <Box sx={{display: { xs: 'none', sm: 'inline'} }}><img src={cymbolText} height={50} alt="Cymbol Logo" style={{marginTop: 4, paddingTop: 2 }} /></Box>
+                    <Box sx={{display: 'inline' }}><img src={pageLogo} height={50} alt="Cymbol Logo" style={{marginTop: 4, paddingTop: 2}} /></Box>
+                  </Box>
                 </Toolbar>
             </AppBar>
         </Box>

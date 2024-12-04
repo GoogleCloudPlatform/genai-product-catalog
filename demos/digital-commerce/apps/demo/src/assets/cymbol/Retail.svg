@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="653px" height="282px" viewBox="0 0 653 282" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Retail</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(12, -14)" fill="#FFFFFF" font-size="169" font-weight="bold">
+            <text id="C" font-family="AvantGarde-Bold, ITC Avant Garde Gothic">
+                <tspan x="0" y="172">C</tspan>
+            </text>
+            <text id="y" font-family="AvantGarde-BoldObl, ITC Avant Garde Gothic" font-style="italic">
+                <tspan x="121" y="172">y</tspan>
+            </text>
+            <text id="m" font-family="AvantGarde-Bold, ITC Avant Garde Gothic">
+                <tspan x="201" y="172">m</tspan>
+            </text>
+            <text id="b" font-family="AvantGarde-Bold, ITC Avant Garde Gothic">
+                <tspan x="355" y="172">b</tspan>
+            </text>
+            <text id="a" font-family="AvantGarde-Bold, ITC Avant Garde Gothic">
+                <tspan x="466" y="172">a</tspan>
+            </text>
+            <text id="l" font-family="AvantGarde-Bold, ITC Avant Garde Gothic">
+                <tspan x="577" y="172">l</tspan>
+            </text>
+        </g>
+        <text id="Retail" font-family="AvantGarde-Medium, ITC Avant Garde Gothic" font-size="63" font-weight="400" letter-spacing="1.2" fill="#FFFFFF">
+            <tspan x="453.5" y="249">Retail</tspan>
+        </text>
+    </g>
+</svg>

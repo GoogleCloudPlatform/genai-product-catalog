@@ -36,12 +36,12 @@ const ImageCard = ({title, img}: ImageCardArgs) => {
 
     return (
         <Grid item xs={4}>
-            <Card sx={{maxWidth: '230px', mb: 2, borderRadius: '7px'}} raised={true}>
-                <CardMedia sx={{height: '200px', mb: 0, pb: 0}} image={img} title={title}/>
+            <Card sx={{maxWidth: '230px', mb: 2, borderRadius: '30px', backgroundColor: 'primary.dark'}} raised={true}>
+                <CardMedia sx={{height: '200px', mb: 0, pb: 0, borderRadius: '0px'}} image={img} title={title}/>
                 <CardContent>
                     <Box sx={{display: 'flex', justifyContent: 'center'}}>
                         <Button onClick={() => handleClick(img)}>
-                            <Typography variant="body2">{title}</Typography>
+                            <Typography variant="body2" color={'primary.contrastText'}>{title}</Typography>
                         </Button>
                     </Box>
                 </CardContent>

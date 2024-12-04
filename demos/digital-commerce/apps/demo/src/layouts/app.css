@@ -1,17 +1,22 @@
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation16.MuiDrawer-paper.MuiDrawer-paperAnchorRight {
-    padding: 1em;
+    padding: 0;
     min-width: 440px;
     height: 100vh;
 
-    background: linear-gradient(186deg, rgba(205, 229, 245, .5) 0%, rgba(155, 188, 212, .5) 100%);
+    background: linear-gradient(0deg, rgba(159, 0, 33, .8), rgba(159, 0, 33, 0.6));
     mix-blend-mode: normal;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(4px);
-    border-radius: 20px 0px 0px 20px;
+    border-radius: 30px 0px 0px 30px;
 }
 
 .DrawerTopPaper {
     background: rgba(255, 255, 255, 0.6);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(2px);
+}
+
+footer * > a, a:hover, a:visited, a:active {
+    color: #FFFFFF;
+    text-decoration: none;
 }

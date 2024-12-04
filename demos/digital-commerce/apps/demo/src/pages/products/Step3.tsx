@@ -165,7 +165,7 @@ const Step3 = () => {
     <React.Fragment>
       <Grid container spacing={2} padding={2}>
         <Grid item xs={6}>
-          <Typography variant="h5">Preview, Edit / Approve Product Detail</Typography>
+          <Typography variant="h5">Preview Detail</Typography>
         </Grid>
         <Grid item xs={6}>
           <Stack direction={'row'} spacing={2} sx={{ justifyContent: 'right' }}>
@@ -175,6 +175,7 @@ const Step3 = () => {
                 id="language-select"
                 size="small"
                 labelId="all-languages-label"
+                variant={'outlined'}
                 value={language}
                 label="Languages"
                 onChange={handleLanguageChange}

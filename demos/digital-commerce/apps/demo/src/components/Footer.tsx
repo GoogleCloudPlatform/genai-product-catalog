@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Box, Container, Typography} from "@mui/material"
+import {Box, Container, Typography} from "@mui/material";
+import TextLogo from '../assets/cymbol/TextCymbolLogoWhite.svg';
 
 const Footer = () => {
     return (
@@ -21,15 +22,15 @@ const Footer = () => {
             bottom: 0,
             height: '3.5em',
             width: '100vw',
-            backgroundColor: '#FFFFFF',
+            backgroundColor: '#333',
+            color: '#FFF',
             zIndex: 999,
             borderTop: '0.5px solid #AAA',
             alignContent: 'center'
         }}>
-            <Container maxWidth="xl">
-                <Typography variant="body2" sx={{display: 'inline', pr: 5}}>&copy;2024 Google LLC</Typography>
-                <Typography variant="body2" sx={{display: 'inline'}}><a href="#">About Google</a> | <a href="#">Google
-                    Cloud Terms</a></Typography>
+            <Container maxWidth="xl" sx={{display: 'flex', justifyContent: 'left', alignItems: 'center'}}>
+              <img src={TextLogo} height={40} alt={"Cymbal Logo"} />
+              <Typography variant="body2" sx={{display: 'inline', pr: 5, color: 'white'}}>&copy;2024 Cymbal <span style={{fontStyle: 'italic'}}>Retail</span></Typography>
             </Container>
         </Box>
     )

@@ -68,9 +68,9 @@ const ProductDetail = ({product}: { product: Product }) => {
                 <Grid item xs={4}>
                     <Stack>
                         <Box>
-                            <Card>
+                            <Card raised={true} sx={{borderRadius: '30px', p: '7px'}}>
                                 {formik.values.images && formik.values.images.length > 0 && formik.values.images[0].uri ? (
-                                    <CardMedia sx={{height: '200px', mb: 0, pb: 0}}
+                                    <CardMedia sx={{height: '200px', borderRadius: '30px', m: 0, p: 0}}
                                                image={formik.values.images[0].uri}/>
                                 ) : (
                                     <></>

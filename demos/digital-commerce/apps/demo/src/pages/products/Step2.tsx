@@ -92,7 +92,7 @@ const Step2 = () => {
   return (
     <React.Fragment>
       <Typography variant="h5" sx={{ mb: 2 }}>
-        Choose one of the suggested categories
+        Choose Category
       </Typography>
 
       <Grid container spacing={2}>
@@ -107,7 +107,7 @@ const Step2 = () => {
           <React.Fragment>
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Card raised={true} sx={{ borderRadius: '7px' }}>
+                <Card raised={true} sx={{ borderRadius: '30px', p: '7px' }}>
                   <CardHeader title="Categories" />
                   <CardContent>
                     <RadioGroup onChange={handleCategoryChange}>
@@ -124,7 +124,7 @@ const Step2 = () => {
                 </Card>
               </Grid>
               <Grid item xs={6}>
-                <Card sx={{ borderRadius: '7px' }}>
+                <Card raised={selectedCategory > -1} sx={{ borderRadius: '30px', p: '7px' }}>
                   <CardHeader
                     title="Attributes"
                     subheader={selectedCategory > -1 ? categories[selectedCategory].name : ''}

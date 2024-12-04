@@ -16,7 +16,7 @@ import React, {useContext, useRef, useState} from 'react';
 import {
     BottomNavigation,
     BottomNavigationAction,
-    Box,
+    Box, Container,
     Drawer,
     FormControl,
     IconButton,
@@ -44,7 +44,7 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
 
     const {conversation, setConversation, socket} = useContext(ConversationContext);
 
-    const [textValue, setTextValue] = useState<string>(null!);
+    const [textValue, setTextValue] = useState<string>('');
 
     const stopRecording = useRef(() => {
     });
@@ -89,7 +89,23 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
                 prompt: JSON.stringify(product.base),
             } as ChatPromptRequest;
             socket.emit('agent:text', data);
-            setTextValue(null!);
+            setTextValue('');
+        }
+    }
+
+    const textOnClick = () => {
+        if (textValue && textValue.trim().length > 0) {
+            setConversation([...conversation, {
+                role: 'user',
+                value: textValue,
+            }])
+            textAgent();
+        }
+    }
+
+    const handleEnter = (e:  React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (e.key === 'Enter') {
+            textOnClick();
         }
     }
 
@@ -97,86 +113,80 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
         <Drawer
             open={open}
             anchor={'right'}
-
             onClose={() => {
                 setOpen(false);
             }}>
             <Stack direction={'column'} minWidth={'400px'} height={'100vh'}>
                 <Box sx={{ml: 2}}>
-                    <Typography variant='h5'>Assistant</Typography>
+                    <Typography variant='h5' color={'white'}>Assistant</Typography>
                 </Box>
                 <Box sx={{
                     flex: '1 1 auto',
                     p: 2,
-                    overflowY: 'auto',
-                    borderBottom: '1px solid #ccc',
-                    borderRadius: '10px',
-                    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-                    backdropFilter: 'blur(4px)',
-                    background: 'linear-gradient(186deg, rgba(205,229,245,.5) 0%, rgba(155,188,212,.5) 100%)'
-                }}>
+                    overflowY: 'auto'}}>
                     {conversation.map((u, idx) =>
                         u.role === 'system' ? (
                             <Box
                                 key={`__sys__${idx}`}
                                 sx={{
                                     color: 'white',
-                                    p: 1,
-                                    lineHeight: '12px',
-                                    borderRadius: '7px',
+                                    p: 2,
                                     mb: 2,
-                                    width: '90%',
+                                    lineHeight: '12px',
+                                    borderRadius: '20px',
+                                    width: '350px',
                                     position: 'relative',
-                                    border: '0.2px solid rgba(155,188,212,.5) 100%',
-                                    background: 'linear-gradient(186deg, rgba(57, 117, 213, 0.4) 0%, rgba(66, 133, 244,.6) 100%)',
+                                    background: 'rgba(111,0,23,1)',
                                 }}>
-                                <Box maxWidth={300}>
+                                <Box maxWidth={350}>
                                     <MarkdownPreview source={u.value} style={{background: 'none', color: '#FFF'}}/>
                                     <Box sx={{display: 'flex', justifyContent: 'right', m: 0, p: 0}}>
-                                        <IconButton
+                                        <IconButton sx={{color: 'primary.contrastText'}}
                                             onClick={() => navigator.clipboard.writeText(u.value)}><ContentCopyIcon/></IconButton>
                                     </Box>
                                 </Box>
                             </Box>
                         ) : (
                             <Box key={`__usr__${idx}`} sx={{
-                                p: 1,
-                                lineHeight: '12px',
+                                p: 2,
                                 mb: 2,
-                                width: '90%',
+                                lineHeight: '12px',
+                                borderRadius: '20px',
+                                width: '350px',
                                 position: 'relative',
-                                borderRadius: '7px',
-                                border: '0.2px solid rgba(155,155,155,.5) 100%',
-                                background: 'linear-gradient(186deg, rgba(107, 108, 111, 0.5) 0%, rgba(53, 55, 58, 0.5) 100%)',
-                                ml: '10%'
+                                backgroundColor: 'white',
+                                ml: '60px'
                             }}>
-                                <Box maxWidth={300}>
-                                    <MarkdownPreview source={u.value} style={{background: 'none', color: '#FFF'}}/>
+                                <Box maxWidth={350}>
+                                    <MarkdownPreview source={u.value} style={{background: 'none', color: '#000'}}/>
                                 </Box>
                             </Box>
                         )
                     )}
                 </Box>
 
-                <FormControl variant='outlined' sx={{mt: 2, mb: 1, p: 0}}>
+                <FormControl variant='filled' sx={{mt: 2, p: 1}}>
                     <InputLabel htmlFor='chatInput'>Chat</InputLabel>
                     <OutlinedInput id='chatInput'
                         type='text'
                         onChange={e => setTextValue(e.target.value)}
-                                   value={textValue} fullWidth sx={{
+                        onKeyUp={handleEnter}
+                        value={textValue}
+                        fullWidth
+                        sx={{
                         borderRadius: '10px',
                         backgroundColor: '#FFFFFF'
                     }} endAdornment={
                         <InputAdornment position='end'>
-                            <IconButton onClick={textAgent}><SendIcon/></IconButton>
+                            <IconButton onClick={textOnClick}><SendIcon/></IconButton>
                         </InputAdornment>
                     }/>
                 </FormControl>
 
-                <BottomNavigation sx={{borderRadius: '10px'}}>
-                    <BottomNavigationAction label="Listen" icon={<MicIcon/>} onClick={startRecorder}/>
-                    <BottomNavigationAction label="Stop" icon={<MicOffIcon/>} onClick={() => stopRecording.current()}/>
-                    <BottomNavigationAction label="Reset" icon={<RestartAltIcon/>} onClick={() => setConversation([])}/>
+                <BottomNavigation sx={{m: 0, p: 0}}>
+                    <BottomNavigationAction label="Listen" icon={<MicIcon sx={{fontSize: '24px'}}/>} onClick={startRecorder}/>
+                    <BottomNavigationAction label="Stop" icon={<MicOffIcon sx={{fontSize: '24px'}}/>} onClick={() => stopRecording.current()}/>
+                    <BottomNavigationAction label="Reset" icon={<RestartAltIcon sx={{fontSize: '24px'}}/>} onClick={() => setConversation([])}/>
                 </BottomNavigation>
             </Stack>
         </Drawer>

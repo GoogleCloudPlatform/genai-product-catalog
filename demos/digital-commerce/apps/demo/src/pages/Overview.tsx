@@ -74,13 +74,13 @@ const RegisteredBody = ({config}: { config: Config }) => {
             <List>
                 <ListItem>
                     <ListItemIcon>
-                        <LooksOneIcon/>
+                        <LooksOneIcon sx={{fontSize: '28px'}}/>
                     </ListItemIcon>
                     Creates a custom, Zero Shot. - Category Detection from the image
                 </ListItem>
                 <ListItem>
                     <ListItemIcon>
-                        <LooksTwoIcon/>
+                        <LooksTwoIcon sx={{fontSize: '28px'}}/>
                     </ListItemIcon>
                     Creates a custom, Multi Shot. - Attribute value extraction, SEO writing, Description Writing,
                     Programmable
@@ -88,25 +88,25 @@ const RegisteredBody = ({config}: { config: Config }) => {
                 </ListItem>
                 <ListItem>
                     <ListItemIcon>
-                        <Looks3Icon/>
+                        <Looks3Icon sx={{fontSize: '28px'}}/>
                     </ListItemIcon>
                     Chain of Thought Prompting. - A custom agent to help tune the product description.
                 </ListItem>
                 <ListItem>
                     <ListItemIcon>
-                        <Looks4Icon/>
+                        <Looks4Icon sx={{fontSize: '28px'}}/>
                     </ListItemIcon>
                     Multi-Language Support
                 </ListItem>
                 <ListItem>
                     <ListItemIcon>
-                        <Looks5Icon/>
+                        <Looks5Icon sx={{fontSize: '28px'}}/>
                     </ListItemIcon>
                     Grounded Truth Tooling - Using Google Search Engine
                 </ListItem>
                 <ListItem>
                     <ListItemIcon>
-                        <Looks6Icon/>
+                        <Looks6Icon sx={{fontSize: '28px'}}/>
                     </ListItemIcon>
                     Video based product setup.
                 </ListItem>

@@ -29,34 +29,32 @@ const Step1 = () => {
     const navigate = useNavigate();
 
     return (
-        <React.Fragment>
-            <Box sx={{display: 'flex', justifyContent: 'center'}}>
-                <Stack>
-                    <Grid container>
-                        <Grid item xs={6}>
-                            <Typography variant="h5" sx={{mb: 2}}>
-                                Select an potential product image
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Box sx={{display: 'flex', justifyContent: 'right'}}>
-                                <IconButton size="medium"
-                                            onClick={() => navigate('/products/video-setup')}><VideoCameraBackIcon/></IconButton>
-                            </Box>
-                        </Grid>
+        <Box sx={{display: 'flex', justifyContent: 'center'}}>
+            <Stack>
+                <Grid container>
+                    <Grid item xs={6}>
+                        <Typography variant="h5" sx={{mb: 2}}>
+                            Select an image.
+                        </Typography>
                     </Grid>
+                    <Grid item xs={6}>
+                        <Box sx={{display: 'flex', justifyContent: 'right'}}>
+                            <IconButton size="medium"
+                                        onClick={() => navigate('/products/video-setup')}><VideoCameraBackIcon/></IconButton>
+                        </Box>
+                    </Grid>
+                </Grid>
 
-                    <Grid container spacing={2} maxWidth={'800px'}>
-                        <ImageCard title="Apparel" img={apparel}/>
-                        <ImageCard title="Beauty" img={beauty}/>
-                        <ImageCard title="Electronics" img={headphones}/>
-                        <ImageCard title="Furniture" img={sofa}/>
-                        <ImageCard title="Jewelry" img={jewelry}/>
-                        <ImageCard title="Grocery" img={mustard}/>
-                    </Grid>
-                </Stack>
-            </Box>
-        </React.Fragment>
+                <Grid container spacing={2} maxWidth={'800px'}>
+                    <ImageCard title="Apparel" img={apparel}/>
+                    <ImageCard title="Beauty" img={beauty}/>
+                    <ImageCard title="Electronics" img={headphones}/>
+                    <ImageCard title="Furniture" img={sofa}/>
+                    <ImageCard title="Jewelry" img={jewelry}/>
+                    <ImageCard title="Grocery" img={mustard}/>
+                </Grid>
+            </Stack>
+        </Box>
     );
 };
 
