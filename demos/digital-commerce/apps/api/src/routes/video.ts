@@ -38,20 +38,22 @@ router.post('/', async (req: Request, resp: Response) => {
                 .then((result) => {
                     const videoResultText = extractTextCandidates(result) as string;
 
-                    console.log(videoResultText);
+                    //console.log(videoResultText);
+
+                    const contentPrompt = videoRequest.categoryPrompt + `Product Information: ${videoResultText}`
 
                     groundedModel.generateContent({
                         contents: [{
                             role: 'user',
-                            parts: [{text: videoRequest.categoryPrompt}, {text: `Product Information: ${videoResultText}`}]
+                            parts: [{text: contentPrompt}]
                         }]
                     }).then(categoryResult => {
-                        const categoryResponeText = extractTextCandidates(categoryResult);
+                        const categoryResponseText = extractTextCandidates(categoryResult);
 
-                        console.log(categoryResponeText)
+                        //console.log(categoryResponseText)
 
                         try {
-                            const category = JSON.parse(categoryResponeText) as Category[];
+                            const category = JSON.parse(categoryResponseText) as Category[];
 
                             const productCategoryAttributes = category[0].attributes.map(a => new Object({
                                 name: a.name,

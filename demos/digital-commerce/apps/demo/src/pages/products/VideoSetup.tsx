@@ -61,7 +61,7 @@ const VideoSetup = () => {
             const requestBody = {
               sessionID: sessionID,
               prompt: config.promptVideo,
-              categoryPrompt: categoryPrompt.replace(
+              categoryPrompt: "Suggest the top category and their top 25 attributes from the product description. The category hierarchy must be 4 levels deep, separated by ' > ' character. Example JSON Output: [${category_model}]".replace(
                 '${category_model}',
                 JSON.stringify({
                   name: 'parent > child > grand_child > great_grand_child',
@@ -78,7 +78,11 @@ const VideoSetup = () => {
               .then((resp) => {
                 console.log('stage 1 complete');
                 if (resp.status === 200) {
+
+
                   const productResponse = resp.data as Product;
+                  console.log('####')
+                  console.log(productResponse)
                   setProduct({ ...product, ...productResponse });
                   navigate('/products/3');
                 }
