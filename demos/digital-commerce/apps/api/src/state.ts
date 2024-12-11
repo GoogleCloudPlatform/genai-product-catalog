@@ -15,11 +15,13 @@
 import {GenerativeModel, VertexAI} from '@google-cloud/vertexai';
 import {GenerativeConfig} from 'model';
 
-const vertexAI = new VertexAI({
-    project: 'retail-shared-demos',
-    location: 'us-central1',
-});
+import { config } from 'dotenv';
+config()
 
+const vertexAI = new VertexAI({
+    project: process.env.GCP_PROJECT_ID,
+    location: process.env.GCP_LOCATION,
+});
 
 export class GenerativeSession {
     public createdAt: number
