@@ -24,8 +24,8 @@ env: flex
 # Add your storage bucket names, and firebase DB information here.
 env_variables:
   STORAGE_BUCKET: ""
-  FIRESTORE_DB_ID: ""
-  FIRESTORE_COLLECTION: ""
+  FIRESTORE_DB_ID: "default"
+  FIRESTORE_COLLECTION: "shared-retail-demos-firestore"
   GCP_PROJECT_ID: ""
   GCP_LOCATION: "us-central1"
   GCP_IMAGE_MODEL: "imagen-3.0-fast-generate-001"

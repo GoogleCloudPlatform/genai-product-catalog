@@ -18,9 +18,23 @@ import {api} from 'model';
 
 export const extractTextCandidates = (result: GenerateContentResult): string => {
     if (result.response.candidates) {
-        const text = result.response.candidates[0].content.parts[0].text;
-        const cleanedString = text.replace(/\\(?!["\\\/bfnrt])/g, "\\\\");
-        return cleanedString;
+        let text = result.response.candidates[0].content.parts[0].text;
+
+        if (text.startsWith("[") && text.endsWith("}")) {
+            text = text.substring(0, text.length - 1)
+        }
+
+        text = text.replace(/\\(?!["\\/bfnrt])/g, "\\\\");
+
+        try {
+            JSON.parse(text);
+            return text;
+        } catch (e) {
+            console.log(`invalid JSON response from Gemini ${e}`)
+            return "[{name='error'}]"
+        }
+
+
     } else {
         return 'no content';
     }
