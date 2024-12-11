@@ -13,6 +13,28 @@ provider "google" {
   region  = "us-central1"
 }
 
+# Create a Firestore Database and collection
+resource "google_firestore_document" "default" {
+  collection = "shared-retail-demos-firestore"
+  document_id = "__initial-setup-doc__"
+
+  fields = {
+    config = {
+      fields = {
+        customerName = {
+          string_value = ""
+        }
+      }
+    }
+    date = {
+      number_value = "1725514849320"
+    }
+    country = {
+      string_value = "USA"
+    }
+  }
+}
+
 # Create a Google Cloud Storage bucket
 resource "google_storage_bucket" "default" {
   name          = "your-bucket-name"
@@ -82,7 +104,7 @@ resource "google_app_engine_standard_app_version" "api" {
   runtime    = "nodejs22"
 
   entrypoint {
-    shell = "node your-api-script.js" # Replace with your API script
+    shell = "node dist/apps/api/main.js" # Replace with your API script
   }
 
   deployment {

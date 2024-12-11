@@ -29,8 +29,6 @@ const firestoreSettings = {
     databaseId: DATABASE_ID,
 } as FirebaseFirestore.Settings;
 
-const db = new Firestore(firestoreSettings);
-
 interface PersistentConfig {
     id: string;
     date: number;
@@ -38,9 +36,14 @@ interface PersistentConfig {
 }
 
 const persistToFirestore = (id: string, config: Config): Promise<FirebaseFirestore.WriteResult> => {
-    const persistentConfig = {id: id, date: Date.now(), config: config} as PersistentConfig;
-    const docRef = db.collection(COLLECTION).doc(persistentConfig.id);
-    return docRef.set(persistentConfig, {merge: true});
+    if (firestoreSettings.databaseId) {
+        const db = new Firestore(firestoreSettings);
+        const persistentConfig = {id: id, date: Date.now(), config: config} as PersistentConfig;
+        const docRef = db.collection(COLLECTION).doc(persistentConfig.id);
+        return docRef.set(persistentConfig, {merge: true});
+    } else {
+        console.log("configuration not persisted to firestore")
+    }
 };
 
 router.post('/', (req: Request, resp: Response) => {
