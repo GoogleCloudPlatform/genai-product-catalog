@@ -1,0 +1,15 @@
+.DS_Store
+venv
+.venv
+.idea
+bazel*
+.ijwb
+
+user.bazelrc
+
+__pycache__/
+
+node_modules/
+.terraform/
+terraform.tfstate
+variables.tfvars

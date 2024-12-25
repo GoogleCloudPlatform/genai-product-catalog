@@ -1,0 +1,32 @@
+[
+    {
+        "name": "business_keys",
+        "type": "ARRAY<STRUCT<value STRING, name STRING>>",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "image_embedding",
+        "type": "ARRAY<FLOAT64>",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "text_embedding",
+        "type": "ARRAY<FLOAT64>",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "categories",
+        "type": "ARRAY<STRUCT<children ARRAY<STRUCT<children ARRAY<STRUCT<children ARRAY<STRUCT<children ARRAY<STRING>, name STRING, id STRING>>, name STRING, id STRING>>, name STRING, id STRING>>, name STRING, id STRING>>",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "base_price",
+        "type": "ARRAY<FLOAT64>",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "headers",
+        "type": "ARRAY<STRUCT<attribute_values ARRAY<STRUCT<string_value STRING, template_attribute_rule STRUCT<required BOOL, field_type STRING, allow_overrides BOOL, name STRING>>>, images ARRAY<STRUCT<url STRING, origin_url STRING>>, nlp_description STRING, locale STRING, long_description STRING, short_description STRING, brand STRING, name STRING>>",
+        "mode": "NULLABLE"
+    }
+]

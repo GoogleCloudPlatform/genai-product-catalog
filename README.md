@@ -15,12 +15,8 @@
 -->
 # Generative AI Product Catalog
 
-> NOTE: This repository has been refactored into two distinct
-> sections, experiments and demos. In the **experiments** directory
-> you'll find Python notebooks and data sets that show
-> much of the evolution prior to the Gemini and Gemma Era.
-> In the **demos** directory you'll find working end-to-end
-> demonstration artifacts.
+This repositor contains the following modules:
 
-Please use the README files in each module to determine how to best
-use, build, and run the artifacts.
+* [archives/experiments](archives/experiments/README.md) - The initial experiments that lead to the creation of the following with the advent of Google Gemini.
+* [modules/digital-commerce](modules/digital-commerce/README.md) - A NodeJS / React API and User Interface that demonstrates the end-to-end workflow of product enrichment.
+* [modules/product-enrichment](modules/product-enrichment/README.md) - A Python API, CLI, and Blueprint for building and running product enrichment at scale.

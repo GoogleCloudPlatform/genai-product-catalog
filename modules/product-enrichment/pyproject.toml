@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "google-catalog-enrichment"
+version = "0.1.0"
+description = "A Python project used to asynchronously enrich product data, images, and videos using generative AI."
+authors = ["Google LLC", "Ryan McGuinness <rmcguinness@google.com>"]
+readme = "README.md"
+packages = [
+    { include = "common", from = "src"},
+    { include = "db", from = "src"},
+    { include = "enrichment", from = "src"},
+    { include = "cli", from = "src" },
+    { include = "api", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+google-generativeai = "^0.8.3"
+google-cloud-aiplatform = "^1.74.0"
+ratelimit = "^2.2.1"
+pydantic = "^2.10.3"
+sqlalchemy = "^2.0.36"
+sqlmodel = "^0.0.22"
+psycopg = {extras = ["binary", "pool"], version = "^3.2.3"}
+
+pgvector = "^0.3.6"
+fastapi = "^0.115.6"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+gRetail = 'cli.main:main'
+
+
