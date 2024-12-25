@@ -38,7 +38,9 @@ router.post('/', async (req: Request, resp: Response) => {
                 .then((result) => {
                     const videoResultText = extractTextCandidates(result) as string;
 
-                    //console.log(videoResultText);
+                    console.log("Video Results:")
+                    console.log(videoResultText);
+
 
                     const contentPrompt = videoRequest.categoryPrompt + `Product Information: ${videoResultText}`
 
@@ -50,7 +52,8 @@ router.post('/', async (req: Request, resp: Response) => {
                     }).then(categoryResult => {
                         const categoryResponseText = extractTextCandidates(categoryResult);
 
-                        //console.log(categoryResponseText)
+                        console.log("Category Results:")
+                        console.log(categoryResponseText)
 
                         try {
                             const category = JSON.parse(categoryResponseText) as Category[];
@@ -60,10 +63,14 @@ router.post('/', async (req: Request, resp: Response) => {
                                 value: ''
                             }))
 
+                            console.log("Product Detail Prompt")
+                            console.log(videoRequest.productDetailPrompt)
+
                             const productDetailPrompt = videoRequest.productDetailPrompt
                                 .replace('${category_attributes}', JSON.stringify(category[0].attributes))
                                 .replace('${product_attribute_value_model}', JSON.stringify(productCategoryAttributes));
 
+                            console.log("Product Detail Prompt:")
                             console.log(productDetailPrompt)
 
                             groundedModel.generateContent({

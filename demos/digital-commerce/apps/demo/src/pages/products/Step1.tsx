@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Box, Grid, IconButton, Stack, Typography} from '@mui/material';
+import { Box, Fab, Grid, IconButton, Stack, Typography } from '@mui/material';
 
 import React from 'react';
 import apparel from '../../assets/apparel.jpeg';
@@ -38,9 +38,9 @@ const Step1 = () => {
                         </Typography>
                     </Grid>
                     <Grid item xs={6}>
-                        <Box sx={{display: 'flex', justifyContent: 'right'}}>
-                            <IconButton size="medium"
-                                        onClick={() => navigate('/products/video-setup')}><VideoCameraBackIcon/></IconButton>
+                        <Box sx={{display: 'flex', justifyContent: 'right', m: '2px', pr: 2}}>
+                            <Fab size="medium" variant={'extended'} color={'secondary'}
+                                        onClick={() => navigate('/products/video-setup')}><VideoCameraBackIcon /> Create from Video</Fab>
                         </Box>
                     </Grid>
                 </Grid>

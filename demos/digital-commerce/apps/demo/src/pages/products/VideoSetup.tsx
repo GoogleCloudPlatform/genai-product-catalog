@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Box, Button, Container, Stack } from '@mui/material';
+import { Box, Button, Container, Fab, Stack } from '@mui/material';
 import React, { useContext, useRef } from 'react';
 import RecordRTC from 'recordrtc';
 import { ConfigurationContext, ProductContext, SessionIDContext } from '../../contexts';
 import { api, Category, Product, ProductAsJsonString } from 'model';
 import { useNavigate } from 'react-router-dom';
 import AxiosInstance from '../../utils/WebClient';
+import PhotoCameraFrontIcon from '@mui/icons-material/PhotoCameraFront';
+import StopIcon from '@mui/icons-material/Stop';
 
 const captureCamera = (cb: (stream: MediaStream) => void) => {
   navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(cb);
@@ -61,8 +63,7 @@ const VideoSetup = () => {
             const requestBody = {
               sessionID: sessionID,
               prompt: config.promptVideo,
-              categoryPrompt: "Suggest the top category and their top 25 attributes from the product description. The category hierarchy must be 4 levels deep, separated by ' > ' character. Example JSON Output: [${category_model}]".replace(
-                '${category_model}',
+              categoryPrompt: "Find a JSON array of the top 2 categories and their top 25 attributes from the product description. The category hierarchy must be 4 levels deep, separated by ' > ' character. Example JSON Output: [ ${category_model} ]".replace('${category_model}',
                 JSON.stringify({
                   name: 'parent > child > grand_child > great_grand_child',
                   attributes: [{ name: 'weight', description: '', valueRange: ['a', 'b', 'c'] }],
@@ -100,11 +101,13 @@ const VideoSetup = () => {
 
   return (
     <Container>
-      <Box sx={{ display: 'grid', justifyContent: 'center' }}>
-        <video ref={localVideoRef} height="120" width="280" autoPlay></video>
-        <Stack direction={'row'}>
-          <Button onClick={() => startRecorder()}>Start Record</Button>
-          <Button onClick={() => stopRecording.current()}>Stop Recorder</Button>
+      <Box sx={{ display: 'grid', justifyContent: 'center', justifyItems: 'center' }}>
+        <Box height={400} sx={{aspectRatio: '16/9', border: '1px solid #666', borderRadius: '10px', p: 1, m:2}}>
+          <video ref={localVideoRef} height="100%" width="100%" autoPlay></video>
+        </Box>
+        <Stack direction={'row'} spacing={2}>
+          <Fab variant={'extended'} color={'success'} onClick={() => startRecorder()}><PhotoCameraFrontIcon /> Start</Fab>
+          <Fab variant={'extended'} color={'secondary'} onClick={() => stopRecording.current()}><StopIcon /> Stop</Fab>
         </Stack>
       </Box>
     </Container>
