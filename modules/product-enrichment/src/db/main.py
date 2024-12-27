@@ -15,8 +15,7 @@ from common.config import Config
 from sqlmodel import SQLModel, create_engine
 from common.model import Product
 
-def create_tables():
-    config = Config(file_name="env.toml")
+def create_tables(config: Config):
     print("Creating Database Tables")
 
     # Bring product into scope to auto generate the tables.

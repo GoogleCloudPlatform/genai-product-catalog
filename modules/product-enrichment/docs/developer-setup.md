@@ -35,13 +35,13 @@ poetry shell
     3. `poetry install`
     4. `retail generate-salt` - copy the salt
     5. `retail encrypt-password -p <your password> -s <your salt>`
-6. Create a local configuration file called "env.local.toml" using "env.toml" as a template **This file is ignored by git**.
-    1. In the application section:
-        1. Add your Google Cloud Project ID `project_id = "<your project id>"`
-        2. Add your API key `api_key = "<your api key>"`
-    2. In the postgres section
-        1. Add the salt `salt = "<your salt>"`
-        2. Add the password `password = "<your encrypted password>"`
+       6. Create a local configuration file called "env.loca    l.toml" using "env.toml" as a template **This file is ignored by git**.
+           1. In the application section:
+               1. Add your Google Cloud Project ID `project_id = "<your project id>"`
+               2. Add your API key `api_key = "<your api key>"`
+           2. In the postgres section
+               1. Add the salt `salt = "<your salt>"`
+               2. Add the password `password = "<your encrypted password>"`
 7. Ensure your Google Cloud CLI is setup
     1. `gcloud config set project <project name>`
     2. `gcloud auth application-default set-quota-project`

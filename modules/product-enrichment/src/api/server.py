@@ -18,25 +18,16 @@ from fastapi import FastAPI
 import api.product as product
 import api.instrument as instrument
 
-config = Config("env.toml")
-engine = config.postgres.get_engine(echo=True)
-
 app = FastAPI()
 
-instrument.register(app)
-product.register(app, engine)
+def start(cfg: Config, host: str, port: int, reload: bool):
+    engine = cfg.postgres.get_engine(echo=True)
+    instrument.register(app)
+    product.register(app, engine)
 
-def start(host: str, port: int, reload: bool):
     """Starts the server in dev mode"""
     uvicorn.run("api.server:app", host=host, port=port, reload=reload)
 
-def dev():
-    """Starts the server in prod mode"""
-    start("127.0.0.1", 8000, True)
-
-def prod():
-    """Starts the server in prod mode"""
-    start("0.0.0.0", 8080, False)
-
 if __name__ == "__main__":
-    dev()
+    config = Config("env.toml")
+    start(config, "127.0.0.1", 8000, reload=True)
