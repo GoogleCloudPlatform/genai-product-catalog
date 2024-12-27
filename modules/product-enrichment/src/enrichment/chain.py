@@ -4,17 +4,31 @@ from abc import ABC, abstractmethod
 
 class Context(object):
     state: Dict[str, Any]
+    prompt_vars: Dict[str, str]
     errors: List[Exception]
 
-    def __init__(self, state: Dict[str, Any]):
+    def __init__(self):
         self.errors = []
-        self.state = state
+        self.state = {}
+        self.prompt_vars = {}
 
     def add(self, key: str, value: Any):
         self.state[key] = value
 
+    def get(self, key: str) -> Any:
+        return self.state[key]
+
     def remove(self, key: str):
         del self.state[key]
+
+    def add_prompt_var(self, prompt_var: str):
+        self.prompt_vars[prompt_var] = prompt_var
+
+    def remove_prompt_var(self, prompt_var: str):
+        del self.prompt_vars[prompt_var]
+
+    def get_prompt_var(self, prompt_var: str) -> str:
+        return self.prompt_vars[prompt_var]
 
     def has_errors(self):
         return self.errors != []
@@ -24,6 +38,9 @@ class Context(object):
 
     def clear_errors(self):
         self.errors = []
+
+    def has_key(self, key: str):
+        return key in self.state
 
 class Command(ABC):
     @abstractmethod
