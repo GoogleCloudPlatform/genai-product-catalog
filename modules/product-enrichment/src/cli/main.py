@@ -15,6 +15,8 @@
 import logging
 import argparse
 import getpass
+import gettext
+import os
 
 from common.config import Config
 from common.utils import encrypt, generate_random_string
@@ -29,9 +31,13 @@ DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8000
 DEFAULT_RELOAD = True
 
-def main():
-    logging.basicConfig(filename="application.log", level=logging.INFO, format=FORMAT)
+localedir = "{}/{}".format(os.path.dirname(os.path.realpath(__file__)), 'locale')
 
+translate = gettext.translation('my_app', localedir, fallback=True)
+_ = translate.gettext
+
+def initialize_parser() -> argparse.ArgumentParser:
+    """Initializes the argument parser."""
     parser = argparse.ArgumentParser(
         prog="gRetail",
         description="A command line interface for demonstrating retail functions using Google Gemini.",
@@ -39,21 +45,43 @@ def main():
     )
 
     parser.add_argument("-c", "--config", action="store", help="The TOML configuration file.", default="env.toml")
-    subparsers = parser.add_subparsers(dest="action", help='Command Help')
+    return parser
 
+
+def initialize_password_functions(subparsers):
+    """Initializes the password functions."""
     # Generate random salt
     subparsers.add_parser('generate-salt', help='Generates a random salt')
 
-    encrypt_password = subparsers.add_parser('encrypt-password', help='Encrypts password with local salt, not good enough for production environments unless the salt and password are seperated.')
-    encrypt_password.add_argument("-s", "--salt", help='The salt for the password', default=generate_random_string(DEFAULT_SALT_LENGTH))
+    encrypt_password = subparsers.add_parser('encrypt-password',
+                                             help='Encrypts password with local salt, not good enough for production environments unless the salt and password are seperated.')
+    encrypt_password.add_argument("-s", "--salt", help='The salt for the password',
+                                  default=generate_random_string(DEFAULT_SALT_LENGTH))
 
+
+def initialize_api_functions(subparsers):
+    """Initializes the API functions."""
     api_server = subparsers.add_parser('api-server', help='Starts the server mode')
     api_server.add_argument("-i", "--ip", help='The ip address to bind the server to.', default=DEFAULT_HOST)
     api_server.add_argument("-p", "--port", help='The port to run the server on', default=DEFAULT_PORT)
     api_server.add_argument("-r", "--reload", help='Reload the server on file changes', default=DEFAULT_RELOAD)
 
+
+def initialize_db_functions(subparsers):
+    """Initializes the database functions."""
     database = subparsers.add_parser("database", help="Functions for managing the database")
     database.add_argument("-i", "--initialize", action='store_true', help='Initializes the database tables')
+
+
+def main():
+    """The main function of the CLI"""
+    logging.basicConfig(filename="application.log", level=logging.INFO, format=FORMAT)
+
+    parser = initialize_parser()
+    subparsers = parser.add_subparsers(dest="action", help='Command Help')
+    initialize_password_functions(subparsers)
+    initialize_api_functions(subparsers)
+    initialize_db_functions(subparsers)
 
     args = parser.parse_args()
     config = Config(args.config)
