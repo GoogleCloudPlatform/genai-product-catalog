@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 
 class Context(object):
+    """Is a simple thread-safe context manager to be used with Chain and Commands"""
     state: Dict[str, Any]
     prompt_vars: Dict[str, str]
     errors: List[Exception]
@@ -43,12 +44,15 @@ class Context(object):
         return key in self.state
 
 class Command(ABC):
+    """An abstract base class defining the contract a command."""
     @abstractmethod
     def execute(self, context: Context) -> bool:
         pass
 
 class Chain(Command):
-    commands: List[Command]
+    """Is a simple chain of responsibility command used to execute
+    one or more commands for a given context."""
+    commands: List[Command] | None
     fail_on_error: bool = False
 
     def __init__(self, commands=None, fail_on_error: bool = False):

@@ -5,12 +5,13 @@ from google.generativeai import GenerativeModel
 from enrichment.chain import Command, Context
 
 
-class DescriptionCmd(Command):
+class GenAICmd(Command):
     agent_name: str
     prompt: str
     keys: List[str]
 
     def __init__(self, agent_name: str, prompt: str, keys: List[str]):
+        self.agent_name = agent_name
         self.prompt = prompt
         self.keys = keys
 

@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "google-catalog-enrichment"
+license = "Apache-2.0"
 version = "0.1.0"
 description = "A Python project used to asynchronously enrich product data, images, and videos using generative AI."
 authors = ["Google LLC", "Ryan McGuinness <rmcguinness@google.com>"]
+maintainers = ["Ryan McGuinness <rmcguinness@google.com>"]
 readme = "README.md"
+keywords = ["retail", "generative ai", "genai", "catalog", "enrichment"]
 packages = [
     { include = "common", from = "src"},
     { include = "db", from = "src"},
@@ -24,6 +27,14 @@ psycopg = {extras = ["binary", "pool"], version = "^3.2.3"}
 pgvector = "^0.3.6"
 fastapi = "^0.115.6"
 uvicorn = {extras = ["standard"], version = "^0.34.0"}
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.6.1"
+mkdocs-material = "^9.5.49"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
