@@ -15,8 +15,12 @@
 -->
 # Generative AI Product Catalog
 
-This repositor contains the following modules:
+## Overview
 
-* [archives/experiments](archives/experiments/README.md) - The initial experiments that lead to the creation of the following with the advent of Google Gemini.
-* [modules/digital-commerce](modules/digital-commerce/README.md) - A NodeJS / React API and User Interface that demonstrates the end-to-end workflow of product enrichment.
-* [modules/product-enrichment](modules/product-enrichment/README.md) - A Python API, CLI, and Blueprint for building and running product enrichment at scale.
+Welcome. This repository is a compilation of multiple projects that represent a collective of works for Retail
+product enrichment. Each subproject has its own repository and ecosystem, so please visit each to find which
+best suits your needs.
+
+* [Applied AI](applied-ai/README.md) - The initial experiments that lead to the creation of the following with the advent of Google Gemini.
+* [Digital Commerce](digital-commerce/README.md) - A NodeJS / React API and User Interface that demonstrates the end-to-end workflow of product enrichment.
+* [Product Enrichment ](product-enrichment/README.md) - A Python API, CLI, and Blueprint for building and running product enrichment at scale.

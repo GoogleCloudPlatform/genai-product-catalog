@@ -1,0 +1,18 @@
+load("@rules_python//python:defs.bzl", "py_library")
+load("@python_deps//:requirements.bzl", "requirement")
+
+PY_DEPS = [
+    requirement("pydantic"),
+]
+
+py_library(
+    name = "model",
+    srcs = [
+        "__init__.py",
+        "domain_model.py",
+    ],
+    imports = ["."],
+    srcs_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = PY_DEPS,
+)

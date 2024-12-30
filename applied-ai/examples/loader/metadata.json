@@ -1,0 +1,24 @@
+{
+    "name": "Streaming beam Python flex template",
+    "description": "Streaming beam example for python flex template.",
+    "parameters": [
+        {
+            "name": "input_subscription",
+            "label": "Input PubSub subscription.",
+            "helpText": "Name of the input PubSub subscription to consume from.",
+            "regexes": [
+                "projects/[^/]+/subscriptions/[a-zA-Z][-_.~+%a-zA-Z0-9]{2,}"
+            ]
+        },
+        {
+            "name": "bucket",
+            "label": "GCS Bucket name for storing product images and information.",
+            "helpText": "GCS Bucket name for storing product images and information."
+        },
+        {
+            "name": "bq-table-id",
+            "label": "BigQuery Fully qualified table id in <DATASET>.<TABLE> format.",
+            "helpText": "BigQuery Fully qualified table id in <DATASET>.<TABLE> format."
+        }
+    ]
+}

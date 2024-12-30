@@ -1,0 +1,8 @@
+filegroup(
+    name = "flipkart_data",
+    srcs = [
+        "ecommerce-sample.csv",
+        "LICENSE-ecommerce-sample",
+    ],
+    visibility = ["//:__subpackages__"],
+)

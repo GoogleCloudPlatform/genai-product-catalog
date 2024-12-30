@@ -1,0 +1,19 @@
+load("@rules_python//python:defs.bzl", "py_library", "py_test")
+load("@python_deps//:requirements.bzl", "requirement")
+
+PY_DEPS = [
+    requirement("google-cloud-aiplatform"),
+    requirement("google-cloud-bigquery"),
+]
+
+py_library(
+    name = "utils",
+    srcs = [
+        "__init__.py",
+        "utils.py",
+    ],
+    imports = ["."],
+    srcs_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = PY_DEPS,
+)
