@@ -22,6 +22,7 @@ bazel-*
 # Virtual Environments
 venv
 .venv
+.trunk
 
 # Protected environment variables
 .env.local
