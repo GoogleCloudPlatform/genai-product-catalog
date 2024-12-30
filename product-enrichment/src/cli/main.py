@@ -55,6 +55,7 @@ def initialize_password_functions(subparsers):
 
     encrypt_password = subparsers.add_parser('encrypt-password',
                                              help='Encrypts password with local salt, not good enough for production environments unless the salt and password are seperated.')
+
     encrypt_password.add_argument("-s", "--salt", help='The salt for the password',
                                   default=generate_random_string(DEFAULT_SALT_LENGTH))
 
