@@ -1,15 +1,52 @@
 .DS_Store
+Thumbs.db
+
+# App Engine
+app.yaml
+dispatch.yaml
+
+# Symlinks
+bazel-*
+
+# IDEs and editors
+.idea
+.ijwb
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+
+# Virtual Environments
 venv
 .venv
-.idea
-bazel*
-.ijwb
+
+# Protected environment variables
+.env.local
+.env.dev
+.env.prod
+.local*
+
+# Log files
+*.log
 
 user.bazelrc
 
+# Node JS
+.nx
+.nx/cache
+.nx/workspace-data
+node_modules
+npm-debug.log
+yarn-error.log
+vite.config.*.timestamp*
+
+# Python
 __pycache__/
 
-node_modules/
+# Terraform
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
