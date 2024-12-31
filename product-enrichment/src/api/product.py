@@ -20,8 +20,8 @@ from sqlmodel import Session
 from fastapi import status, Response, FastAPI
 
 def register(app: FastAPI, engine: Engine):
-    @app.post("/products/", status_code=status.HTTP_201_CREATED)
-    def create_hero(product: Product):
+    @app.post("/products", status_code=status.HTTP_201_CREATED)
+    def create_product(product: Product):
         with Session(engine) as session:
             product.created = datetime.now()
             product.updated = datetime.now()

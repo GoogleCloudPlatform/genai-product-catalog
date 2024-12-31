@@ -15,6 +15,7 @@ import uvicorn
 from common.config import Config
 from fastapi import FastAPI
 
+import api.prompts as prompts
 import api.product as product
 import api.instrument as instrument
 
@@ -23,6 +24,7 @@ app = FastAPI()
 def start(cfg: Config, host: str, port: int, reload: bool):
     engine = cfg.postgres.get_engine(echo=True)
     instrument.register(app)
+    prompts.register(app, engine)
     product.register(app, engine)
 
     """Starts the server in dev mode"""
