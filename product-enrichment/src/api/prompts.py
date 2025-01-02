@@ -5,7 +5,7 @@ from sqlalchemy import Engine
 from common.model import GeminiPrompt
 from fastapi import status, FastAPI, Response
 from pydantic import BaseModel
-from db.prompts import PromptsDao
+from db.gemini_prompt_dao import GeminiPromptsDao
 
 class PromptRequest(BaseModel):
     name: str
@@ -14,7 +14,7 @@ class PromptRequest(BaseModel):
 
 def register(app: FastAPI, engine: Engine):
 
-    dao = PromptsDao(engine)
+    dao = GeminiPromptsDao(engine)
 
     @app.post("/prompts", status_code=status.HTTP_201_CREATED)
     def post(prompt: GeminiPrompt):

@@ -5,7 +5,7 @@ from common.model import GeminiPrompt
 from sqlmodel import Session, select
 from datetime import datetime
 
-class PromptsDao(Dao):
+class GeminiPromptsDao(Dao):
     def create(self, model: GeminiPrompt):
         with Session(self.engine) as session:
             model.created = datetime.now()
