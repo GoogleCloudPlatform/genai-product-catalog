@@ -14,7 +14,8 @@
 
 
 import {Container, Slider, Typography} from '@mui/material';
-import {HarmBlockThreshold, HarmCategory, SafetySettings} from 'model';
+import { HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
+import { gemini } from 'model';
 
 const CustomMarks = [
     {value: 0, label: 'Default'},
@@ -34,18 +35,18 @@ type SafetySettingsArgs = {
 const SafetySetting = ({category, threshold, setThreshold, disabled}: SafetySettingsArgs) => {
     return (
         <Container sx={{mt: 2}}>
-            <Typography gutterBottom>{SafetySettings.categoryLabel(category)}</Typography>
+            <Typography gutterBottom>{gemini.SafetySettings.categoryLabel(category)}</Typography>
             <Slider
                 aria-label={category}
-                value={SafetySettings.thresholdToNumber(threshold)}
-                getAriaValueText={SafetySettings.thresholdLabel}
+                value={gemini.SafetySettings.thresholdToNumber(threshold)}
+                getAriaValueText={gemini.SafetySettings.thresholdLabel}
                 valueLabelDisplay="auto"
                 shiftStep={1}
                 step={1}
                 marks={CustomMarks}
                 min={0}
                 max={4}
-                onChange={(_, v) => setThreshold(SafetySettings.numberToThreshold(v))}
+                onChange={(_, v) => setThreshold(gemini.SafetySettings.numberToThreshold(v))}
                 disabled={disabled}
             />
         </Container>

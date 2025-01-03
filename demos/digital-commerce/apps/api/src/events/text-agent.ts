@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChatPromptRequest } from "libs/model/src/lib/api";
+import { api } from "model";
 import { Socket } from "socket.io";
 import sessionManager from "../state";
 import { extractTextCandidates } from "../utils";
 
-export default (socket: Socket) => async ({sessionID, prompt, value}: ChatPromptRequest) => {
+export default (socket: Socket) => async ({sessionID, prompt, value}: api.ChatPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
 
     const model = session.groundedModel;

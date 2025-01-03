@@ -40,14 +40,14 @@ export interface SessionPromptPayloadRequest<T> {
   value: T;
 }
 
-export interface ImagePromptRequest extends SessionPromptPayloadRequest<Image[]> {}
+export type ImagePromptRequest = SessionPromptPayloadRequest<Image[]>
 
 export interface AudioPromptRequest extends SessionPromptPayloadRequest<string> {
   type: string;
   size: number;
 }
 
-export interface ChatPromptRequest extends SessionPromptPayloadRequest<string> {}
+export type ChatPromptRequest = SessionPromptPayloadRequest<string>
 
 
 export interface AudioResponse {

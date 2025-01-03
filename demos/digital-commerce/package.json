@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "devDependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@mui/styled-engine-sc": "^6.0.2",
     "@mui/x-data-grid": "^7.16.0",
     "@nx/devkit": "20.2.2",

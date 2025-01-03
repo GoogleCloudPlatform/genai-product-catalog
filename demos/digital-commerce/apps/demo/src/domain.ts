@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { GridRowsProp } from '@mui/x-data-grid';
-import {BatchProduct, Config, languages, NewGenerativeConfig, Product} from 'model';
+import {BatchProduct, Config, languages, gemini, Product} from 'model';
 import {Socket} from 'socket.io-client';
 
 export const CONFIG_KEY = '__RET_CFG_KeY__';
@@ -70,7 +70,7 @@ export const defaultConfig = (): Config => {
     conf.customerName = '';
     conf.engineerLdap = '';
 
-    conf.generativeConfig = NewGenerativeConfig(
+    conf.generativeConfig = gemini.NewGenerativeConfig(
         'You are an retail merchandising expert capable of describing, categorizing, and answering questions about products for a retail catalog and will ground answers using google when possible.'
     );
 

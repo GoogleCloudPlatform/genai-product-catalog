@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import {GenerativeModel, VertexAI} from '@google-cloud/vertexai';
-import {GenerativeConfig} from 'model';
+import { gemini } from 'model';
 
 import { config } from 'dotenv';
 config()
@@ -25,11 +25,11 @@ const vertexAI = new VertexAI({
 
 export class GenerativeSession {
     public createdAt: number
-    public config: GenerativeConfig;
+    public config: gemini.GenerativeConfig;
     public model: GenerativeModel;
     public groundedModel: GenerativeModel;
 
-    constructor(config: GenerativeConfig) {
+    constructor(config: gemini.GenerativeConfig) {
         this.createdAt = Date.now()
         this.config = config;
         this.model = vertexAI.getGenerativeModel({
@@ -71,7 +71,7 @@ class SessionState {
         this.state = new Map<string, GenerativeSession>();
     }
 
-    addSession(socketId: string, config: GenerativeConfig) {
+    addSession(socketId: string, config: gemini.GenerativeConfig) {
         this.state.set(socketId, new GenerativeSession(config));
     }
 

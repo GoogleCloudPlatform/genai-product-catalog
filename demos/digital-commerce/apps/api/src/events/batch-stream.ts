@@ -16,7 +16,7 @@ import { GoogleAuth } from 'google-auth-library';
 import { Socket } from 'socket.io';
 import sessionManager from '../state';
 import { extractTextCandidates } from '../utils';
-import { BatchPromptRequest } from 'libs/model/src/lib/api';
+import { api } from 'model';
 import { BaseProduct, BatchProduct, Category, Image, Product } from 'model';
 import axios from 'axios';
 import { GenerativeModel } from '@google-cloud/vertexai';
@@ -144,7 +144,7 @@ const generate_product = ({
 };
 
 export default (socket: Socket) =>
-  async ({ sessionID, values }: BatchPromptRequest) => {
+  async ({ sessionID, values }: api.BatchPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
     const model = session.groundedModel;
 

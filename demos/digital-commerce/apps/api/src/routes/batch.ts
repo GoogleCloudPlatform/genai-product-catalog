@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Request, Response, Router } from "express";
-import sessionManager from '../state';
 import { BatchProduct } from "model";
 
 const router = Router();

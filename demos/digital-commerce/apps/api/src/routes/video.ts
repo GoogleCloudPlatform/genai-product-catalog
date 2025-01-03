@@ -19,7 +19,7 @@ import {extractTextCandidates, generateFailedDependencyResponse} from '../utils'
 import {deleteFile, saveFile} from '../storage';
 import {Category} from 'model';
 
-const VIDEO_FILE_EXTENSION = 'mp4';
+const VIDEO_FILE_EXTENSION = 'mv4';
 
 const router = Router();
 

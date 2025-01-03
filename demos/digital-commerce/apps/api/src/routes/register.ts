@@ -17,7 +17,7 @@ import {Request, Response, Router} from 'express';
 import {api} from 'model';
 import {v4 as uuidv4} from 'uuid';
 import sessionManager from '../state';
-import {Config, GenerativeConfig} from 'model';
+import {Config, gemini} from 'model';
 
 const router = Router();
 
@@ -47,6 +47,7 @@ const persistToFirestore = (id: string, config: Config): Promise<FirebaseFiresto
 };
 
 router.post('/', (req: Request, resp: Response) => {
+    console.log(`Registering "${firestoreSettings.databaseId}"`)
     const registrationRequest = req.body as api.ConfigurationRequest;
 
     const sessionID = registrationRequest.sessionID;
@@ -59,14 +60,18 @@ router.post('/', (req: Request, resp: Response) => {
     if (!existingConfig) {
         const configCopy = {...value};
         configCopy.generativeConfig.genAIToken = 'x'.repeat(8);
-        persistToFirestore(activeId, configCopy)
-            .then(() => {
-                sessionManager.addSession(activeId, value.generativeConfig);
-                resp.status(201).send({sessionID: activeId, message: 'created'} as api.ConfigurationResponse);
-            })
-            .catch((err) => resp.status(400).send({error: err} as api.ErrorResponse));
+        sessionManager.addSession(activeId, value.generativeConfig);
+        if (firestoreSettings.databaseId) {
+            persistToFirestore(activeId, configCopy)
+              .then(() => {
+                  resp.status(201).send({ sessionID: activeId, message: 'created' } as api.ConfigurationResponse);
+              })
+              .catch((err) => resp.status(400).send({ error: err } as api.ErrorResponse));
+        } else {
+            resp.status(201).send({ sessionID: activeId, message: 'created' } as api.ConfigurationResponse);
+        }
     } else {
-        const mergedConfig = {...existingConfig.config, ...value.generativeConfig} as GenerativeConfig;
+        const mergedConfig = {...existingConfig.config, ...value.generativeConfig} as gemini.GenerativeConfig;
         sessionManager.addSession(activeId, mergedConfig);
         resp.status(202).send({sessionID: activeId, message: 'updated'} as api.ConfigurationResponse);
     }
