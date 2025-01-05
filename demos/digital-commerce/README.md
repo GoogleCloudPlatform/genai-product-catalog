@@ -39,6 +39,12 @@ In the apps/api directory update the app.yaml file and the .env file to your Goo
 
 The app engine service account MUST have read/write access to the bucket.
 
+### GCP Services
+
+* Generative Language API
+* Cloud Firestore API
+* Cloud Datastore API
+
 ### Setup
 
 Once you download this repository, open a shell of your choice

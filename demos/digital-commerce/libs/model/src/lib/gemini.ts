@@ -13,7 +13,7 @@ export interface GenerativeConfig {
 
 export const NewGenerativeConfig = (instructions: string) => {
   return {
-    modelName: 'gemini-1.5-flash',
+    modelName: 'gemini-2.0-flash-exp',
     genAIToken: '',
     instructions: instructions,
     temperature: 0.2,

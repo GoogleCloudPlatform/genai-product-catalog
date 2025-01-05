@@ -37,10 +37,15 @@ interface PersistentConfig {
 
 const persistToFirestore = (id: string, config: Config): Promise<FirebaseFirestore.WriteResult> => {
     if (firestoreSettings.databaseId) {
-        const db = new Firestore(firestoreSettings);
-        const persistentConfig = {id: id, date: Date.now(), config: config} as PersistentConfig;
-        const docRef = db.collection(COLLECTION).doc(persistentConfig.id);
-        return docRef.set(persistentConfig, {merge: true});
+        try {
+            const db = new Firestore(firestoreSettings);
+            const persistentConfig = { id: id, date: Date.now(), config: config } as PersistentConfig;
+            const docRef = db.collection(COLLECTION).doc(persistentConfig.id);
+            return docRef.set(persistentConfig, { merge: true });
+        } catch (err) {
+            console.error(err);
+            return Promise.reject(err);
+        }
     } else {
         console.log("configuration not persisted to firestore")
     }

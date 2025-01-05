@@ -21,12 +21,12 @@ const router = Router();
 
 router.post('/', (req: Request, resp: Response) => {
     const {sessionID, prompt, schema} = req.body as api.TextPromptRequest;
-    const {groundedModel} = sessionManager.getSession(sessionID);
-    if (groundedModel) {
-        if (schema) {
-            groundedModel.generationConfig.responseSchema = schema;
-        }
-        groundedModel
+    const { model } = sessionManager.getSession(sessionID);
+    if (schema) {
+        model.generationConfig.responseSchema = schema;
+    }
+    if (model) {
+        model
             .generateContent({
                 contents: [{role: 'user', parts: [{text: prompt}]}],
             })
