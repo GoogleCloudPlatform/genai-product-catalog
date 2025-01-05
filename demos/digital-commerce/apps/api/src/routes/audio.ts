@@ -54,7 +54,7 @@ router.post('/', async (req: Request, resp: Response) => {
                     .then((result) => {
                         resp.status(200).send({
                             transcript: transcription,
-                            value: extractTextCandidates(result)
+                            value: result.response.text()
                         } as api.AudioResponse);
                     });
             }

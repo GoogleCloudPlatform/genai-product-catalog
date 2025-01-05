@@ -36,9 +36,10 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import SafetySetting from '../components/SafetySetting';
 import * as Yup from 'yup';
 
-import { api, Config, HarmBlockThreshold, HarmCategory } from 'model';
+import { api, Config } from 'model';
 import { ConfigurationContext, SessionIDContext } from '../contexts';
 import AxiosInstance from '../utils/WebClient';
+import { HarmBlockThreshold, HarmCategory } from '@google/generative-ai';
 
 const Settings = () => {
   const [modelControls, setModelControls] = useState<boolean>(true);

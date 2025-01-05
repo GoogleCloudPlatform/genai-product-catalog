@@ -34,7 +34,7 @@ import { useNavigate } from 'react-router-dom';
 import GoogleBackdrop from '../../components/GoogleBackdrop';
 import { ConfigurationContext, ProductContext, SessionIDContext } from '../../contexts';
 
-import { api, Category } from 'model';
+import { api, Category, gemini } from 'model';
 import AxiosInstance from '../../utils/WebClient';
 
 const initialCategories = () => {
@@ -60,8 +60,8 @@ const Step2 = () => {
       prompt = prompt.replace(
         '${category_model}',
         JSON.stringify({
-          name: '',
-          attributes: [{ name: '', description: '', valueRange: [] }],
+          name: 'Level 1 > Level 2 > Level 3 > Level 4',
+          attributes: [{ name: 'colors', description: 'the available colors of the product', valueRange: ['red', 'blue', 'green'] }],
         } as Category)
       );
 
@@ -69,6 +69,7 @@ const Step2 = () => {
         sessionID: sessionID,
         prompt: prompt,
         value: product.images,
+        schema: gemini.CategorySchema,
       } as api.ImagePromptRequest)
         .then((resp) => {
           if (resp.status === 200) {

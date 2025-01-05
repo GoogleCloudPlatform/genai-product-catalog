@@ -1,19 +1,19 @@
-import { HarmBlockThreshold, HarmCategory, SchemaType, SafetySetting } from '@google/generative-ai';
+import { HarmBlockThreshold, HarmCategory, SafetySetting, SchemaType } from '@google/generative-ai';
 
 export interface GenerativeConfig {
-  modelName: string
-  genAIToken: string
-  instructions: string
-  temperature: number
-  topP: number
-  topK: number
-  maxTokenCount: number
-  safetySettings: SafetySetting[]
+  modelName: string;
+  genAIToken: string;
+  instructions: string;
+  temperature: number;
+  topP: number;
+  topK: number;
+  maxTokenCount: number;
+  safetySettings: SafetySetting[];
 }
 
 export const NewGenerativeConfig = (instructions: string) => {
   return {
-    modelName: 'gemini-2.0-flash-exp',
+    modelName: 'gemini-1.5-flash',
     genAIToken: '',
     instructions: instructions,
     temperature: 0.2,
@@ -37,10 +37,6 @@ export const NewGenerativeConfig = (instructions: string) => {
         category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
         threshold: HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
       },
-      {
-        category: HarmCategory.HARM_CATEGORY_UNSPECIFIED,
-        threshold: HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED,
-      },
     ],
   } as GenerativeConfig;
 };
@@ -57,7 +53,7 @@ export class SafetySettings {
       case HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT:
         return 'Sexually Explicit';
       default:
-        return 'Undefined';
+        return 'Undefined'
     }
   };
 
@@ -110,6 +106,47 @@ export class SafetySettings {
         return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
     }
   };
+}
+
+export const CategorySchema = {
+  description: 'A retail product category',
+  type: SchemaType.OBJECT,
+  properties: {
+    name: {
+      type: SchemaType.STRING,
+      description: 'The name of the category',
+      nullable: false,
+    },
+    attributes: {
+      type: SchemaType.ARRAY,
+      description: 'The attributes of the category such as color, dimensions, etc.',
+      items: {
+        type: SchemaType.OBJECT,
+        nullable: false,
+        properties: {
+          name: {
+            type: SchemaType.STRING,
+            description: 'The name of the attribute',
+            nullable: false,
+          },
+          description: {
+            type: SchemaType.STRING,
+            description: 'The description of the attribute',
+            nullable: false,
+          },
+          valueRange: {
+            type: SchemaType.ARRAY,
+            description: 'The value range of the attribute',
+            items: {
+              type: SchemaType.STRING,
+              description: 'The value of the attribute',
+              nullable: false,
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 

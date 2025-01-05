@@ -19,7 +19,7 @@ import { extractTextCandidates } from '../utils';
 import { api } from 'model';
 import { BaseProduct, BatchProduct, Category, Image, Product } from 'model';
 import axios from 'axios';
-import { GenerativeModel } from '@google-cloud/vertexai';
+import { GenerativeModel } from '@google/generative-ai';
 
 const GCP_IMAGE_MODEL = process.env.GCP_IMAGE_MODEL;
 const GCP_PROJECT_ID = process.env.GCP_PROJECT_ID;

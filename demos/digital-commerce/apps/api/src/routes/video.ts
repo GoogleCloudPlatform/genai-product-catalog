@@ -36,7 +36,7 @@ router.post('/', async (req: Request, resp: Response) => {
                     contents: [{role: 'user', parts: [{text: videoRequest.prompt}, {fileData: fileData}]}],
                 })
                 .then((result) => {
-                    const videoResultText = extractTextCandidates(result) as string;
+                    const videoResultText = result.response.text(); //extractTextCandidates(result.response.text()) as string;
 
                     console.log("Video Results:")
                     console.log(videoResultText);
@@ -50,7 +50,7 @@ router.post('/', async (req: Request, resp: Response) => {
                             parts: [{text: contentPrompt}]
                         }]
                     }).then(categoryResult => {
-                        const categoryResponseText = extractTextCandidates(categoryResult);
+                        const categoryResponseText = categoryResult.response.text(); //extractTextCandidates(categoryResult);
 
                         console.log("Category Results:")
                         console.log(categoryResponseText)
@@ -77,7 +77,7 @@ router.post('/', async (req: Request, resp: Response) => {
                                 contents: [{role: 'user', parts: [{text: productDetailPrompt}]}]
                             }).then((productResult) => {
                                 // Send the final product
-                                resp.status(200).send(extractTextCandidates(productResult))
+                                resp.status(200).send(productResult.response.text())
                             }).catch(productErr => resp.status(400).send({error: productErr}));
 
                         } catch (marshallErr) {

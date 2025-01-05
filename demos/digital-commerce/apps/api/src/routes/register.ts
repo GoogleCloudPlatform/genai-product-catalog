@@ -59,11 +59,13 @@ router.post('/', (req: Request, resp: Response) => {
 
     if (!existingConfig) {
         const configCopy = {...value};
+        const originalConfig = {... value.generativeConfig }
         configCopy.generativeConfig.genAIToken = 'x'.repeat(8);
-        sessionManager.addSession(activeId, value.generativeConfig);
+
         if (firestoreSettings.databaseId) {
             persistToFirestore(activeId, configCopy)
               .then(() => {
+                  sessionManager.addSession(activeId, originalConfig);
                   resp.status(201).send({ sessionID: activeId, message: 'created' } as api.ConfigurationResponse);
               })
               .catch((err) => resp.status(400).send({ error: err } as api.ErrorResponse));

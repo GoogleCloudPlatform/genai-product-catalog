@@ -76,14 +76,15 @@ export const defaultConfig = (): Config => {
 
     // The more categories, the longer it will take to generate
     conf.promptDetectCategories = `
-    Execute the following instructions:
+    Execute the following instructions and return a valid JSON response:
     - Suggest the top 2 categories and their top 25 attributes from the image.
-    - The category hierarchy must be 4 levels deep, separated by ' > ' character.
+    - The category name reflects the hierarchy and must be 4 levels deep, separated by ' > ' character.
+    - No attribute should nave more than 10 values in the valueRange.
         
     Example JSON Output: [\${category_model}]`.trim();
 
     conf.promptExtractProductDetail = `
-    Execute the following instructions and ground that is provided:
+    Execute the following instructions and return a valid JSON response:
     - Extract the product name as the attribute 'name'.
     - Write an enriched product description in markdown format for a retailers online catalog as the attribute 'description'.
     - Write the HTML SEO description and keywords for the product as 'seoHtmlHeader'
@@ -93,7 +94,7 @@ export const defaultConfig = (): Config => {
     - Example JSON Output: \${product_json}`.trim();
 
     conf.promptTranslateProductDetail = `
-    Execute the following instructions:
+    Execute the following instructions and return a valid JSON response:
     - Translate the json values in this JSON Object: \${product_json} from language: \${base_language} to: \${target_language}
     - If there is a unit of measure or numeric value convert the value into the most common unit of measure for the target language for the type of product.
     - Be as specific as possible using natural dialect.`.trim();

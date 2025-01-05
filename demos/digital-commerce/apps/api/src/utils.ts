@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {GenerateContentResult} from '@google-cloud/vertexai';
+
 import {Response} from 'express';
 import {api} from 'model';
+import { GenerateContentResult } from '@google/generative-ai';
 
 export const extractTextCandidates = (result: GenerateContentResult): string => {
     if (result.response.candidates) {

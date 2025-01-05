@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Box, Fab, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Fab, Grid, Stack, Typography } from '@mui/material';
 
 import React from 'react';
 import apparel from '../../assets/apparel.jpeg';

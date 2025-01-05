@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {GenerativeModel, VertexAI} from '@google-cloud/vertexai';
+import { GoogleGenerativeAI, GenerativeModel } from "@google/generative-ai";
 import { gemini } from 'model';
 
 import { config } from 'dotenv';
 config()
 
-const vertexAI = new VertexAI({
-    project: process.env.GCP_PROJECT_ID,
-    location: process.env.GCP_LOCATION,
-});
 
 export class GenerativeSession {
+
     public createdAt: number
     public config: gemini.GenerativeConfig;
     public model: GenerativeModel;
     public groundedModel: GenerativeModel;
 
     constructor(config: gemini.GenerativeConfig) {
+        console.log(`Passed Config : ${JSON.stringify(config)}`)
+        const genai = new GoogleGenerativeAI(config.genAIToken)
+
         this.createdAt = Date.now()
         this.config = config;
-        this.model = vertexAI.getGenerativeModel({
+        this.model = genai.getGenerativeModel({
             model: config.modelName,
             systemInstruction: config.instructions,
             safetySettings: config.safetySettings,
@@ -45,7 +45,7 @@ export class GenerativeSession {
                 responseMimeType: 'application/json',
             },
         });
-        this.groundedModel = vertexAI.getGenerativeModel({
+        this.groundedModel = genai.getGenerativeModel({
             model: config.modelName,
             systemInstruction: config.instructions,
             safetySettings: config.safetySettings,
@@ -58,7 +58,7 @@ export class GenerativeSession {
                 responseMimeType: 'application/json',
             },
             tools: [
-                {googleSearchRetrieval: {}}
+                { googleSearchRetrieval: {} }
             ]
         })
     }

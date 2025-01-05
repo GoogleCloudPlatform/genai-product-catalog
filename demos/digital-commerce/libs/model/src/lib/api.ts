@@ -32,11 +32,13 @@ export interface ConfigurationResponse {
 export interface TextPromptRequest {
   sessionID: string;
   prompt: string;
+  schema?: object;
 }
 
 export interface SessionPromptPayloadRequest<T> {
   sessionID: string;
   prompt: string;
+  schema?: object;
   value: T;
 }
 

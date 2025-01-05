@@ -16,8 +16,9 @@ import {Request, Response, Router} from 'express';
 import {api} from 'model';
 import sessionManager from '../state';
 import {utils} from 'model';
-import {GenerativeContentBlob, InlineDataPart} from '@google-cloud/vertexai';
-import {extractTextCandidates, generateFailedDependencyResponse} from '../utils';
+
+import { generateFailedDependencyResponse, extractTextCandidates} from '../utils';
+import { GenerativeContentBlob, InlineDataPart } from '@google/generative-ai';
 
 const router = Router();
 
@@ -30,6 +31,10 @@ router.post('/', (req: Request, resp: Response) => {
     const generativeSession = sessionManager.getSession(sessionID);
     if (generativeSession) {
         const model = generativeSession.model;
+        console.log(JSON.stringify(imagePrompt.prompt))
+        if (imagePrompt.schema) {
+            model.generationConfig.responseSchema = imagePrompt.schema;
+        }
         model
             .generateContent({
                 contents: [
@@ -51,9 +56,11 @@ router.post('/', (req: Request, resp: Response) => {
                 ],
             })
             .then((result) => {
+                console.log(extractTextCandidates(result))
                 resp.status(200).send(extractTextCandidates(result));
             });
     } else {
+        console.log("ERROR ...")
         generateFailedDependencyResponse(resp);
     }
 });

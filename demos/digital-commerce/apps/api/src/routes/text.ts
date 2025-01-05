@@ -15,20 +15,23 @@
 import {Request, Response, Router} from 'express';
 import {api} from 'model';
 import sessionManager from '../state';
-import {extractTextCandidates, generateFailedDependencyResponse} from '../utils';
+import {generateFailedDependencyResponse} from '../utils';
 
 const router = Router();
 
 router.post('/', (req: Request, resp: Response) => {
-    const {sessionID, prompt} = req.body as api.TextPromptRequest;
+    const {sessionID, prompt, schema} = req.body as api.TextPromptRequest;
     const {groundedModel} = sessionManager.getSession(sessionID);
     if (groundedModel) {
+        if (schema) {
+            groundedModel.generationConfig.responseSchema = schema;
+        }
         groundedModel
             .generateContent({
                 contents: [{role: 'user', parts: [{text: prompt}]}],
             })
             .then((result) => {
-                resp.status(200).send(extractTextCandidates(result));
+                resp.status(200).send(result.response.text());
             });
     } else {
         generateFailedDependencyResponse(resp);
