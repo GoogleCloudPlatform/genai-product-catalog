@@ -46,7 +46,7 @@ export class GenerativeSession {
             },
         });
         this.groundedModel = genai.getGenerativeModel({
-            model: config.modelName,
+            model: config.groundedModelName,
             systemInstruction: config.instructions,
             safetySettings: config.safetySettings,
             generationConfig: {

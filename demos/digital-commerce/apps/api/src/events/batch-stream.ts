@@ -47,6 +47,8 @@ const generate_image = (product: Product, socket: Socket) => {
   // TODO - reactor once the API is supported in main stream, until then use axios.
   // If you HAVE NOT been approved for imagen 3, you may need to change to an older model: imagegeneration@006
 
+
+
   const auth = new GoogleAuth();
   auth
     .getAccessToken()
@@ -146,7 +148,7 @@ const generate_product = ({
 export default (socket: Socket) =>
   async ({ sessionID, values }: api.BatchPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
-    const model = session.groundedModel;
+    const model = session.model;
 
     const exampleOutput = {
       language: 'EN-US',

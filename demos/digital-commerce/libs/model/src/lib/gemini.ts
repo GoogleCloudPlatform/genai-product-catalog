@@ -2,6 +2,7 @@ import { HarmBlockThreshold, HarmCategory, SafetySetting, SchemaType } from '@go
 
 export interface GenerativeConfig {
   modelName: string;
+  groundedModelName: string;
   genAIToken: string;
   instructions: string;
   temperature: number;
@@ -14,6 +15,7 @@ export interface GenerativeConfig {
 export const NewGenerativeConfig = (instructions: string) => {
   return {
     modelName: 'gemini-2.0-flash-exp',
+    groundedModelName: 'gemini-1.5-pro',
     genAIToken: '',
     instructions: instructions,
     temperature: 0.2,
