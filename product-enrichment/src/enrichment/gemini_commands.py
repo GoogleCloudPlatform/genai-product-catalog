@@ -5,7 +5,7 @@ from google.generativeai import GenerativeModel
 from enrichment.chain import Command, Context
 
 
-class GenAICmd(Command):
+class PromptCommand(Command):
     agent_name: str
     prompt: str
     keys: List[str]

@@ -14,7 +14,6 @@
 
 from typing import Optional, Any
 
-from sqlalchemy import UniqueConstraint
 from sqlmodel import Field, SQLModel, Relationship, Column
 from pgvector.sqlalchemy import Vector
 from datetime import datetime
@@ -106,18 +105,6 @@ class ProductEmbeddings(SQLModel, table=True):
     product_id: int | None = Field(default=None, foreign_key="product.id")
     product: Product | None = Relationship()
 
-
-class GeminiPrompt(SQLModel, table=True):
-    __tablename__ = 'gemini_prompts'
-    __table_args__ = (
-        UniqueConstraint("name", "effective", name="unique_name_effective"),
-    )
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    created: datetime = Field(default=datetime.now())
-    effective: datetime = Field(default=datetime.now())
-    name: str = Field()
-    prompt: str = Field()
 
 
 
