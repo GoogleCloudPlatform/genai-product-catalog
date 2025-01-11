@@ -4,6 +4,9 @@ from sqlalchemy import UniqueConstraint
 
 from sqlmodel import Field, SQLModel, CheckConstraint, Column, JSON
 from datetime import datetime
+from sqlalchemy_continuum import make_versioned
+
+make_versioned(user_cls=None)
 
 
 class HttpVerb(StrEnum):
@@ -20,10 +23,12 @@ class CommandOrder(StrEnum):
 
 
 class PersistedCommand(SQLModel, table=False):
+    __versioned__ = {}
     __table_args__ = (
         UniqueConstraint("name"),
     )
     id: Optional[int] = Field(default=None, primary_key=True)
+    version: int = Field(default=None, nullable=False)
     created: datetime = Field(default=datetime.now())
     updated: datetime = Field(default=datetime.now())
     deleted: Optional[datetime] = Field(default=None)
