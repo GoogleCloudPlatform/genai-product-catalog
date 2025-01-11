@@ -1,12 +1,12 @@
 
 
 from db.dao import Dao
-from common.model import GeminiPrompt
+from common.cor import GeminiPromptCommand
 from sqlmodel import Session, select
 from datetime import datetime
 
 class GeminiPromptsDao(Dao):
-    def create(self, model: GeminiPrompt):
+    def create(self, model: GeminiPromptCommand):
         with Session(self.engine) as session:
             model.created = datetime.now()
             model.effective = datetime.now()
@@ -15,14 +15,14 @@ class GeminiPromptsDao(Dao):
             session.refresh(model)
             return model
 
-    def read(self, model: GeminiPrompt, id: int):
+    def read(self, model: GeminiPromptCommand, id: int):
         with Session(self.engine) as session:
-            return session.get(GeminiPrompt, id)
+            return session.get(GeminiPromptCommand, id)
 
 
-    def update(self, model: GeminiPrompt):
+    def update(self, model: GeminiPromptCommand):
         with Session(self.engine) as session:
-            existing = session.get(GeminiPrompt, id)
+            existing = session.get(GeminiPromptCommand, id)
             existing.effective = datetime.now()
             existing.name = model.name
             existing.prompt = model.prompt
@@ -31,7 +31,7 @@ class GeminiPromptsDao(Dao):
             session.refresh(existing)
             return existing
 
-    def delete(self, model: GeminiPrompt):
+    def delete(self, model: GeminiPromptCommand):
         with Session(self.engine) as session:
             session.delete(model)
             session.commit()
@@ -39,6 +39,6 @@ class GeminiPromptsDao(Dao):
 
     def find_by_name(self, name: str):
         with Session(self.engine) as session:
-            statement = select(GeminiPrompt).where(GeminiPrompt.name == name, GeminiPrompt.effective <= datetime.now()).order_by(GeminiPrompt.effective)
+            statement = select(GeminiPromptCommand).where(GeminiPromptCommand.name == name, GeminiPromptCommand.deleted == None)
             results = session.exec(statement)
             return results.first()

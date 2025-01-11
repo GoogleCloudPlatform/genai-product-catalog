@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import Engine
-from common.model import GeminiPrompt
+from common.cor import GeminiPromptCommand
 from fastapi import status, FastAPI, Response
 from pydantic import BaseModel
 from db.gemini_prompt_dao import GeminiPromptsDao
@@ -17,11 +17,11 @@ def register(app: FastAPI, engine: Engine):
     dao = GeminiPromptsDao(engine)
 
     @app.post("/prompts", status_code=status.HTTP_201_CREATED)
-    def post(prompt: GeminiPrompt):
+    def post(prompt: GeminiPromptCommand):
         dao.create(prompt)
 
     @app.put("/prompts/:id", status_code=status.HTTP_202_ACCEPTED)
-    def put(id: int, prompt: GeminiPrompt, response: Response):
+    def put(id: int, prompt: GeminiPromptCommand, response: Response):
         if id == prompt.id:
             return dao.update(prompt)
         else:

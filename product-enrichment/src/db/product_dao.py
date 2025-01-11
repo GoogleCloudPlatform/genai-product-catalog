@@ -1,6 +1,6 @@
 from db.dao import Dao
-from common.model import GeminiPrompt, Product
-from sqlmodel import Session, select, SQLModel
+from common.model import  Product
+from sqlmodel import Session, SQLModel
 from datetime import datetime
 
 class ProductDao(Dao):

@@ -1,8 +1,10 @@
 from enum import StrEnum, auto
-from typing import Optional, Any, Dict
+from typing import Optional
 from sqlalchemy import UniqueConstraint
-from sqlmodel import Field, SQLModel, CheckConstraint
+
+from sqlmodel import Field, SQLModel, CheckConstraint, Column, JSON
 from datetime import datetime
+
 
 class HttpVerb(StrEnum):
     GET = auto()
@@ -10,10 +12,12 @@ class HttpVerb(StrEnum):
     PUT = auto()
     DELETE = auto()
 
+
 class CommandOrder(StrEnum):
     BEGIN = auto(),
     BODY = auto()
     END = auto()
+
 
 class PersistedCommand(SQLModel, table=False):
     __table_args__ = (
@@ -26,11 +30,11 @@ class PersistedCommand(SQLModel, table=False):
     name: str = Field(max_length=255)
 
 
-class HttpEntryPointCommand(PersistedCommand, table=True):
+class EntryPointHTTPCommand(PersistedCommand, table=True):
     """A user defined HTTP entry point and associated workflow ID"""
-    __tablename__ = 'cmd_http_entry_point'
+    __tablename__ = 'cmd_ep_http'
     __table_args__ = (
-        UniqueConstraint("entry_point_uri", "entry_point_verb"),
+        UniqueConstraint("entry_point_uri", "entry_point_verb", "processor_id"),
         CheckConstraint("entry_point_verb IN ('GET', 'POST', 'PUT', 'DELETE')"),
     )
 
@@ -44,10 +48,10 @@ class HttpEntryPointCommand(PersistedCommand, table=True):
     processor_id: str = Field()
 
 
-class PubSubEntryPointCommand(PersistedCommand, table=True):
-    __tablename__ = 'cmd_pubsub_entry_points'
+class EntryPointPubSubCommand(PersistedCommand, table=True):
+    __tablename__ = 'cmd_ep_pubsub'
     __table_args__ = (
-        UniqueConstraint("topic_name", "processor_name")
+        UniqueConstraint("topic_name", "processor_id"),
     )
     @staticmethod
     def get_order() -> CommandOrder:
@@ -57,8 +61,9 @@ class PubSubEntryPointCommand(PersistedCommand, table=True):
     override_context_id: str = Field(max_length=128)
     processor_id: str = Field()
 
-class HttpCallbackCommand(PersistedCommand, table=True):
-    __tablename__ = 'cmd_http_callbacks'
+
+class CallbackHTTPCommand(PersistedCommand, table=True):
+    __tablename__ = 'cmd_cb_http'
     __table_args__ = (
         CheckConstraint("callback_verb IN ('GET', 'POST', 'PUT', 'DELETE')"),
     )
@@ -68,12 +73,15 @@ class HttpCallbackCommand(PersistedCommand, table=True):
 
     callback_uri: str = Field(max_length=128)
     callback_verb: HttpVerb = Field()
-    headers: Dict[str, str] = Field(default={})
+    headers: dict[str, str] = Field(default_factory=dict, sa_column=Column(JSON))
 
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class GeminiPromptCommand(PersistedCommand, table=True):
     __tablename__ = 'cmd_gemini_prompts'
+    model_name: str = Field(max_length=128)
     prompt: str = Field()
     @staticmethod
     def get_order() -> CommandOrder:
