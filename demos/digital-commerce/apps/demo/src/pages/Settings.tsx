@@ -99,10 +99,10 @@ const Settings = () => {
       <Container maxWidth="md">
         <form method="post" onSubmit={formik.handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography variant="h5">Required Information</Typography>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 label="Customer Name"
@@ -115,7 +115,7 @@ const Settings = () => {
                 onBlur={formik.handleBlur}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 label="Engineer LDAP"
@@ -128,7 +128,7 @@ const Settings = () => {
                 onBlur={formik.handleBlur}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Stack direction={'row'} spacing={2}>
                 <TextField
                   fullWidth
@@ -152,7 +152,7 @@ const Settings = () => {
                 </Button>
               </Stack>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Box sx={{ display: 'flex', justifyContent: 'right' }}>
                 <Button type="submit" variant="contained">
                   Save
@@ -163,7 +163,7 @@ const Settings = () => {
 
           {/* Gen AI Setting */}
           <Grid container spacing={2} sx={{ mt: 6, borderTop: '.5px solid #DDD' }}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Stack direction={'row'}>
                 <Typography variant="h5">Generative AI Settings</Typography>
                 <Box sx={{ display: 'flex', flex: 1, justifyContent: 'right', alignContent: 'center' }}>
@@ -173,7 +173,7 @@ const Settings = () => {
                 </Box>
               </Stack>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 label="Instructions"
@@ -189,10 +189,10 @@ const Settings = () => {
                 disabled={modelControls}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography variant="h5">Prompts</Typography>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 name="promptDetectCategories"
@@ -203,7 +203,7 @@ const Settings = () => {
                 disabled={modelControls}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 label="Extract Product Detail"
@@ -214,7 +214,7 @@ const Settings = () => {
                 disabled={modelControls}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 name="promptTranslateProductDetail"
@@ -225,7 +225,7 @@ const Settings = () => {
                 disabled={modelControls}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 name="promptVideo"
@@ -240,10 +240,10 @@ const Settings = () => {
 
           {/* Model Controls */}
           <Grid container spacing={2} sx={{ pt: 2 }}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography variant="h5">Model Controls</Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <Paper elevation={3} sx={{ p: 1 }}>
                 <Typography variant="h6">Generative Settings</Typography>
                 <Stack spacing={4}>
@@ -350,7 +350,7 @@ const Settings = () => {
                 </Stack>
               </Paper>
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <Paper elevation={3} sx={{ p: 1 }}>
                 <Typography variant="h6">Safety Settings</Typography>
                 {formik.values.generativeConfig.safetySettings.map((safetySetting) => (

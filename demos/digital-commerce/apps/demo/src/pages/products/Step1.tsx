@@ -33,12 +33,12 @@ const Step1 = () => {
             <Box sx={{display: 'flex', justifyContent: 'center'}}>
                 <Stack>
                     <Grid container>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Typography variant="h5" sx={{mb: 2}}>
                                 Select an potential product image
                             </Typography>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                             <Box sx={{display: 'flex', justifyContent: 'right'}}>
                                 <IconButton size="medium"
                                             onClick={() => navigate('/products/video-setup')}><VideoCameraBackIcon/></IconButton>

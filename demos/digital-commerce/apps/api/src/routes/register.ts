@@ -39,6 +39,7 @@ const persistToFirestore = (id: string, config: Config): Promise<FirebaseFiresto
     if (firestoreSettings.databaseId) {
         const db = new Firestore(firestoreSettings);
         const persistentConfig = {id: id, date: Date.now(), config: config} as PersistentConfig;
+        console.log("Yep, still here " + firestoreSettings.databaseId)
         const docRef = db.collection(COLLECTION).doc(persistentConfig.id);
         return docRef.set(persistentConfig, {merge: true});
     } else {
@@ -56,12 +57,16 @@ router.post('/', (req: Request, resp: Response) => {
 
     const existingConfig = sessionManager.getSession(sessionID);
 
+    
+
     if (!existingConfig) {
+        
         const configCopy = {...value};
         configCopy.generativeConfig.genAIToken = 'x'.repeat(8);
         persistToFirestore(activeId, configCopy)
             .then(() => {
                 sessionManager.addSession(activeId, value.generativeConfig);
+                console.log("Yep, still here")
                 resp.status(201).send({sessionID: activeId, message: 'created'} as api.ConfigurationResponse);
             })
             .catch((err) => resp.status(400).send({error: err} as api.ErrorResponse));

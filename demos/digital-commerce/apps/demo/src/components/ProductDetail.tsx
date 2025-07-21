@@ -65,7 +65,7 @@ const ProductDetail = ({product}: { product: Product }) => {
     return (
         <form method="post" onSubmit={formik.handleSubmit}>
             <Grid container spacing={2}>
-                <Grid item xs={4}>
+                <Grid size={4}>
                     <Stack>
                         <Box>
                             <Card>
@@ -103,7 +103,7 @@ const ProductDetail = ({product}: { product: Product }) => {
                         </Stack>
                     </Stack>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid size={8}>
                     <Stack spacing={2}>
                         <TextField
                             fullWidth
@@ -138,7 +138,7 @@ const ProductDetail = ({product}: { product: Product }) => {
 
                             {product && product.base.attributeValues ? (
                                 product.base.attributeValues.map((v, vIdx) => (
-                                    <Grid key={`cat_attr_grd_${vIdx}`} item xs={4}>
+                                    <Grid key={`cat_attr_grd_${vIdx}`} size={4}>
                                         <TextField
                                             key={`cat_attr_val_${vIdx}`}
                                             fullWidth

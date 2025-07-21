@@ -35,13 +35,13 @@ const ProductAccordionPanel = ({ index, product }: { index: number; product: Pro
         <AccordionDetails sx={{ p: 1, borderRadius: '10px' }}>
           <Typography variant="overline">{product.category.name}</Typography>
           <Grid container spacing={2}>
-            <Grid item xs={8}>
+            <Grid size={8}>
               <MarkdownPreview
                 source={product.base.description}
                 style={{ backgroundColor: '#fff', color: '#666', marginBottom: '2em' }}
               />
             </Grid>
-            <Grid item xs={4}>
+            <Grid size={4}>
               {product.images ? (
                 product.images.map((i) => (
                   <Paper elevation={5} sx={{borderRadius: '10px', display: 'flex', flexGrow: 1}}>
@@ -59,7 +59,7 @@ const ProductAccordionPanel = ({ index, product }: { index: number; product: Pro
               <Typography variant="h6">Attributes</Typography>
               <Grid container spacing={2}>
                 {product.base.attributeValues.map((a) => (
-                  <Grid item xs={3}>
+                  <Grid size={3}>
                     <Typography variant="overline">{a.name}</Typography>
                     <br />
                     <Typography variant="caption">{a.value}</Typography>
