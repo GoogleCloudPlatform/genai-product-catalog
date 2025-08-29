@@ -35,7 +35,7 @@ const ImageCard = ({title, img}: ImageCardArgs) => {
     };
 
     return (
-        <Grid item xs={4}>
+        <Grid size={4}>
             <Card sx={{maxWidth: '230px', mb: 2, borderRadius: '7px'}} raised={true}>
                 <CardMedia sx={{height: '200px', mb: 0, pb: 0}} image={img} title={title}/>
                 <CardContent>

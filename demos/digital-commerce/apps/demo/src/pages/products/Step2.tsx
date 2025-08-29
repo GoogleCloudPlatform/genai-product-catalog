@@ -96,17 +96,17 @@ const Step2 = () => {
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Paper elevation={1} sx={{ borderRadius: '7px' }}>
             {product.images?.map((image, idx) => (
               <img key={`product_image_${idx}`} src={image.uri} style={{ width: '100%', objectFit: 'contain' }} />
             ))}
           </Paper>
         </Grid>
-        <Grid item xs={10}>
+        <Grid size={10}>
           <React.Fragment>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Card raised={true} sx={{ borderRadius: '7px' }}>
                   <CardHeader title="Categories" />
                   <CardContent>
@@ -123,7 +123,7 @@ const Step2 = () => {
                   </CardActions>
                 </Card>
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={6}>
                 <Card sx={{ borderRadius: '7px' }}>
                   <CardHeader
                     title="Attributes"

@@ -22,13 +22,13 @@ const ProductPreview = ({img, category, base}: { img: Image; category: Category;
     return (
         <React.Fragment>
             <Grid container>
-                <Grid item xs={4}>
+                <Grid size={4}>
                     {(img && img.uri) ?
                         <img src={img.uri} style={{maxWidth: '250px'}}/> :
                         <Skeleton variant='rounded'/>
                     }
                 </Grid>
-                <Grid item xs={8}>
+                <Grid size={8}>
                     <Typography variant="h5">{base.name}</Typography>
                     {(category && category.name) ? <Typography variant="body2">{category.name}</Typography> : <></>}
 
@@ -39,12 +39,12 @@ const ProductPreview = ({img, category, base}: { img: Image; category: Category;
                     <Typography variant='h6'>Attributes</Typography>
                     <Grid container>
                         {base.attributeValues.map((av, idx) => (
-                            <Grid item xs={4} key={`av_idx_${idx}`}>
+                            <Grid size={4} key={`av_idx_${idx}`}>
                                 <Grid container spacing={1}>
-                                    <Grid item xs={4}>
+                                    <Grid size={4}>
                                         <Typography variant='body2' sx={{fontWeight: 'bold'}}>{av.name}</Typography>
                                     </Grid>
-                                    <Grid item xs={8}>
+                                    <Grid size={8}>
                                         <Typography variant='body2'>{av.value}</Typography>
                                     </Grid>
                                 </Grid>

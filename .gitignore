@@ -5,6 +5,13 @@ venv
 bazel*
 .ijwb
 
+.env
+
+test_data.json
+resources/test*json
+
+.env*
+
 user.bazelrc
 
 __pycache__/

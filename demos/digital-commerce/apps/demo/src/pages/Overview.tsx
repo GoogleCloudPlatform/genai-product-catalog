@@ -117,38 +117,38 @@ const RegisteredBody = ({config}: { config: Config }) => {
             </Typography>
             <Paper elevation={3} sx={{borderRadius: '10px', p: 2}}>
                 <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid size={3}>
                         Agent Persona:
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid size={9}>
                         {config.generativeConfig.instructions}
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid size={3}>
                         Temperture:
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid size={9}>
                         {config.generativeConfig.temperature}
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid size={3}>
                         Top P:
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid size={9}>
                         {config.generativeConfig.topP}
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid size={3}>
                         Top K:
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid size={9}>
                         {config.generativeConfig.topK}
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid size={3}>
                         Max Tokens:
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid size={9}>
                         {config.generativeConfig.maxTokenCount}
                     </Grid>
                 </Grid>

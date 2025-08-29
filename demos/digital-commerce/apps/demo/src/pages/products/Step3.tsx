@@ -164,10 +164,10 @@ const Step3 = () => {
   return (
     <React.Fragment>
       <Grid container spacing={2} padding={2}>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <Typography variant="h5">Preview, Edit / Approve Product Detail</Typography>
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={6}>
           <Stack direction={'row'} spacing={2} sx={{ justifyContent: 'right' }}>
             <FormControl>
               <InputLabel id="all-languages-label">Languages</InputLabel>

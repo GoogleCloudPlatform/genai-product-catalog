@@ -96,17 +96,19 @@ const BatchInputGrid = ({
     return updatedRow;
   };
 
+  //slots={{
+      //   toolbar: GridToolbar as GridSlots['toolbar'],
+      // }}
+      // slotProps={{
+      //   toolbar: { setRows, setRowModesModel, rows: rows },
+      // }}
+
   return (
     <DataGrid
       rows={rows}
       columns={columns}
       processRowUpdate={processRowUpdate}
-      slots={{
-        toolbar: GridToolbar as GridSlots['toolbar'],
-      }}
-      slotProps={{
-        toolbar: { setRows, setRowModesModel, rows: rows },
-      }}
+      
     />
   );
 };
