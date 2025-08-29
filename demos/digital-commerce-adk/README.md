@@ -25,16 +25,16 @@ pip install uv
 ## GCloud Setup
 
 ```shell
-gcloud config configurations create truworths
+gcloud config configurations create <configuration_name>
 ```
 
 ```shell
-gcloud config configurations activate truworths
+gcloud config configurations activate <configuration_name>
 ```
 
 ```shell
 # Activate Google Cloud Project
- gcloud config set project tru-ecom-product-enrichment
+ gcloud config set project <project_name>
 ```
 
 ```shell
