@@ -5,4 +5,4 @@ __pycache__
 
 setup.sh
 
-resources/test_data.json
+./resources/*.json
