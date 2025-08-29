@@ -28,7 +28,7 @@ Example 2:
 User: Fix the following product: SKU: abc-123, Name: Some Product, Description: some description, attributes: color: black, size: large
 System: ```json {"sku":"abc-123","name":"Some Product","description":"some description","attributes":{"color":"black","size":"large"}}```
 
-""
+"""
 
 product_extractor_agent = LlmAgent(
     name="product_extractor_agent",

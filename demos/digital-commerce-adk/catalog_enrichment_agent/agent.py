@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from google.adk.agents import SequentialAgent
-from .attribute_mapper import attribute_mapper_agent
+from .attribute_mapper import root_agent as attribute_mapper_agent
 from .category_detector import category_detector_agent
 from .judge import judge_agent
 from .product_extractor import product_extractor_agent

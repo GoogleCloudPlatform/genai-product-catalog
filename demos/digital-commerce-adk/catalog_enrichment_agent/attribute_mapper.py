@@ -55,3 +55,19 @@ Output JSON:
   "name": "Breville Barista Express Espresso Machine (BES870XL)",
   "description": "Create café-quality espresso at home with the Breville Barista Express. This all-in-one machine takes you from beans to espresso in under a minute, featuring an integrated conical burr grinder and precise temperature control to ensure optimal flavor extraction.\n\n**Key Features:**\n- **Integrated Conical Burr Grinder:** Dose-control grinding delivers the right amount of freshly ground coffee on demand.\n- **Precise Espresso Extraction:** Digital temperature control (PID) ensures water is at the perfect temperature for balanced flavor.\n- **Manual Micro-Foam Milk Texturing:** The powerful steam wand allows you to hand-texture micro-foam milk for authentic latte art.\n- **All-In-One Design:** Includes a 1/2 lb bean hopper, 67 oz water tank, and a compact footprint perfect for any kitchen countertop.",
   "seoHtmlHeader": "<meta name=\"description\" content=\"Shop the Breville Barista Express BES870XL. This all-in-one espresso machine with an integrated grinder makes third-wave specialty coffee at home.\">\n<meta name=\"keywords\" content=\"Breville, Barista Express, BES870XL, espresso machine, coffee maker, home espresso, coffee grinder, stainless steel appliance\">",
+  }
+  ```
+""".strip()
+
+
+root_agent = LlmAgent(
+    name="attribute_mapper_agent",
+    description="An agent used for mapping category attributes to detected products.",
+    model="gemini-2.5-pro",
+    tools=[google_search],
+    instruction=INSTRUCTIONS,
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.5,
+    ),
+    output_key="attribute_map"
+)
