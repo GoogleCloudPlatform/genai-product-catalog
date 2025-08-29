@@ -44,7 +44,7 @@ gcloud auth application-default login
 
 ```shell
 # Set the quota project
-gcloud auth application-default set-quota-project tru-ecom-product-enrichment
+gcloud auth application-default set-quota-project <project_name>
 ```
 
 ## Running the Application
@@ -76,11 +76,11 @@ This will start a web server (usually at `http://localhost:8000`) where you can 
 ## Testing with Curl
 
 ### URL
-https://catalog-enrichment-agent-327589796738.europe-west1.run.app
+<Your Cloud RUN URL>
 
 ```shell
 # Set the app URL
-export APP_URL="https://catalog-enrichment-agent-327589796738.europe-west1.run.app"
+export APP_URL="<Cloud Run URL>"
 ```
 
 ```shell
@@ -113,7 +113,7 @@ curl -X POST -H "Authorization: Bearer $TOKEN" \
     "new_message": {
         "role": "user",
         "parts": [{
-        "text": "{\"uniq_id\":3152365,\"crawl_timestamp\":\"2025-07-30 16:37:40 +0200\",\"product_url\":\"https://www.truworths.co.za/navy-branded-t-shirt/product/prod3152365\",\"product_name\":\"Navy Branded T-shirt\",\"product_category_tree\":[\"Men >> Tops\",\"Brands >> Men >> Fuel >> Tops\",\"Men >> Fuel\",\"Men >> Fuel\",\"Men >> Tops >> T-shirts\"],\"pid\":3152365,\"retail_price\":250,\"discounted_price\":null,\"images\":[\"https://cdn.media.amplience.net/i/truworths/prod3152365_1?fmt=jpg\",\"https://cdn.media.amplience.net/i/truworths/prod3152365_2?fmt=jpg\",\"https://cdn.media.amplience.net/i/truworths/prod3152365_3?fmt=jpg\"],\"is_FK_Advantage_product\":\"FALSE\",\"description\":\"Navy Branded T-shirt by Fuel\\r\\n-Colour: Navy\\r\\n-Style: T-shirt\\r\\n-Sleeve length: Short sleeve\\r\\n-Fabric: Carded Single Jersey\",\"product_rating\":\"No rating available\",\"overall_rating\":\"No rating available\",\"brand\":\"Fuel\",\"product_specifications\":[{\"key\":\"Type\",\"value\":\"T-Shirts\"},{\"key\":\"Primary Colour\",\"value\":\"Navy\"},{\"key\":\"Style\",\"value\":\"T-shirts\"},{\"key\":\"Sleeve length\",\"value\":\"Short sleeve\"},{\"key\":\"Gender\",\"value\":\"Men\"},{\"key\":\"Age Group\",\"value\":\"Adult\"}]}"
+        "text": "{\"uniq_id\":3152365,\"crawl_timestamp\":\"2025-07-30 16:37:40 +0200\",\"product_url\":\"https://product_url/\",\"product_name\":\"Navy Branded T-shirt\",\"product_category_tree\":[\"Men >> Tops\",\"Brands >> Men >> Fuel >> Tops\",\"Men >> Fuel\",\"Men >> Fuel\",\"Men >> Tops >> T-shirts\"],\"pid\":3152365,\"retail_price\":250,\"discounted_price\":null,\"images\":[\"https://image_url.jpg\",\"https://image_url2.jpg\",\"https://image_url3.jpg\"],\"is_FK_Advantage_product\":\"FALSE\",\"description\":\"Navy Branded T-shirt by Fuel\\r\\n-Colour: Navy\\r\\n-Style: T-shirt\\r\\n-Sleeve length: Short sleeve\\r\\n-Fabric: Carded Single Jersey\",\"product_rating\":\"No rating available\",\"overall_rating\":\"No rating available\",\"brand\":\"Fuel\",\"product_specifications\":[{\"key\":\"Type\",\"value\":\"T-Shirts\"},{\"key\":\"Primary Colour\",\"value\":\"Navy\"},{\"key\":\"Style\",\"value\":\"T-shirts\"},{\"key\":\"Sleeve length\",\"value\":\"Short sleeve\"},{\"key\":\"Gender\",\"value\":\"Men\"},{\"key\":\"Age Group\",\"value\":\"Adult\"}]}"
         }]
     },
     "streaming": false
