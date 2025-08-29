@@ -5,6 +5,10 @@ venv
 bazel*
 .ijwb
 
+.env
+
+.env*
+
 user.bazelrc
 
 __pycache__/

@@ -1,0 +1,16 @@
+[project]
+name = "catalog-ml"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "google-adk>=1.8.0",
+    "google-cloud-logging>=3.12.1",
+    "google-cloud-trace>=1.16.2",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+    "pytest>=8.0.0",
+    "werkzeug>=3.0.0",
+    "google-generativeai>=0.3.0",
+]
