@@ -16,7 +16,6 @@ import {Request, Response, Router} from 'express';
 import {api} from 'model';
 import sessionManager from '../state';
 import {utils} from 'model';
-import {GenerativeContentBlob, InlineDataPart} from '@google-cloud/vertexai';
 import {extractTextCandidates, generateFailedDependencyResponse} from '../utils';
 
 const router = Router();
@@ -29,9 +28,11 @@ router.post('/', (req: Request, resp: Response) => {
     const sessionID = imagePrompt.sessionID;
     const generativeSession = sessionManager.getSession(sessionID);
     if (generativeSession) {
-        const model = generativeSession.model;
-        model
+        //generativeSession.ai.files.upload({config: {mimeType: imagePrompt.prompt}, file: })
+
+        generativeSession.ai.models
             .generateContent({
+                model: "gemini-2.5-flash",
                 contents: [
                     {
                         role: 'user',
@@ -43,15 +44,20 @@ router.post('/', (req: Request, resp: Response) => {
                                         inlineData: {
                                             data: utils.stripBase64Prefix(image.base64),
                                             mimeType: image.type,
-                                        } as GenerativeContentBlob,
-                                    } as InlineDataPart)
+                                        },
+                                    })
                             ),
                         ],
                     },
                 ],
+                config: generativeSession.modelParams
             })
             .then((result) => {
                 resp.status(200).send(extractTextCandidates(result));
+            })
+            .catch((e) => {
+                console.error(e);
+                resp.status(400).send({error: 'Failed to generate content'} as api.ErrorResponse);
             });
     } else {
         generateFailedDependencyResponse(resp);

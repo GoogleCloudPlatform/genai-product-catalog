@@ -14,12 +14,12 @@
 
 import { GoogleAuth } from 'google-auth-library';
 import { Socket } from 'socket.io';
-import sessionManager from '../state';
+import sessionManager, { GenerativeSession } from '../state';
 import { extractTextCandidates } from '../utils';
 import { BatchPromptRequest } from 'libs/model/src/lib/api';
 import { BaseProduct, BatchProduct, Category, Image, Product } from 'model';
 import axios from 'axios';
-import { GenerativeModel } from '@google-cloud/vertexai';
+import {GoogleGenAI, GenerateContentConfig, GoogleSearchRetrieval} from '@google/genai';
 
 const GCP_IMAGE_MODEL = process.env.GCP_IMAGE_MODEL;
 const GCP_PROJECT_ID = process.env.GCP_PROJECT_ID;
@@ -95,58 +95,62 @@ const generate_image = (product: Product, socket: Socket) => {
 };
 
 const generate_product = ({
-  model,
+  session,
   socket,
   value,
   prompt,
   incrementor,
   count,
 }: {
-  model: GenerativeModel;
+  session: GenerativeSession;
   socket: Socket;
   value: BatchProduct;
   prompt: string;
   incrementor: () => void;
   count: number;
 }) => {
-  model.generateContent({ contents: [{ role: 'user', parts: [{ text: prompt }] }] }).then((result) => {
-    try {
-      const resultText = extractTextCandidates(result);
-      const obj = JSON.parse(resultText) as SimpleProduct;
-      const product = {
-        base: {
-          language: obj.language,
-          name: obj.name,
-          description: obj.description,
-          seoHtmlHeader: obj.seoHtmlHeader,
-          attributeValues: obj.attributeValues,
-        } as BaseProduct,
-        category: { name: obj.category } as Category,
-      } as Product;
-      generate_image(product, socket);
-      incrementor();
-    } catch (e) {
-      if (count < 3) {
-        socket.emit('batch:warn', { message: `Retrying process for item: ${value.name}` });
-        generate_product({
-          model: model,
-          socket: socket,
-          value: value,
-          prompt: prompt,
-          incrementor: incrementor,
-          count: count + 1,
-        });
-      } else {
-        socket.emit('batch:error', { message: `Failed to process: ${value.name}` });
+  session.ai.models.generateContent({ model: session.config.modelName, contents: prompt })
+    .then((result) => {
+      try {
+        const resultText = extractTextCandidates(result);
+        const obj = JSON.parse(resultText) as SimpleProduct;
+        const product = {
+          base: {
+            language: obj.language,
+            name: obj.name,
+            description: obj.description,
+            seoHtmlHeader: obj.seoHtmlHeader,
+            attributeValues: obj.attributeValues,
+          } as BaseProduct,
+          category: { name: obj.category } as Category,
+        } as Product;
+        generate_image(product, socket);
+        incrementor();
+      } catch (e) {
+        if (count < 3) {
+          socket.emit('batch:warn', { message: `Retrying process for item: ${value.name}` });
+          generate_product({
+            session: session,
+            socket: socket,
+            value: value,
+            prompt: prompt,
+            incrementor: incrementor,
+            count: count + 1,
+          });
+        } else {
+          socket.emit('batch:error', { message: `Failed to process: ${value.name}` });
+        }
       }
-    }
-  });
+    })
+    .catch((e) => {
+      console.error(e);
+      socket.emit('batch:error', { message: `Failed to generate content for: ${value.name}` });
+    });
 };
 
 export default (socket: Socket) =>
   async ({ sessionID, values }: BatchPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
-    const model = session.groundedModel;
 
     const exampleOutput = {
       language: 'EN-US',
@@ -186,7 +190,7 @@ Example Output:
 ${example}
 `.trim();
       generate_product({
-        model: model,
+        session: session,
         socket: socket,
         value: value,
         prompt: prompt,

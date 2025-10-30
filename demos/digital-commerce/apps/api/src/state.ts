@@ -12,55 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {GenerativeModel, VertexAI} from '@google-cloud/vertexai';
+import {GoogleGenAI, GenerateContentConfig, GoogleSearch, MediaResolution} from '@google/genai';
+
 import {GenerativeConfig} from 'model';
 
 import { config } from 'dotenv';
 config()
 
-const vertexAI = new VertexAI({
-    project: process.env.GCP_PROJECT_ID,
-    location: process.env.GCP_LOCATION,
+const ai = new GoogleGenAI({
+    vertexai: true,
+    project: 'retail-shared-demos',
+    location: 'us-central1',
 });
 
-export class GenerativeSession {
-    public createdAt: number
+
+export class GenerativeSession { 
+    public createdAt: number;
     public config: GenerativeConfig;
-    public model: GenerativeModel;
-    public groundedModel: GenerativeModel;
+    public ai: GoogleGenAI;
+    public modelName: string;
+    public modelParams: GenerateContentConfig;
+    public groundedModelParams: GenerateContentConfig;
+
+    // mediaResolution: MediaResolution.MEDIA_RESOLUTION_HIGH
+    // responseMimeType: 'application/json',
 
     constructor(config: GenerativeConfig) {
-        this.createdAt = Date.now()
-        this.config = config;
-        this.model = vertexAI.getGenerativeModel({
-            model: config.modelName,
-            systemInstruction: config.instructions,
-            safetySettings: config.safetySettings,
-            generationConfig: {
-                maxOutputTokens: config.maxTokenCount,
-                temperature: config.temperature,
-                candidateCount: 1,
-                topK: config.topK,
-                topP: config.topP,
-                responseMimeType: 'application/json',
-            },
-        });
-        this.groundedModel = vertexAI.getGenerativeModel({
-            model: config.modelName,
-            systemInstruction: config.instructions,
-            safetySettings: config.safetySettings,
-            generationConfig: {
-                maxOutputTokens: config.maxTokenCount,
-                temperature: config.temperature,
-                candidateCount: 1,
-                topK: config.topK,
-                topP: config.topP,
-                responseMimeType: 'application/json',
-            },
+        this.createdAt = Date.now(),
+        this.config = config,
+        this.ai = ai,
+        this.modelParams = {
+            maxOutputTokens: config.maxTokenCount,
+            temperature: config.temperature,
+            candidateCount: 1,
+            topK: config.topK,
+            topP: config.topP,
+        },
+        this.groundedModelParams =  {
+            maxOutputTokens: config.maxTokenCount,
+            temperature: config.temperature,
+            candidateCount: 1,
+            topK: config.topK,
+            topP: config.topP,
             tools: [
-                {googleSearchRetrieval: {}}
+                {googleSearch
+                    : {}}
             ]
-        })
+        }
     }
 }
 

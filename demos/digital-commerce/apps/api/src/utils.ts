@@ -11,14 +11,18 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-import {GenerateContentResult} from '@google-cloud/vertexai';
+import {GenerateContentResponse} from '@google/genai'
 import {Response} from 'express';
 import {api} from 'model';
 
-export const extractTextCandidates = (result: GenerateContentResult): string => {
-    if (result.response.candidates) {
-        let text = result.response.candidates[0].content.parts[0].text;
+export const extractTextCandidates = (result: GenerateContentResponse): string => {
+    if (result) {
+        let text = result.candidates[0].content.parts[0].text;
+
+        if (text.match("```json")) {
+            text = text.replace("```json", "")
+            text = text.replace("```", "")
+        }
 
         if (text.startsWith("[") && text.endsWith("}")) {
             text = text.substring(0, text.length - 1)
@@ -33,8 +37,6 @@ export const extractTextCandidates = (result: GenerateContentResult): string => 
             console.log(`invalid JSON response from Gemini ${e}`)
             return "[{name='error'}]"
         }
-
-
     } else {
         return 'no content';
     }

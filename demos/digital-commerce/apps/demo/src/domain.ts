@@ -69,6 +69,7 @@ export const defaultConfig = (): Config => {
     conf.defaultLanguage = languages.DEFAULT_LANGUAGE;
     conf.customerName = '';
     conf.engineerLdap = '';
+    conf.supportedLanguages = [];
 
     conf.generativeConfig = NewGenerativeConfig(
         'You are an retail merchandising expert capable of describing, categorizing, and answering questions about products for a retail catalog and will ground answers using google when possible.'

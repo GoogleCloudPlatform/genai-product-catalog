@@ -1,11 +1,11 @@
-// Copyright 2024 Google, LLC
-// 
+// Copyright 2023 Google LLC
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     https://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,11 +14,23 @@
 
 import {ReactElement, useState} from "react";
 import {SessionIDContext} from "../contexts";
+import {SessionIDState} from "../domain";
+
+const SESSION_ID = '__RET_SID_KeY__';
 
 const SessionIDProvider = ({children}: { children: ReactElement | ReactElement[] }) => {
-    const [sessionID, setSessionID] = useState<string>(null!);
+
+    const [sessionID, setSessionID] = useState<string>(sessionStorage.getItem(SESSION_ID) ?? '');
+
+    const overrideSetSessionID = (sessionID: string) => {
+        sessionStorage.setItem(SESSION_ID, sessionID)
+        setSessionID(sessionID)
+    }
+
+    const value = {sessionID, setSessionID: overrideSetSessionID} as SessionIDState;
+
     return (
-        <SessionIDContext.Provider value={{sessionID, setSessionID}}>
+        <SessionIDContext.Provider value={value}>
             {children}
         </SessionIDContext.Provider>
     )

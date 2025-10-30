@@ -16,9 +16,11 @@ import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL_BASE;
 
+console.log(API_BASE)
+
 const AxiosInstance = axios.create({
   baseURL: API_BASE,
-  timeout: 30000,
+  timeout: 60000,
 });
 AxiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
 

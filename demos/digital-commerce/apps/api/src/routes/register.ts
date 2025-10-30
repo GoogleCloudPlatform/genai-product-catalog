@@ -39,7 +39,6 @@ const persistToFirestore = (id: string, config: Config): Promise<FirebaseFiresto
     if (firestoreSettings.databaseId) {
         const db = new Firestore(firestoreSettings);
         const persistentConfig = {id: id, date: Date.now(), config: config} as PersistentConfig;
-        console.log("Yep, still here " + firestoreSettings.databaseId)
         const docRef = db.collection(COLLECTION).doc(persistentConfig.id);
         return docRef.set(persistentConfig, {merge: true});
     } else {
@@ -53,24 +52,25 @@ router.post('/', (req: Request, resp: Response) => {
     const sessionID = registrationRequest.sessionID;
     const value = registrationRequest.config;
 
-    const activeId = sessionID !== undefined && sessionID !== null && sessionID.trim().length > 0 ? sessionID : uuidv4();
-
+    const activeId = sessionID && sessionID.trim().length > 0 ? sessionID : uuidv4();
     const existingConfig = sessionManager.getSession(sessionID);
-
-    
 
     if (!existingConfig) {
         
-        const configCopy = {...value};
+        const configCopy = structuredClone(value);
         configCopy.generativeConfig.genAIToken = 'x'.repeat(8);
+        
         persistToFirestore(activeId, configCopy)
             .then(() => {
                 sessionManager.addSession(activeId, value.generativeConfig);
-                console.log("Yep, still here")
                 resp.status(201).send({sessionID: activeId, message: 'created'} as api.ConfigurationResponse);
             })
-            .catch((err) => resp.status(400).send({error: err} as api.ErrorResponse));
+            .catch((err) => {
+                console.error("Firestore Error:", err);
+                resp.status(400).send({error: err} as api.ErrorResponse)
+            });
     } else {
+        console.log("active session")
         const mergedConfig = {...existingConfig.config, ...value.generativeConfig} as GenerativeConfig;
         sessionManager.addSession(activeId, mergedConfig);
         resp.status(202).send({sessionID: activeId, message: 'updated'} as api.ConfigurationResponse);

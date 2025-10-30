@@ -27,10 +27,9 @@ export default (socket: Socket) =>
     async ({sessionID, type, prompt, value}: api.AudioPromptRequest) => {
         const session = sessionManager.getSession(sessionID);
 
-        const model = session.groundedModel;
+        const ai = session.ai;
 
         const handleFile = async (filUri: string) => {
-            console.log(`file handle ${filUri}`);
             const [resp] = await speechClient.recognize({
                 config: {
                     encoding: 'WEBM_OPUS',
@@ -54,13 +53,18 @@ export default (socket: Socket) =>
 
                 const audioPrompt = transcription + `\nProduct Data JSON: ${prompt}\nExample JSON output: {prompt: '${transcription}', response: 'Some generated response'} where the response value is in markdown format.`;
 
-                model
+                ai.models
                     .generateContent({
+                        model: session.config.modelName,
                         contents: [{role: 'user', parts: [{text: audioPrompt}]}],
                     })
                     .then((result) => {
                         const value = extractTextCandidates(result);
                         socket.emit('agent:response', value);
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                        socket.emit('voice:error', { message: 'Failed to generate content' });
                     })
                     .finally(() => {
                         deleteFile(filUri);
@@ -68,7 +72,7 @@ export default (socket: Socket) =>
             }
         };
 
-        if (model) {
+        if (ai) {
             await saveFile(sessionID, 'voice-transcript', type, value, AUDIO_EXTENSION, handleFile);
         } else {
             socket.emit('voice:error', {

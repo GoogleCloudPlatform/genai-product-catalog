@@ -10,7 +10,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.
+// limitations under the.
 
 import {Request, Response, Router} from 'express';
 import {api} from 'model';
@@ -21,14 +21,20 @@ const router = Router();
 
 router.post('/', (req: Request, resp: Response) => {
     const {sessionID, prompt} = req.body as api.TextPromptRequest;
-    const {groundedModel} = sessionManager.getSession(sessionID);
-    if (groundedModel) {
-        groundedModel
+    const {ai, config, groundedModelParams} = sessionManager.getSession(sessionID);
+    if (ai) {
+        ai.models
             .generateContent({
+                model: config.modelName,
                 contents: [{role: 'user', parts: [{text: prompt}]}],
+                config: groundedModelParams
             })
             .then((result) => {
                 resp.status(200).send(extractTextCandidates(result));
+            })
+            .catch((e) => {
+                console.error(e);
+                resp.status(400).send({error: 'Failed to generate content'} as api.ErrorResponse);
             });
     } else {
         generateFailedDependencyResponse(resp);

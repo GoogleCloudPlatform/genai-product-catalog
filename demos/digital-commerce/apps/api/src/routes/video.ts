@@ -26,29 +26,29 @@ const router = Router();
 router.post('/', async (req: Request, resp: Response) => {
     const videoRequest = req.body as api.VideoPromptRequest;
 
-    const {model, groundedModel} = sessionManager.getSession(videoRequest.sessionID);
+    const { ai, config, groundedModelParams } = sessionManager.getSession(videoRequest.sessionID);
 
-    if (model) {
+    if (ai) {
         const handleFile = async (filUri: string) => {
             const fileData = {mimeType: videoRequest.type, fileUri: filUri};
-            model
+            // ai.files.upload({file: filUri})
+            ai.models
                 .generateContent({
+                    model: config.modelName,
                     contents: [{role: 'user', parts: [{text: videoRequest.prompt}, {fileData: fileData}]}],
                 })
                 .then((result) => {
                     const videoResultText = extractTextCandidates(result) as string;
 
-                    console.log(videoResultText);
-
-                    groundedModel.generateContent({
+                    ai.models.generateContent({
+                        model: config.modelName,
                         contents: [{
                             role: 'user',
                             parts: [{text: videoRequest.categoryPrompt}, {text: `Product Information: ${videoResultText}`}]
-                        }]
+                        }],
+                        config: groundedModelParams 
                     }).then(categoryResult => {
                         const categoryResponeText = extractTextCandidates(categoryResult);
-
-                        console.log(categoryResponeText)
 
                         try {
                             const category = JSON.parse(categoryResponeText) as Category[];
@@ -62,23 +62,32 @@ router.post('/', async (req: Request, resp: Response) => {
                                 .replace('${category_attributes}', JSON.stringify(category[0].attributes))
                                 .replace('${product_attribute_value_model}', JSON.stringify(productCategoryAttributes));
 
-                            console.log(productDetailPrompt)
-
-                            groundedModel.generateContent({
-                                contents: [{role: 'user', parts: [{text: productDetailPrompt}]}]
+                            ai.models.generateContent({
+                                model: config.modelName,
+                                contents: [{role: 'user', parts: [{text: productDetailPrompt}]}],
+                                config: groundedModelParams
                             }).then((productResult) => {
                                 // Send the final product
                                 resp.status(200).send(extractTextCandidates(productResult))
-                            }).catch(productErr => resp.status(400).send({error: productErr}));
+                            }).catch(productErr => {
+                                console.error(productErr);
+                                resp.status(400).send({error: 'Failed to generate product details'} as api.ErrorResponse)
+                            });
 
                         } catch (marshallErr) {
                             console.log(`Marshall Error: ${marshallErr}`)
-                            resp.status(400).send({error: marshallErr});
+                            resp.status(400).send({error: 'Failed to parse category response'} as api.ErrorResponse);
                         }
 
-                    }).catch(categoryErr => resp.status(400).send({error: categoryErr}));
+                    }).catch(categoryErr => {
+                        console.error(categoryErr);
+                        resp.status(400).send({error: 'Failed to generate category'} as api.ErrorResponse)
+                    });
                 })
-                .catch((err) => resp.status(400).send({error: err}))
+                .catch((err) => {
+                    console.error(err);
+                    resp.status(400).send({error: 'Failed to process video'} as api.ErrorResponse)
+                })
                 .finally(() => {
                     deleteFile(filUri);
                 });

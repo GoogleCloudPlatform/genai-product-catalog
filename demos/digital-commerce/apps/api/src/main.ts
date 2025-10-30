@@ -61,7 +61,6 @@ app.use('/api/video', videoHandlers);
 app.use('/api/batch', batchHandlers);
 
 io.on('connection', (socket: Socket) => {
-  console.log(`Connected: ${socket.id}`);
   socket.on('agent:text', textAgent(socket));
   socket.on('agent:voice', voiceAgent(socket));
   socket.on('batch:request', batchStream(socket));
@@ -69,5 +68,5 @@ io.on('connection', (socket: Socket) => {
 
 const port = process.env.PORT || 3000;
 httpServer.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+  console.log(`[server]: Server is running at http://127.0.0.1:${port}`);
 });

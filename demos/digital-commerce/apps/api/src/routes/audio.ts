@@ -26,8 +26,8 @@ export const AUDIO_EXTENSION = 'webm';
 
 router.post('/', async (req: Request, resp: Response) => {
     const audioPrompt = req.body as api.AudioPromptRequest;
-    const {model} = sessionManager.getSession(audioPrompt.sessionID);
-    if (model) {
+    const {ai, config} = sessionManager.getSession(audioPrompt.sessionID);
+    if (ai) {
         const handleFile = async (filUri: string) => {
             const [speechResponse] = await speechClient.recognize({
                 config: {
@@ -47,8 +47,9 @@ router.post('/', async (req: Request, resp: Response) => {
 
                 const prompt = transcription + `\nUse the following Product Data for additional information: ${JSON.stringify(audioPrompt.prompt)}`;
 
-                model
+                ai.models
                     .generateContent({
+                        model: config.modelName,
                         contents: [{role: 'user', parts: [{text: prompt}]}],
                     })
                     .then((result) => {
@@ -56,6 +57,10 @@ router.post('/', async (req: Request, resp: Response) => {
                             transcript: transcription,
                             value: extractTextCandidates(result)
                         } as api.AudioResponse);
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                        resp.status(400).send({error: 'Failed to generate content'} as api.ErrorResponse);
                     });
             }
         };

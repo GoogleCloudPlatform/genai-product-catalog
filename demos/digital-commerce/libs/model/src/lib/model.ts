@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { DEFAULT_LANGUAGE } from './languages';
+import {GenerateContentParameters} from '@google/genai';
 
 export interface Attribute {
   name: string;
@@ -135,13 +136,13 @@ export const ProductAsJsonString = () => {
 
 export const NewGenerativeConfig = (instructions: string) => {
   return {
-    modelName: 'gemini-1.5-flash-002',
+    modelName: 'gemini-2.5-flash',
     genAIToken: '',
     instructions: instructions,
     temperature: 0.2,
     topP: 0.94,
     topK: 32,
-    maxTokenCount: 8192,
+    maxTokenCount: 65535,
     safetySettings: [
       {
         category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
@@ -215,21 +216,40 @@ export class SafetySettings {
     }
   };
 
-  static numberToThreshold = (value: number | number[]): HarmBlockThreshold => {
-    const input = Array.isArray(value) ? value[0] : value;
-    switch (input) {
-      case 0:
-        return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
-      case 1:
-        return HarmBlockThreshold.BLOCK_LOW_AND_ABOVE;
-      case 2:
-        return HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE;
-      case 3:
-        return HarmBlockThreshold.BLOCK_ONLY_HIGH;
-      case 4:
-        return HarmBlockThreshold.BLOCK_NONE;
-      default:
-        return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
-    }
-  };
-}
+    static numberToThreshold = (value: number | number[]): HarmBlockThreshold => {
+
+      const input = Array.isArray(value) ? value[0] : value;
+
+      switch (input) {
+
+        case 0:
+
+          return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
+
+        case 1:
+
+          return HarmBlockThreshold.BLOCK_LOW_AND_ABOVE;
+
+        case 2:
+
+          return HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE;
+
+        case 3:
+
+          return HarmBlockThreshold.BLOCK_ONLY_HIGH;
+
+        case 4:
+
+          return HarmBlockThreshold.BLOCK_NONE;
+
+        default:
+
+          return HarmBlockThreshold.HARM_BLOCK_THRESHOLD_UNSPECIFIED;
+
+      }
+
+    };
+
+  }
+
+  

@@ -20,16 +20,22 @@ import { extractTextCandidates } from "../utils";
 export default (socket: Socket) => async ({sessionID, prompt, value}: ChatPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
 
-    const model = session.groundedModel;
+    const {ai, groundedModelParams} = sessionManager.getSession(sessionID);
 
     const chatPrompt = prompt + `\nProduct Data JSON: ${prompt}\nExample JSON output: {prompt: '${value}', response: 'Some generated response'} where the response value is in markdown format.`;
-
-    model
+    
+    ai.models
         .generateContent({
-            contents: [{role: 'user', parts: [{text: chatPrompt}]}],
+            model: session.config.modelName,
+            contents: prompt,
+            config: groundedModelParams
         })
         .then((result) => {
             const value = extractTextCandidates(result);
             socket.emit('agent:response', value);
+        })
+        .catch((e) => {
+          console.error(e);
+          socket.emit('agent:error', { message: 'Failed to generate content' });
         });
 }

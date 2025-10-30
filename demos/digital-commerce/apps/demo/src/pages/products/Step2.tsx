@@ -28,11 +28,15 @@ import {
   RadioGroup,
   Typography,
 } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import GoogleBackdrop from '../../components/GoogleBackdrop';
-import { ConfigurationContext, ProductContext, SessionIDContext } from '../../contexts';
+import {
+  ConfigurationContext,
+  ProductContext,
+  SessionIDContext,
+} from '../../contexts';
 
 import { api, Category } from 'model';
 import AxiosInstance from '../../utils/WebClient';
@@ -48,37 +52,45 @@ const Step2 = () => {
   const nav = useNavigate();
 
   const [backdrop, setBackdrop] = useState(false);
-  const [categories, setCategories] = useState<Array<Category>>(initialCategories);
+  const [categories, setCategories] =
+    useState<Array<Category>>(initialCategories);
   const [selectedCategory, setSelectedCategoy] = useState<number>(-1);
 
   const categoryLength = categories.length;
+  const effectRan = useRef(false);
 
   useEffect(() => {
-    if (categoryLength === 0) {
-      setBackdrop(true);
-      let prompt = config.promptDetectCategories;
-      prompt = prompt.replace(
-        '${category_model}',
-        JSON.stringify({
-          name: '',
-          attributes: [{ name: '', description: '', valueRange: [] }],
-        } as Category)
-      );
+    if (effectRan.current === false) {
+      if (categoryLength === 0) {
+        setBackdrop(true);
+        let prompt = config.promptDetectCategories;
+        prompt = prompt.replace(
+          '${category_model}',
+          JSON.stringify({
+            name: '',
+            attributes: [{ name: '', description: '', valueRange: [] }],
+          } as Category)
+        );
 
-      AxiosInstance.post(`/images`, {
-        sessionID: sessionID,
-        prompt: prompt,
-        value: product.images,
-      } as api.ImagePromptRequest)
-        .then((resp) => {
-          if (resp.status === 200) {
-            setCategories([...(resp.data as Category[])]);
-            setBackdrop(false);
-          }
-        })
-        .catch((err) => console.error(err));
+        AxiosInstance.post(`/images`, {
+          sessionID: sessionID,
+          prompt: prompt,
+          value: product.images,
+        } as api.ImagePromptRequest)
+          .then((resp) => {
+            if (resp.status === 200) {
+              setCategories([...(resp.data as Category[])]);
+              setBackdrop(false);
+            }
+          })
+          .catch((err) => console.error(err));
+      }
     }
-  }, [setCategories]);
+
+    return () => {
+      effectRan.current = true;
+    };
+  }, [categoryLength, config, product, sessionID, setCategories]);
 
   const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedCategoy(parseInt(event.target.value));
@@ -136,7 +148,7 @@ const Step2 = () => {
                           <ListItem key={`cat_attr_li_${attrIdx}`}>
                             <Box>
                               {attr.name} - {attr.description}
-                              {attr.valueRange.length > 0 ? (
+                              {attr.valueRange && attr.valueRange.length > 0 ? (
                                 <>
                                   <br />
                                   <Typography variant="body2">{attr.valueRange.join(', ')}</Typography>
