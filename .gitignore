@@ -5,6 +5,8 @@ venv
 bazel*
 .ijwb
 
+*.log
+
 .env
 
 test_data.json
