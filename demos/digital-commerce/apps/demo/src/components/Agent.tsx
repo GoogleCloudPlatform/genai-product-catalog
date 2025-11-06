@@ -44,7 +44,7 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
 
     const {conversation, setConversation, socket} = useContext(ConversationContext);
 
-    const [textValue, setTextValue] = useState<string>(null!);
+    const [textValue, setTextValue] = useState<string>('');
 
     const stopRecording = useRef(() => {
     });
@@ -89,7 +89,7 @@ const Agent = ({open, setOpen}: { open: boolean; setOpen: (value: boolean) => vo
                 prompt: JSON.stringify(product.base),
             } as ChatPromptRequest;
             socket.emit('agent:text', data);
-            setTextValue(null!);
+            setTextValue('');
         }
     }
 

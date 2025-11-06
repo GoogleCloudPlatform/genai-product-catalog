@@ -100,7 +100,7 @@ const Step3 = () => {
       AxiosInstance.post(`/text`, { sessionID: sessionID, prompt: prompt } as api.TextPromptRequest)
         .then((resp) => {
           if (resp.status === 200) {
-            const newBase = resp.data as BaseProduct;
+            const newBase = JSON.parse(resp.data.response) as BaseProduct;
             const newProduct = {} as Product;
             newProduct.base = newBase;
             newProduct.category = product.category;
@@ -149,7 +149,8 @@ const Step3 = () => {
       AxiosInstance.post(`/text`, { sessionID: sessionID, prompt: prompt } as api.TextPromptRequest)
         .then((resp) => {
           if (resp.status === 200) {
-            setProduct({ ...product, base: resp.data as BaseProduct });
+            const base = JSON.parse(resp.data.response) as BaseProduct;
+            setProduct({ ...product, base: base });
           }
         })
         .catch((err) => {

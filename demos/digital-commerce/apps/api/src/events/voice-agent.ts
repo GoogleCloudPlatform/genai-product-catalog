@@ -59,8 +59,8 @@ export default (socket: Socket) =>
                         contents: [{role: 'user', parts: [{text: audioPrompt}]}],
                     })
                     .then((result) => {
-                        const value = extractTextCandidates(result);
-                        socket.emit('agent:response', value);
+                        const response = extractTextCandidates(result);
+                        socket.emit('agent:response', { prompt, response });
                     })
                     .catch((e) => {
                         console.error(e);

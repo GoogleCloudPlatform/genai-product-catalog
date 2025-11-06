@@ -19,26 +19,24 @@ export const extractTextCandidates = (result: GenerateContentResponse): string =
     if (result) {
         let text = result.candidates[0].content.parts[0].text;
 
-        if (text.match("```json")) {
-            text = text.replace("```json", "")
-            text = text.replace("```", "")
+        if (text.includes("```json")) {
+            text = text.replace("```json", "").replace("```", "");
         }
 
-        if (text.startsWith("[") && text.endsWith("}")) {
-            text = text.substring(0, text.length - 1)
-        }
-
-        text = text.replace(/\\(?!["\\/bfnrt])/g, "\\\\");
+        // Clean up any non-printable characters and extra backslashes.
+        text = text.trim().replace(/\\(?!["\\/bfnrt])/g, "\\\\");
 
         try {
+            // Test if the cleaned text is valid JSON
             JSON.parse(text);
-            return text;
+            // If it is, return it directly as the response property
+            return JSON.stringify({ response: text });
         } catch (e) {
-            console.log(`invalid JSON response from Gemini ${e}`)
-            return "[{name='error'}]"
+            // If not, it's likely a plain string, so wrap it.
+            return JSON.stringify({ response: text });
         }
     } else {
-        return 'no content';
+        return JSON.stringify({ response: 'no content' });
     }
 };
 

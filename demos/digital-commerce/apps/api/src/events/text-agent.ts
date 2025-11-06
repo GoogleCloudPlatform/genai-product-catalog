@@ -1,11 +1,11 @@
 // Copyright 2024 Google, LLC
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     https://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,7 @@ export default (socket: Socket) => async ({sessionID, prompt, value}: ChatPrompt
     const {ai, groundedModelParams} = sessionManager.getSession(sessionID);
 
     const chatPrompt = prompt + `\nProduct Data JSON: ${prompt}\nExample JSON output: {prompt: '${value}', response: 'Some generated response'} where the response value is in markdown format.`;
-    
+
     ai.models
         .generateContent({
             model: session.config.modelName,
@@ -31,8 +31,10 @@ export default (socket: Socket) => async ({sessionID, prompt, value}: ChatPrompt
             config: groundedModelParams
         })
         .then((result) => {
-            const value = extractTextCandidates(result);
-            socket.emit('agent:response', value);
+            // console.log('Result from Model: ', result.candidates[0].content)
+            const response = extractTextCandidates(result);
+            // console.log('Result after extract text: ', response)
+            socket.emit('agent:response', { prompt, response });
         })
         .catch((e) => {
           console.error(e);
