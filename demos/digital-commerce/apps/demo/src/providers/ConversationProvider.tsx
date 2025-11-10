@@ -23,6 +23,26 @@ const getSocket = (): Socket => {
     return io(SOCKET_BASE);
 }
 
+const getDeepestResponse = (data: any): any => {
+    if (data && typeof data === 'object' && 'response' in data) {
+        let nextLevel = data.response;
+        if (typeof nextLevel === 'string') {
+            try {
+                const parsed = JSON.parse(nextLevel);
+                if (parsed && typeof parsed === 'object' && 'response' in parsed) {
+                    return getDeepestResponse(parsed);
+                }
+            } catch {
+                // ignore
+            }
+        } else if (typeof nextLevel === 'object' && nextLevel !== null) {
+            return getDeepestResponse(nextLevel);
+        }
+        return nextLevel;
+    }
+    return data;
+};
+
 const ConversationProvider = ({children}: { children: ReactElement | ReactElement[] }) => {
     const [socket] = useState<Socket>(getSocket);
     const [conversation, setConversation] = useState<Interlocutor[]>([]);
@@ -30,21 +50,16 @@ const ConversationProvider = ({children}: { children: ReactElement | ReactElemen
     useEffect(() => {
         // Register the socket event for the client and how to handle them.
         socket.once('connected', ({message}) => console.log(message));
-        socket.on('voice:transcript', ({message}) => setConversation([...conversation, {
+        socket.on('voice:transcript', ({message}) => setConversation(c => [...c, {
             role: 'user',
             value: message
         }]));
         socket.on('agent:response', (v) => {
-            const r = v as { prompt: string; response: string };
-            try {
-                const message = JSON.parse(r.response);
-                setConversation([...conversation, {role: 'system', value: message.response}]);
-            } catch (e) {
-                setConversation([...conversation, {role: 'system', value: r.response}]);
-            }
+            const response = getDeepestResponse(v);
+            setConversation(c => [...c, {role: 'system', value: response}]);
         });
         socket.on('voice:error', ({message}) => console.error(message));
-    })
+    }, [])
 
     return (
         <ConversationContext.Provider value={{conversation, setConversation, socket: socket}}>

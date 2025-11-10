@@ -146,8 +146,11 @@ const Step3 = () => {
       }
 
       prompt = prompt.replace('${product_json}', JSON.stringify(product.base));
+      console.log('Received product information: ', product.base)
+      console.log('Received product prompt: ', prompt)
       AxiosInstance.post(`/text`, { sessionID: sessionID, prompt: prompt } as api.TextPromptRequest)
         .then((resp) => {
+          console.log('Got response from product call', resp);
           if (resp.status === 200) {
             const base = JSON.parse(resp.data.response) as BaseProduct;
             setProduct({ ...product, base: base });

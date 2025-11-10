@@ -17,7 +17,24 @@ import {api} from 'model';
 
 export const extractTextCandidates = (result: GenerateContentResponse): string => {
     if (result) {
-        let text = result.candidates[0].content.parts[0].text;
+        let text = '';
+        let partCount = 0;
+        if (result.candidates) {
+            result.candidates.forEach(candidate => {
+                if (candidate.content && candidate.content.parts) {
+                    candidate.content.parts.forEach(part => {
+                        if (part.text) {
+                            text += part.text;
+                            partCount++;
+                        }
+                    });
+                }
+            });
+        }
+
+        if (partCount > 1) {
+            console.log(`Found ${partCount} parts in response candidates.`);
+        }
 
         if (text.includes("```json")) {
             text = text.replace("```json", "").replace("```", "");

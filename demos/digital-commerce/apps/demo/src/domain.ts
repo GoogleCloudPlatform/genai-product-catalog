@@ -80,7 +80,7 @@ export const defaultConfig = (): Config => {
     Execute the following instructions:
     - Suggest the top 2 categories and their top 25 attributes from the image.
     - The category hierarchy must be 4 levels deep, separated by ' > ' character.
-        
+
     Example JSON Output: [\${category_model}]`.trim();
 
     conf.promptExtractProductDetail = `
@@ -88,10 +88,10 @@ export const defaultConfig = (): Config => {
     - Extract the product name as the attribute 'name'.
     - Write an enriched product description in markdown format for a retailers online catalog as the attribute 'description'.
     - Write the HTML SEO description and keywords for the product as 'seoHtmlHeader'
-    - Extract the product specific values for the attributes from the following attributes: \${category_attributes} as a json array of attributeValues like: \${product_attribute_value_model}
+    - Extract the product specific values for the attributes from the following attributes: \${category_attributes}\n\n write the attributes as a json array of attributeValues like: \${product_attribute_value_model}
     - If the product is edible, include nutritional as additional attributeValues.
 
-    - Example JSON Output: \${product_json}`.trim();
+    - Example JSON Output Structure: \${product_json}`.trim();
 
     conf.promptTranslateProductDetail = `
     Execute the following instructions:

@@ -31,9 +31,7 @@ export default (socket: Socket) => async ({sessionID, prompt, value}: ChatPrompt
             config: groundedModelParams
         })
         .then((result) => {
-            // console.log('Result from Model: ', result.candidates[0].content)
             const response = extractTextCandidates(result);
-            // console.log('Result after extract text: ', response)
             socket.emit('agent:response', { prompt, response });
         })
         .catch((e) => {
