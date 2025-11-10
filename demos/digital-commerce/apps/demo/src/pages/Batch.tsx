@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { BatchContext, SessionIDContext } from '../contexts';
 
 import { OverridableStringUnion } from "@mui/types";
@@ -108,7 +108,7 @@ const BatchInputGrid = ({
       rows={rows}
       columns={columns}
       processRowUpdate={processRowUpdate}
-      
+
     />
   );
 };
@@ -120,35 +120,49 @@ const Batch = () => {
   const [rows, setRows] = useState<BatchProductGridItem[]>(data as BatchProductGridItem[]);
   const { sessionID } = useContext(SessionIDContext);
   const [activeStep, setActiveStep] = useState(0);
-  
+
   const [alertSeverity, setAlertSeverity] = useState<OverridableStringUnion<AlertColor, AlertPropsColorOverrides> | undefined>(undefined);
   const [snackBarMessage, setSnackBarMessage] = useState<string>('');
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
 
-  socket.on('batch:error', ({message}) => {
-    setAlertSeverity('error');
-    setSnackBarMessage(message);
-    setShowSnackBar(true)
-  });
+  useEffect(() => {
+    const onError = ({message}: {message: string}) => {
+      setAlertSeverity('error');
+      setSnackBarMessage(message);
+      setShowSnackBar(true);
+    };
 
-  socket.on('batch:warn', ({message}) => {
-    setAlertSeverity('warning');
-    setSnackBarMessage(message);
-    setShowSnackBar(true)
-  });
+    const onWarn = ({message}: {message: string}) => {
+      setAlertSeverity('warning');
+      setSnackBarMessage(message);
+      setShowSnackBar(true);
+    };
 
-  socket.on('batch:info', ({message}) => {
-    setAlertSeverity('info');
-    setSnackBarMessage(message);
-    setShowSnackBar(true)
-  });
+    const onInfo = ({message}: {message: string}) => {
+      setAlertSeverity('info');
+      setSnackBarMessage(message);
+      setShowSnackBar(true);
+    };
 
-  socket.on('batch:complete', ({message}) => {
-    setAlertSeverity('success');
-    setSnackBarMessage(message);
-    setShowSnackBar(true)
-  });
-  
+    const onComplete = ({message}: {message: string}) => {
+      setAlertSeverity('success');
+      setSnackBarMessage(message);
+      setShowSnackBar(true);
+    };
+
+    socket.on('batch:error', onError);
+    socket.on('batch:warn', onWarn);
+    socket.on('batch:info', onInfo);
+    socket.on('batch:complete', onComplete);
+
+    return () => {
+      socket.off('batch:error', onError);
+      socket.off('batch:warn', onWarn);
+      socket.off('batch:info', onInfo);
+      socket.off('batch:complete', onComplete);
+    };
+  }, [socket]);
+
 
   const submit_batch = () => {
     socket.emit('batch:request', { sessionID: sessionID, values: rows } as BatchPromptRequest);

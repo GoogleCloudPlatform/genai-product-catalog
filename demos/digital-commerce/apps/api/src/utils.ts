@@ -15,7 +15,7 @@ import {GenerateContentResponse} from '@google/genai'
 import {Response} from 'express';
 import {api} from 'model';
 
-export const extractTextCandidates = (result: GenerateContentResponse): string => {
+export const extractTextCandidates = (result: GenerateContentResponse, raw: boolean = false): string => {
     if (result) {
         let text = '';
         let partCount = 0;
@@ -43,6 +43,10 @@ export const extractTextCandidates = (result: GenerateContentResponse): string =
         // Clean up any non-printable characters and extra backslashes.
         text = text.trim().replace(/\\(?!["\\/bfnrt])/g, "\\\\");
 
+        if (raw) {
+            return text;
+        }
+
         try {
             // Test if the cleaned text is valid JSON
             JSON.parse(text);
@@ -53,7 +57,7 @@ export const extractTextCandidates = (result: GenerateContentResponse): string =
             return JSON.stringify({ response: text });
         }
     } else {
-        return JSON.stringify({ response: 'no content' });
+        return raw ? '' : JSON.stringify({ response: 'no content' });
     }
 };
 
