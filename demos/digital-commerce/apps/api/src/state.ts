@@ -21,7 +21,7 @@ config()
 
 const ai = new GoogleGenAI({
     vertexai: true,
-    project: 'ai-poc-tests',
+    project: process.env.GCP_PROJECT_ID,
     location: 'us-central1',
 });
 
