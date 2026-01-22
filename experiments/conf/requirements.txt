@@ -11,8 +11,6 @@ anyio==4.3.0
     #   starlette
 apache-beam[gcp]==2.51.0
     # via -r requirements.in
-appnope==0.1.4
-    # via ipykernel
 argon2-cffi==23.1.0
     # via jupyter-server
 argon2-cffi-bindings==21.2.0
@@ -436,7 +434,7 @@ overrides==7.7.0
     # via
     #   google-cloud-pubsublite
     #   jupyter-server
-packaging==23.2
+packaging==26.0
     # via
     #   apache-beam
     #   black
@@ -450,6 +448,7 @@ packaging==23.2
     #   nbconvert
     #   spacy
     #   thinc
+    #   wheel
 pandas==2.2.1
     # via -r requirements.in
 pandocfilters==1.5.1
@@ -760,7 +759,7 @@ webencodings==0.5.1
     #   tinycss2
 websocket-client==1.7.0
     # via jupyter-server
-wheel==0.42.0
+wheel==0.46.2
     # via pip-tools
 wrapt==1.16.0
     # via deprecated
@@ -772,5 +771,11 @@ zstandard==0.22.0
     # via apache-beam
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
+pip==25.3
+    # via pip-tools
 setuptools==69.1.1
+    # via
+    #   pip-tools
+    #   spacy
+    #   spacy-lookups-data
+    #   thinc
