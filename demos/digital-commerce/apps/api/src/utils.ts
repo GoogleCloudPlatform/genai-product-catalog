@@ -15,30 +15,49 @@ import {GenerateContentResponse} from '@google/genai'
 import {Response} from 'express';
 import {api} from 'model';
 
-export const extractTextCandidates = (result: GenerateContentResponse): string => {
+export const extractTextCandidates = (result: GenerateContentResponse, raw: boolean = false): string => {
     if (result) {
-        let text = result.candidates[0].content.parts[0].text;
-
-        if (text.match("```json")) {
-            text = text.replace("```json", "")
-            text = text.replace("```", "")
+        let text = '';
+        let partCount = 0;
+        if (result.candidates) {
+            result.candidates.forEach(candidate => {
+                if (candidate.content && candidate.content.parts) {
+                    candidate.content.parts.forEach(part => {
+                        if (part.text) {
+                            text += part.text;
+                            partCount++;
+                        }
+                    });
+                }
+            });
         }
 
-        if (text.startsWith("[") && text.endsWith("}")) {
-            text = text.substring(0, text.length - 1)
+        if (partCount > 1) {
+            console.log(`Found ${partCount} parts in response candidates.`);
         }
 
-        text = text.replace(/\\(?!["\\/bfnrt])/g, "\\\\");
+        if (text.includes("```json")) {
+            text = text.replace("```json", "").replace("```", "");
+        }
+
+        // Clean up any non-printable characters and extra backslashes.
+        text = text.trim().replace(/\\(?!["\\/bfnrt])/g, "\\\\");
+
+        if (raw) {
+            return text;
+        }
 
         try {
+            // Test if the cleaned text is valid JSON
             JSON.parse(text);
-            return text;
+            // If it is, return it directly as the response property
+            return JSON.stringify({ response: text });
         } catch (e) {
-            console.log(`invalid JSON response from Gemini ${e}`)
-            return "[{name='error'}]"
+            // If not, it's likely a plain string, so wrap it.
+            return JSON.stringify({ response: text });
         }
     } else {
-        return 'no content';
+        return raw ? '' : JSON.stringify({ response: 'no content' });
     }
 };
 

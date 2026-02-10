@@ -111,8 +111,9 @@ const generate_product = ({
 }) => {
   session.ai.models.generateContent({ model: session.config.modelName, contents: prompt })
     .then((result) => {
+      let resultText = '';
       try {
-        const resultText = extractTextCandidates(result);
+        resultText = extractTextCandidates(result, true);
         const obj = JSON.parse(resultText) as SimpleProduct;
         const product = {
           base: {
@@ -127,6 +128,8 @@ const generate_product = ({
         generate_image(product, socket);
         incrementor();
       } catch (e) {
+        console.error(`[Batch] Error processing ${value.name}:`, e);
+        console.error(`[Batch] Failed text was:`, resultText);
         if (count < 3) {
           socket.emit('batch:warn', { message: `Retrying process for item: ${value.name}` });
           generate_product({
@@ -143,7 +146,7 @@ const generate_product = ({
       }
     })
     .catch((e) => {
-      console.error(e);
+      console.error(`[Batch] Generation failed for ${value.name}:`, e);
       socket.emit('batch:error', { message: `Failed to generate content for: ${value.name}` });
     });
 };

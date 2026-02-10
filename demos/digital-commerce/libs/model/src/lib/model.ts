@@ -40,8 +40,8 @@ export interface Image {
 export interface BatchProduct {
   id?: number,
   isNew?: boolean,
-  gtin?: string, 
-  name: string, 
+  gtin?: string,
+  name: string,
   short_description: string,
 }
 
@@ -252,4 +252,3 @@ export class SafetySettings {
 
   }
 
-  

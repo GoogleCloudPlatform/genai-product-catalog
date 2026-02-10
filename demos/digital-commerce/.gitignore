@@ -5,6 +5,8 @@
 .env.dev
 .env.prod
 .local*
+**/.env
+!**/.env.example
 
 # compiled output
 dist

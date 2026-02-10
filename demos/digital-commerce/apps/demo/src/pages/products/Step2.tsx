@@ -79,7 +79,8 @@ const Step2 = () => {
         } as api.ImagePromptRequest)
           .then((resp) => {
             if (resp.status === 200) {
-              setCategories([...(resp.data as Category[])]);
+              const categories = JSON.parse(resp.data.response) as Category[];
+              setCategories([...categories]);
               setBackdrop(false);
             }
           })

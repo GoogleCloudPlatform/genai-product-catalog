@@ -38,7 +38,7 @@ router.post('/', async (req: Request, resp: Response) => {
                     contents: [{role: 'user', parts: [{text: videoRequest.prompt}, {fileData: fileData}]}],
                 })
                 .then((result) => {
-                    const videoResultText = extractTextCandidates(result) as string;
+                    const videoResultText = extractTextCandidates(result, true) as string;
 
                     ai.models.generateContent({
                         model: config.modelName,
@@ -46,9 +46,9 @@ router.post('/', async (req: Request, resp: Response) => {
                             role: 'user',
                             parts: [{text: videoRequest.categoryPrompt}, {text: `Product Information: ${videoResultText}`}]
                         }],
-                        config: groundedModelParams 
+                        config: groundedModelParams
                     }).then(categoryResult => {
-                        const categoryResponeText = extractTextCandidates(categoryResult);
+                        const categoryResponeText = extractTextCandidates(categoryResult, true);
 
                         try {
                             const category = JSON.parse(categoryResponeText) as Category[];
@@ -60,7 +60,13 @@ router.post('/', async (req: Request, resp: Response) => {
 
                             const productDetailPrompt = videoRequest.productDetailPrompt
                                 .replace('${category_attributes}', JSON.stringify(category[0].attributes))
-                                .replace('${product_attribute_value_model}', JSON.stringify(productCategoryAttributes));
+                                .replace('${category_attributes}', JSON.stringify(category[0].attributes))
+                                .replace('${category_attributes}', JSON.stringify(category[0].attributes))
+                                .replace('${category_attributes}', JSON.stringify(category[0].attributes))
+                                .replace('${product_attribute_value_model}', JSON.stringify(productCategoryAttributes)) +
+                                `\n\nProduct Information:\n${videoResultText}`; +
+                                `\n\nProduct Information:\n${videoResultText}`; +
+                                `\n\nProduct Information:\n${videoResultText}`;
 
                             ai.models.generateContent({
                                 model: config.modelName,
@@ -68,7 +74,8 @@ router.post('/', async (req: Request, resp: Response) => {
                                 config: groundedModelParams
                             }).then((productResult) => {
                                 // Send the final product
-                                resp.status(200).send(extractTextCandidates(productResult))
+                                const productText = extractTextCandidates(productResult, true);
+                                resp.status(200).send(JSON.parse(productText));
                             }).catch(productErr => {
                                 console.error(productErr);
                                 resp.status(400).send({error: 'Failed to generate product details'} as api.ErrorResponse)

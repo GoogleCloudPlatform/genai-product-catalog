@@ -20,7 +20,7 @@ console.log(API_BASE)
 
 const AxiosInstance = axios.create({
   baseURL: API_BASE,
-  timeout: 60000,
+  timeout: 120000,
 });
 AxiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
 

@@ -21,12 +21,12 @@ config()
 
 const ai = new GoogleGenAI({
     vertexai: true,
-    project: 'retail-shared-demos',
+    project: process.env.GCP_PROJECT_ID,
     location: 'us-central1',
 });
 
 
-export class GenerativeSession { 
+export class GenerativeSession {
     public createdAt: number;
     public config: GenerativeConfig;
     public ai: GoogleGenAI;
@@ -47,6 +47,7 @@ export class GenerativeSession {
             candidateCount: 1,
             topK: config.topK,
             topP: config.topP,
+            responseMimeType: "application/json",
         },
         this.groundedModelParams =  {
             maxOutputTokens: config.maxTokenCount,

@@ -1,11 +1,11 @@
 // Copyright 2024 Google, LLC
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     https://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,10 +29,20 @@ const BatchProvider = ({children}: { children: ReactElement | ReactElement[] }) 
     const {socket} = useContext(ConversationContext);
     const [products, setProducts] = useState<Product[]>(initialState)
 
-    socket.once('connected', ({message}) => console.log(message));
-    socket.on('batch:response', ({message}) => {
-        setProducts([...products, message])
-    });
+    useEffect(() => {
+        const onConnect = ({message}: {message: string}) => console.log(message);
+        const onBatchResponse = ({message}: {message: Product}) => {
+            setProducts((prev) => [...prev, message]);
+        };
+
+        socket.once('connected', onConnect);
+        socket.on('batch:response', onBatchResponse);
+
+        return () => {
+            socket.off('connected', onConnect);
+            socket.off('batch:response', onBatchResponse);
+        };
+    }, [socket]);
 
     return(
         <BatchContext.Provider value={{socket, products, setProducts}}>
