@@ -70,7 +70,7 @@
     "@emotion/styled": "^11.14.1",
     "@google-cloud/firestore": "^7.11.3",
     "@google-cloud/speech": "^7.2.0",
-    "@google-cloud/storage": "^7.16.0",
+    "@google-cloud/storage": "^7.19.0",
     "@google/genai": "^1.28.0",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
