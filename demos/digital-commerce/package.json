@@ -18,7 +18,7 @@
     "@nx/react": "^21.3.11",
     "@nx/vite": "22.0.2",
     "@nx/web": "22.0.2",
-    "@nx/webpack": "22.0.2",
+    "@nx/webpack": "22.6.3",
     "@playwright/test": "^1.54.1",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
     "@svgr/webpack": "^8.1.0",
