@@ -11,8 +11,6 @@ anyio==4.3.0
     #   starlette
 apache-beam[gcp]==2.51.0
     # via -r requirements.in
-appnope==0.1.4
-    # via ipykernel
 argon2-cffi==23.1.0
     # via jupyter-server
 argon2-cffi-bindings==21.2.0
@@ -33,7 +31,7 @@ beautifulsoup4==4.12.3
     # via nbconvert
 black==23.12.1
     # via docspec-python
-bleach==6.1.0
+bleach[css]==6.1.0
     # via nbconvert
 blis==0.7.11
     # via thinc
@@ -392,7 +390,7 @@ mypy-extensions==1.0.0
     # via black
 nbclient==0.9.0
     # via nbconvert
-nbconvert==7.16.1
+nbconvert==7.17.1
     # via jupyter-server
 nbformat==5.9.2
     # via
@@ -681,7 +679,7 @@ terminado==0.18.0
 thinc==8.1.12
     # via spacy
 tinycss2==1.2.1
-    # via nbconvert
+    # via bleach
 tomli==2.0.1
     # via
     #   pydoc-markdown
@@ -772,5 +770,11 @@ zstandard==0.22.0
     # via apache-beam
 
 # The following packages are considered to be unsafe in a requirements file:
-# pip
+pip==26.0.1
+    # via pip-tools
 setuptools==69.1.1
+    # via
+    #   pip-tools
+    #   spacy
+    #   spacy-lookups-data
+    #   thinc
