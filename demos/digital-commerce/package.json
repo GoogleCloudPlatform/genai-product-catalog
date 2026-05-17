@@ -78,7 +78,7 @@
     "@types/recordrtc": "^5.6.14",
     "@types/uuid": "^10.0.0",
     "@uiw/react-markdown-preview": "^5.1.4",
-    "axios": "^1.10.0",
+    "axios": "^1.16.1",
     "eslint": "^9.31.0",
     "express": "^4.21.2",
     "formik": "^2.4.6",
