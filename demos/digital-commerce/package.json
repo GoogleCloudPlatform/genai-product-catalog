@@ -80,7 +80,7 @@
     "@uiw/react-markdown-preview": "^5.1.4",
     "axios": "^1.10.0",
     "eslint": "^9.31.0",
-    "express": "^4.21.2",
+    "express": "^4.22.2",
     "formik": "^2.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
