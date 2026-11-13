@@ -21,7 +21,7 @@ class CategoryList(BaseModel):
 
 
 class Product(BaseModel):
-    id: str | None
+    id: Optional[str] = None
     description: str
     category: Optional[list[str]] = []
     image_uri: Optional[str] = None

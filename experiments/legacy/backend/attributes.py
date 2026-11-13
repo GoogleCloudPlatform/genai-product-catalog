@@ -17,6 +17,8 @@ import json
 import logging
 from typing import Union, Optional
 
+from google.cloud import bigquery
+
 import config
 import embeddings
 import nearest_neighbors
@@ -38,6 +40,8 @@ def join_attributes_desc(
             attributes: e.g. {'color':'green', 'pattern': striped}
             description: e.g. 'This is a description'
     """
+    if not ids:
+        return {}
     query = f"""
     SELECT
         {config.COLUMN_ID},
@@ -46,9 +50,14 @@ def join_attributes_desc(
     FROM
         `{config.PRODUCT_REFERENCE_TABLE}`
     WHERE
-        {config.COLUMN_ID} IN {str(ids).replace('[','(').replace(']',')')}
+        {config.COLUMN_ID} IN UNNEST(@ids)
     """
-    query_job = bq_client.query(query)
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ArrayQueryParameter("ids", "STRING", [str(item) for item in ids]),
+        ]
+    )
+    query_job = bq_client.query(query, job_config=job_config)
     rows = query_job.result()
     attributes = {}
     for row in rows:

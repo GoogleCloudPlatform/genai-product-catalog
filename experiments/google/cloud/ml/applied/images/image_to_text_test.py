@@ -272,14 +272,25 @@ class ImageToTextSecurityTest(unittest.TestCase):
         from fastapi.testclient import TestClient
         from routers.images import router as image_router
 
+        os.environ["SERVICE_API_KEYS"] = "tenant-test:valid-test-token"
+        auth_headers = {"X-API-Key": "valid-test-token"}
+
         test_app = FastAPI()
         test_app.include_router(image_router, prefix="/images")
         client = TestClient(test_app)
+
+        # Unauthenticated request -> HTTP 401
+        resp_unauth = client.post(
+            "/images/api/v1/genai/images/descriptions",
+            json={"image": "file:///etc/passwd"},
+        )
+        self.assertEqual(resp_unauth.status_code, 401)
 
         # PoC payload: file:///etc/passwd -> HTTP 400
         resp = client.post(
             "/images/api/v1/genai/images/descriptions",
             json={"image": "file:///etc/passwd"},
+            headers=auth_headers,
         )
         self.assertEqual(resp.status_code, 400)
 
@@ -287,6 +298,7 @@ class ImageToTextSecurityTest(unittest.TestCase):
         resp_meta = client.post(
             "/images/api/v1/genai/images/attributes",
             json={"image": "http://169.254.169.254/computeMetadata/v1/"},
+            headers=auth_headers,
         )
         self.assertEqual(resp_meta.status_code, 400)
 
@@ -294,6 +306,7 @@ class ImageToTextSecurityTest(unittest.TestCase):
         resp_gcs = client.post(
             "/images/api/v1/genai/images/descriptions",
             json={"image": "gs://untrusted-bucket/object.jpg"},
+            headers=auth_headers,
         )
         self.assertEqual(resp_gcs.status_code, 400)
 
@@ -306,6 +319,7 @@ class ImageToTextSecurityTest(unittest.TestCase):
             resp_err = client.post(
                 "/images/api/v1/genai/images/descriptions",
                 json={"image": "https://cdn.example.com/item.jpg"},
+                headers=auth_headers,
             )
             self.assertEqual(resp_err.status_code, 500)
             self.assertEqual(resp_err.json(), {"detail": "Internal server error"})

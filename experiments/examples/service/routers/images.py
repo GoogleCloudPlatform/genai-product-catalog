@@ -16,12 +16,13 @@ import json
 import logging
 
 from fastapi import APIRouter, HTTPException
+from auth import ROUTER_AUTH_DEPENDENCIES
 from models.common_model import ImageRequest, TextValue, ProductAttributes
 
 from google.cloud.ml.applied.images import image_to_text
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(dependencies=ROUTER_AUTH_DEPENDENCIES)
 
 
 @router.post("/api/v1/genai/images/attributes")

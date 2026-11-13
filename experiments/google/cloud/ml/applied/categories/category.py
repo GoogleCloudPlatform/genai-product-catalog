@@ -18,6 +18,7 @@ import re
 from collections import defaultdict
 from typing import Optional
 
+from google.cloud import bigquery
 from google.cloud.ml.applied.model import domain_model as m
 from google.cloud.ml.applied.embeddings import embeddings
 from google.cloud.ml.applied.knn import nearest_neighbors
@@ -36,6 +37,21 @@ table_product = Config.value(bq, "product_table")
 column_id = Config.value(bq, "product_id_column")
 column_categories = Config.value(bq, "product_category_column_list")
 
+_BQ_IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
+_BQ_TABLE_PATTERN = re.compile(r"^[A-Za-z0-9_.-]{1,256}$")
+
+
+def _validate_bq_column(column: str) -> str:
+    if not isinstance(column, str) or not _BQ_IDENTIFIER_PATTERN.fullmatch(column):
+        raise ValueError("Invalid BigQuery column identifier in configuration")
+    return column
+
+
+def _validate_bq_table(table: str) -> str:
+    if not isinstance(table, str) or not _BQ_TABLE_PATTERN.fullmatch(table):
+        raise ValueError("Invalid BigQuery table identifier in configuration")
+    return table
+
 
 def join_categories(ids: list[str]) -> dict[str : list[str]]:
     """Given list of product IDs, join category names.
@@ -47,16 +63,30 @@ def join_categories(ids: list[str]) -> dict[str : list[str]]:
         dict mapping product IDs to category name. The category name will be
         a list of strings e.g. ['level 1 category', 'level 2 category']
     """
+    if not ids:
+        return defaultdict(list)
+
+    validated_table = _validate_bq_table(table_product)
+    validated_id_col = _validate_bq_column(column_id)
+    validated_cat_cols = [
+        _validate_bq_column(col) for col in column_categories[:category_depth]
+    ]
+
     query = f"""
     SELECT
-        {column_id},
-        {','.join(column_categories[:category_depth])}
+        {validated_id_col},
+        {','.join(validated_cat_cols)}
     FROM
-        `{table_product}`
+        `{validated_table}`
     WHERE
-        {column_id} IN {str(ids).replace('[', '(').replace(']', ')')}
+        {validated_id_col} IN UNNEST(@ids)
     """
-    query_job = bq_client.query(query)
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ArrayQueryParameter("ids", "STRING", [str(item) for item in ids]),
+        ]
+    )
+    query_job = bq_client.query(query, job_config=job_config)
     rows = query_job.result()
     categories = defaultdict(list)
     for row in rows:

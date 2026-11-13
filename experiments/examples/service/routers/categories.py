@@ -15,12 +15,17 @@
 import logging
 
 from fastapi import APIRouter, HTTPException
+from auth import (
+    ROUTER_AUTH_DEPENDENCIES,
+    validate_optional_product_image_uri,
+    validate_product_categories,
+)
 from models.common_model import Product, CategoryList
 
 from google.cloud.ml.applied.categories import category
 
 logger = logging.getLogger(__name__)
-router = APIRouter()
+router = APIRouter(dependencies=ROUTER_AUTH_DEPENDENCIES)
 
 
 @router.post("/api/v1/genai/categories")
@@ -30,11 +35,13 @@ def suggest_categories(product: Product) -> CategoryList:
     and image (if present).
     """
     try:
+        validated_categories = validate_product_categories(product.category)
+        validated_image = validate_optional_product_image_uri(product.image_uri)
         response = category.retrieve_and_rank(
             desc=product.description,
-            image=product.image_uri,
+            image=validated_image,
             base64=False,
-            filters=product.category,
+            filters=validated_categories,
         )
     except HTTPException:
         raise

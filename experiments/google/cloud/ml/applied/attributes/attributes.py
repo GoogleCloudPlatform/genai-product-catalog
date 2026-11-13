@@ -16,8 +16,10 @@
 """Functions related to attribute generation."""
 import json
 import logging
+import re
 from typing import Optional
 
+from google.cloud import bigquery
 from google.cloud.ml.applied.model import domain_model as m
 from google.cloud.ml.applied.embeddings import embeddings
 from google.cloud.ml.applied.utils import utils
@@ -26,6 +28,21 @@ from google.cloud.ml.applied.config import Config
 
 bq_client = utils.get_bq_client()
 llm = utils.get_llm()
+
+_BQ_IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,127}$")
+_BQ_TABLE_PATTERN = re.compile(r"^[A-Za-z0-9_.-]{1,256}$")
+
+
+def _validate_bq_column(column: str) -> str:
+    if not isinstance(column, str) or not _BQ_IDENTIFIER_PATTERN.fullmatch(column):
+        raise ValueError("Invalid BigQuery column identifier in configuration")
+    return column
+
+
+def _validate_bq_table(table: str) -> str:
+    if not isinstance(table, str) or not _BQ_TABLE_PATTERN.fullmatch(table):
+        raise ValueError("Invalid BigQuery table identifier in configuration")
+    return table
 
 
 def join_attributes_desc(ids: list[str]) -> dict[str:dict]:
@@ -41,11 +58,18 @@ def join_attributes_desc(ids: list[str]) -> dict[str:dict]:
             attributes: e.g. {'color':'green', 'pattern': striped}
             description: e.g. 'This is a description'
     """
+    if not ids:
+        return {}
+
     bq = Config.SECTION_BIG_QUERY
-    table_name = Config.value(bq, "product_table")
-    column_id = Config.value(bq, "product_id_column")
-    column_attributes = Config.value(bq, "product_attributes_column")
-    column_description = Config.value(bq, "product_description_column")
+    table_name = _validate_bq_table(Config.value(bq, "product_table"))
+    column_id = _validate_bq_column(Config.value(bq, "product_id_column"))
+    column_attributes = _validate_bq_column(
+        Config.value(bq, "product_attributes_column")
+    )
+    column_description = _validate_bq_column(
+        Config.value(bq, "product_description_column")
+    )
 
     query = f"""
     SELECT
@@ -55,9 +79,14 @@ def join_attributes_desc(ids: list[str]) -> dict[str:dict]:
     FROM
         `{table_name}`
     WHERE
-        {column_id} IN {str(ids).replace('[', '(').replace(']', ')')}
+        {column_id} IN UNNEST(@ids)
     """
-    query_job = bq_client.query(query)
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ArrayQueryParameter("ids", "STRING", [str(item) for item in ids]),
+        ]
+    )
+    query_job = bq_client.query(query, job_config=job_config)
     rows = query_job.result()
     attributes = {}
     for row in rows:
