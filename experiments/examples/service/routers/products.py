@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 from models.common_model import Product, ProductAttributes, MarketingRequest, TextValue
 from models.checks_model import Status
@@ -20,6 +22,7 @@ from google.cloud.ml.applied.attributes import attributes
 from google.cloud.ml.applied.marketing import marketing
 from google.cloud.ml.applied.embeddings import search
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -44,9 +47,14 @@ def suggest_attributes(product: Product) -> ProductAttributes:
             base64=False,
             filters=product.category,
         )
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid product attribute request: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        print(f"ERROR: Product Retrieval & Generation Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Retrieval & Generation Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
     else:
         return response
 
@@ -59,9 +67,14 @@ def generate_marketing_copy(marketing_request: MarketingRequest) -> TextValue:
     """
     try:
         response = marketing.generate_marketing_copy(marketing_request)
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid product marketing request: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        print(f"ERROR: Product Marketing Copy Generation Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Marketing Copy Generation Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
     else:
         return response
 
@@ -76,9 +89,14 @@ def product_create_index(product: Product) -> Status:
             cat=product.category,
         )
 
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid product create index request: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        print(f"ERROR: Product Index Create Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Index Create Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
     else:
         return Status(status="OK")
 
@@ -97,9 +115,14 @@ def update_vector_search_index(product_id: str, product: Product) -> Status:
             cat=product.category,
         )
 
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid product index update request: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        print(f"ERROR: Product Index Update Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Index Update Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
     else:
         return Status(status="OK")
 
@@ -117,8 +140,13 @@ def remove_product_from_vector_search(product_id: str) -> None:
     """
     try:
         search.delete_dp(prod_id=product_id)
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid product index delete request: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        print(f"ERROR: Product Index Delete Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Index Delete Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
     else:
         return None

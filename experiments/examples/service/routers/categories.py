@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from fastapi import APIRouter, HTTPException
 from models.common_model import Product, CategoryList
 
 from google.cloud.ml.applied.categories import category
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -33,8 +36,13 @@ def suggest_categories(product: Product) -> CategoryList:
             base64=False,
             filters=product.category,
         )
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid category suggestion request: %s", e)
+        raise HTTPException(status_code=400, detail=str(e)) from e
     except Exception as e:
-        print(f"ERROR: Product Category Retrieve and Ranking Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Category Retrieve and Ranking Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
     return response
