@@ -18,9 +18,13 @@ import { BatchContext, ConversationContext } from "../contexts";
 import { Product } from "model";
 
 const SOCKET_BASE = import.meta.env.VITE_SOCKET_URL_BASE
+const SOCKET_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN
 
 const getSocket = (): Socket => {
-    return io(SOCKET_BASE);
+    return io(SOCKET_BASE, {
+        withCredentials: true,
+        ...(SOCKET_AUTH_TOKEN ? { auth: { token: SOCKET_AUTH_TOKEN } } : {}),
+    });
 }
 
 const initialState = () => []

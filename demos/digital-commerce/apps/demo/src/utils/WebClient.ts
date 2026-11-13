@@ -15,14 +15,17 @@
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL_BASE;
-
-console.log(API_BASE)
+const API_AUTH_TOKEN = import.meta.env.VITE_API_AUTH_TOKEN;
 
 const AxiosInstance = axios.create({
   baseURL: API_BASE,
   timeout: 60000,
+  withCredentials: true,
 });
 AxiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
+if (API_AUTH_TOKEN) {
+  AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${API_AUTH_TOKEN}`;
+}
 
 
 export default AxiosInstance;

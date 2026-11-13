@@ -26,9 +26,10 @@ const router = Router();
 router.post('/', async (req: Request, resp: Response) => {
     const videoRequest = req.body as api.VideoPromptRequest;
 
-    const { ai, config, groundedModelParams } = sessionManager.getSession(videoRequest.sessionID);
+    const session = sessionManager.getSession(videoRequest?.sessionID);
 
-    if (ai) {
+    if (session?.ai) {
+        const { ai, config, groundedModelParams } = session;
         const handleFile = async (filUri: string) => {
             const fileData = {mimeType: videoRequest.type, fileUri: filUri};
             // ai.files.upload({file: filUri})

@@ -48,6 +48,10 @@ const persistToFirestore = (id: string, config: Config): Promise<FirebaseFiresto
 
 router.post('/', (req: Request, resp: Response) => {
     const registrationRequest = req.body as api.ConfigurationRequest;
+    if (!registrationRequest?.config?.generativeConfig) {
+        resp.status(400).send({error: 'Invalid registration payload'} as api.ErrorResponse);
+        return;
+    }
 
     const sessionID = registrationRequest.sessionID;
     const value = registrationRequest.config;
@@ -60,14 +64,14 @@ router.post('/', (req: Request, resp: Response) => {
         const configCopy = structuredClone(value);
         configCopy.generativeConfig.genAIToken = 'x'.repeat(8);
         
-        persistToFirestore(activeId, configCopy)
+        Promise.resolve(persistToFirestore(activeId, configCopy))
             .then(() => {
                 sessionManager.addSession(activeId, value.generativeConfig);
                 resp.status(201).send({sessionID: activeId, message: 'created'} as api.ConfigurationResponse);
             })
             .catch((err) => {
                 console.error("Firestore Error:", err);
-                resp.status(400).send({error: err} as api.ErrorResponse)
+                resp.status(500).send({error: 'Failed to persist session configuration'} as api.ErrorResponse)
             });
     } else {
         console.log("active session")

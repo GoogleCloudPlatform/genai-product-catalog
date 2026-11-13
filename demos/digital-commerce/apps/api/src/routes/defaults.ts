@@ -28,4 +28,8 @@ router.get('/readiness_check', (req: Request, resp: Response) => {
     resp.status(200).send({status: 'ok'});
 });
 
+router.get('/healthz', (req: Request, resp: Response) => {
+    resp.status(200).send({status: 'ok'});
+});
+
 export default router;
