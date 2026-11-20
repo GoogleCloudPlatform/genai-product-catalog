@@ -200,8 +200,8 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
                 cat=["Footwear"],
             )
 
-            # Tenant B attempts to delete Tenant A's product (unprefixed & prefixed) -> 403
-            for target_id in ("legit-001", "tenantA__legit-001", "tenantA:legit-001"):
+            # Tenant B attempts to delete Tenant A's product via explicit prefix -> 403
+            for target_id in ("tenantA__legit-001", "tenantA:legit-001"):
                 with self.subTest(target_id=target_id):
                     r_cross_del = self.client.delete(
                         f"/products/api/v1/genai/products/{target_id}",
@@ -209,13 +209,17 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
                     )
                     self.assertEqual(r_cross_del.status_code, 403)
 
-            # Tenant B attempts to overwrite Tenant A's product -> 403
-            r_cross_put = self.client.put(
+            # Tenant B updating its own unprefixed legit-001 writes only to tenantB__legit-001
+            # and never touches or collides with tenantA__legit-001
+            r_own_b_put = self.client.put(
                 "/products/api/v1/genai/products/legit-001",
-                json={"id": "legit-001", "description": "Poisoned"},
+                json={"id": "legit-001", "description": "Tenant B item"},
                 headers=headers_b,
             )
-            self.assertEqual(r_cross_put.status_code, 403)
+            self.assertEqual(r_own_b_put.status_code, 200)
+            self.assertEqual(
+                mock_upsert.call_args.kwargs["prod_id"], "tenantB__legit-001"
+            )
             mock_delete.assert_not_called()
 
             # Spoofed X-Tenant-ID header rejected -> 403
@@ -225,7 +229,7 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
             )
             self.assertEqual(r_spoof.status_code, 403)
 
-            # Tenant A can update and delete its own product
+            # Tenant A can delete its own product
             r_own_del = self.client.delete(
                 "/products/api/v1/genai/products/legit-001",
                 headers=headers_a,
@@ -233,7 +237,7 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
             self.assertEqual(r_own_del.status_code, 200)
             mock_delete.assert_called_once_with(prod_id="tenantA__legit-001")
 
-    def test_oidc_token_authentication_supported(self):
+    def test_oidc_token_authentication_requires_email_allowlist_and_sanitizes_tenant(self):
         os.environ["ALLOWED_OIDC_AUDIENCE"] = "https://catalog-service.example.com"
         fake_claims = {
             "iss": "https://accounts.google.com",
@@ -248,19 +252,47 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
             ) as mock_verify,
             mock.patch.object(search, "upsert_dp") as mock_upsert,
         ):
+            # Fails closed (503) when ALLOWED_OIDC_EMAILS is unset
+            r_unconfigured = self.client.post(
+                "/products/api/v1/genai/products",
+                json={"id": "item-99", "description": "Jacket"},
+                headers={"Authorization": "Bearer valid.oidc.jwt"},
+            )
+            self.assertEqual(r_unconfigured.status_code, 503)
+            mock_upsert.assert_not_called()
+
+            # Rejects unlisted Google identities (403)
+            os.environ["ALLOWED_OIDC_EMAILS"] = "other@example.com"
+            r_forbidden = self.client.post(
+                "/products/api/v1/genai/products",
+                json={"id": "item-99", "description": "Jacket"},
+                headers={"Authorization": "Bearer valid.oidc.jwt"},
+            )
+            self.assertEqual(r_forbidden.status_code, 403)
+            mock_upsert.assert_not_called()
+
+            # Accepts allowlisted verified Google identity
+            os.environ["ALLOWED_OIDC_EMAILS"] = "svc@example.com"
             resp = self.client.post(
                 "/products/api/v1/genai/products",
                 json={"id": "item-99", "description": "Jacket"},
                 headers={"Authorization": "Bearer valid.oidc.jwt"},
             )
             self.assertEqual(resp.status_code, 200)
-            mock_verify.assert_called_once()
+            self.assertGreaterEqual(mock_verify.call_count, 1)
             mock_upsert.assert_called_once_with(
                 prod_id="oidc_1122334455__item-99",
                 desc="Jacket",
                 image=None,
                 cat=[],
             )
+
+        # Tenant IDs with trailing underscores are rejected / sanitized so namespaces cannot collide
+        self.assertIsNone(auth.TENANT_ID_PATTERN.fullmatch("tenantA_"))
+        self.assertIsNone(auth.TENANT_ID_PATTERN.fullmatch("_tenantA"))
+        sanitized = auth._sanitize_oidc_tenant("a" * 47 + "_tail")
+        self.assertFalse(sanitized.endswith("_"))
+        self.assertNotIn("__", sanitized)
 
     def test_rejects_sql_and_restrict_injection_payloads_and_local_image_paths(self):
         os.environ["API_AUTH_TOKEN"] = "single-service-secret"

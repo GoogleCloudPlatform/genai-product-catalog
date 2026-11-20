@@ -39,6 +39,13 @@ DEFAULT_MAX_WORKERS = 8
 
 _CGNAT_NETWORK = ipaddress.ip_network("100.64.0.0/10")
 _LINK_LOCAL_V4_NETWORK = ipaddress.ip_network("169.254.0.0/16")
+_DISALLOWED_V6_NETWORKS = (
+    ipaddress.ip_network("2002::/16"),       # 6to4 (encapsulates arbitrary IPv4)
+    ipaddress.ip_network("2001::/32"),       # Teredo tunneling
+    ipaddress.ip_network("64:ff9b::/96"),    # NAT64 well-known prefix
+    ipaddress.ip_network("64:ff9b:1::/48"),  # NAT64 local-use prefix
+    ipaddress.ip_network("::/96"),           # Deprecated IPv4-compatible IPv6
+)
 _FORBIDDEN_HOSTNAMES = frozenset(
     {
         "localhost",
@@ -131,6 +138,10 @@ def _check_single_ip(
         addr in _CGNAT_NETWORK or addr in _LINK_LOCAL_V4_NETWORK
     ):
         raise ValueError("Image URL resolves to a disallowed reserved IP address")
+    if isinstance(addr, ipaddress.IPv6Address) and any(
+        addr in net for net in _DISALLOWED_V6_NETWORKS
+    ):
+        raise ValueError("Image URL resolves to a disallowed transitional IPv6 address")
 
 
 def _validate_ip_address(
@@ -362,6 +373,7 @@ def _build_safe_https_opener(
     opener.add_handler(_PinnedHTTPSHandler(expected_host, validated_addrs))
     opener.add_handler(_NoRedirectHandler())
     opener.add_handler(urllib.request.HTTPDefaultErrorHandler())
+    opener.add_handler(urllib.request.HTTPErrorProcessor())
     return opener
 
 

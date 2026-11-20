@@ -12,8 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createHash, timingSafeEqual } from 'crypto';
-import type { ErrorRequestHandler, NextFunction, Request, RequestHandler, Response } from 'express';
+import {
+  createHash,
+  createPublicKey,
+  timingSafeEqual,
+  verify as cryptoVerify,
+} from 'crypto';
+import type {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  RequestHandler,
+  Response,
+} from 'express';
 
 export interface SocketHandshakeLike {
   address?: string;
@@ -32,13 +43,33 @@ export interface SocketServerLike<TSocket extends SocketLike = SocketLike> {
   use(fn: (socket: TSocket, next: (err?: Error) => void) => void): unknown;
 }
 
+export interface IapJwk {
+  kid?: string;
+  kty?: string;
+  crv?: string;
+  x?: string;
+  y?: string;
+  [key: string]: unknown;
+}
+
+export type IapJwksProvider = () => Promise<readonly IapJwk[]>;
+
 export const DEFAULT_JSON_BODY_LIMIT = '1mb';
-export const DEFAULT_SOCKET_MAX_BUFFER_BYTES = 1_048_576; // 1 MiB
-export const MAX_ALLOWED_SOCKET_BUFFER_BYTES = 10 * 1_048_576; // 10 MiB
+export const MAX_STANDARD_JSON_BODY_BYTES = 5 * 1_048_576; // 5 MiB cap
+export const DEFAULT_MEDIA_JSON_BODY_LIMIT = '15mb';
+export const MAX_MEDIA_JSON_BODY_BYTES = 25 * 1_048_576; // 25 MiB cap (post-auth media routes only)
+export const DEFAULT_SOCKET_MAX_BUFFER_BYTES = 8 * 1_048_576; // 8 MiB (supports authenticated voice payloads)
+export const MAX_ALLOWED_SOCKET_BUFFER_BYTES = 10 * 1_048_576; // 10 MiB cap
 export const DEFAULT_RATE_LIMIT_WINDOW_MS = 60_000;
 export const DEFAULT_HTTP_RATE_LIMIT_MAX = 60;
 export const DEFAULT_SOCKET_CONN_RATE_LIMIT_MAX = 20;
 export const DEFAULT_SOCKET_EVENT_RATE_LIMIT_MAX = 30;
+export const MIN_AUTH_TOKEN_LENGTH = 16;
+
+const IAP_ISSUER = 'https://cloud.google.com/iap';
+const IAP_JWKS_URL = 'https://www.gstatic.com/iap/verify/public_key-jwk';
+const IAP_JWKS_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const IAP_CLOCK_SKEW_SECONDS = 30;
 
 export const DEFAULT_LOCAL_DEV_ORIGINS: readonly string[] = Object.freeze([
   'http://localhost:4200',
@@ -47,17 +78,79 @@ export const DEFAULT_LOCAL_DEV_ORIGINS: readonly string[] = Object.freeze([
   'http://127.0.0.1:3000',
 ]);
 
+let cachedIapJwks: { keys: readonly IapJwk[]; fetchedAt: number } | null = null;
+
+async function defaultIapJwksProvider(): Promise<readonly IapJwk[]> {
+  const now = Date.now();
+  if (cachedIapJwks && now - cachedIapJwks.fetchedAt < IAP_JWKS_CACHE_TTL_MS) {
+    return cachedIapJwks.keys;
+  }
+  const resp = await fetch(IAP_JWKS_URL, {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    signal: AbortSignal.timeout(5_000),
+  });
+  if (!resp.ok) {
+    throw new Error(`Failed to fetch IAP JWKS (HTTP ${resp.status})`);
+  }
+  const data = (await resp.json()) as { keys?: IapJwk[] };
+  const keys = Array.isArray(data?.keys) ? data.keys : [];
+  cachedIapJwks = { keys, fetchedAt: now };
+  return keys;
+}
+
+function parseSizeToBytes(raw: string): number | null {
+  const match = /^(\d+(?:\.\d+)?)\s*(b|kb|mb)?$/i.exec(raw.trim());
+  if (!match) {
+    return null;
+  }
+  const num = Number(match[1]);
+  if (!Number.isFinite(num) || num <= 0) {
+    return null;
+  }
+  const unit = (match[2] || 'b').toLowerCase();
+  const multiplier =
+    unit === 'mb' ? 1_048_576 : unit === 'kb' ? 1_024 : 1;
+  return Math.floor(num * multiplier);
+}
+
+function resolveBoundedBodyLimit(
+  rawValue: string | undefined,
+  defaultLimit: string,
+  maxBytes: number
+): string {
+  const configured = rawValue?.trim();
+  if (!configured) {
+    return defaultLimit;
+  }
+  const bytes = parseSizeToBytes(configured);
+  if (bytes === null) {
+    return defaultLimit;
+  }
+  if (bytes > maxBytes) {
+    return `${Math.floor(maxBytes / 1_048_576)}mb`;
+  }
+  return configured;
+}
+
 export function resolveJsonBodyLimit(
   env: NodeJS.ProcessEnv = process.env
 ): string {
-  const configured = env.JSON_BODY_LIMIT?.trim();
-  if (!configured) {
-    return DEFAULT_JSON_BODY_LIMIT;
-  }
-  if (!/^\d+(?:\.\d+)?\s*(?:b|kb|mb)?$/i.test(configured)) {
-    return DEFAULT_JSON_BODY_LIMIT;
-  }
-  return configured;
+  return resolveBoundedBodyLimit(
+    env.JSON_BODY_LIMIT,
+    DEFAULT_JSON_BODY_LIMIT,
+    MAX_STANDARD_JSON_BODY_BYTES
+  );
+}
+
+export function resolveMediaJsonBodyLimit(
+  env: NodeJS.ProcessEnv = process.env
+): string {
+  return resolveBoundedBodyLimit(
+    env.MEDIA_JSON_BODY_LIMIT,
+    DEFAULT_MEDIA_JSON_BODY_LIMIT,
+    MAX_MEDIA_JSON_BODY_BYTES
+  );
 }
 
 export function resolveSocketMaxBufferBytes(
@@ -72,6 +165,64 @@ export function resolveSocketMaxBufferBytes(
     return DEFAULT_SOCKET_MAX_BUFFER_BYTES;
   }
   return Math.min(Math.floor(parsed), MAX_ALLOWED_SOCKET_BUFFER_BYTES);
+}
+
+export function resolveTrustProxy(
+  env: NodeJS.ProcessEnv = process.env
+): number | false {
+  const raw = env.TRUST_PROXY?.trim().toLowerCase();
+  if (raw !== undefined && raw !== '') {
+    if (raw === 'false' || raw === '0' || raw === 'off') {
+      return false;
+    }
+    if (raw === 'true') {
+      return 1;
+    }
+    const hops = Number.parseInt(raw, 10);
+    if (Number.isFinite(hops) && hops > 0) {
+      return Math.min(hops, 5);
+    }
+    return false;
+  }
+  if (env.GAE_ENV || env.K_SERVICE) {
+    return 1;
+  }
+  return false;
+}
+
+export function resolveBindHost(
+  env: NodeJS.ProcessEnv = process.env
+): string {
+  const explicit = env.HOST?.trim();
+  if (explicit) {
+    return explicit;
+  }
+  if (env.NODE_ENV === 'production' || env.GAE_ENV || env.K_SERVICE) {
+    return '0.0.0.0';
+  }
+  return '127.0.0.1';
+}
+
+export function resolveSocketClientIp(
+  socket: SocketLike,
+  env: NodeJS.ProcessEnv = process.env
+): string {
+  const trustProxy = resolveTrustProxy(env);
+  if (typeof trustProxy === 'number' && trustProxy > 0) {
+    const rawXff = socket.handshake?.headers?.['x-forwarded-for'];
+    const xff = Array.isArray(rawXff) ? rawXff.join(',') : rawXff;
+    if (xff) {
+      const ips = xff
+        .split(',')
+        .map((ip) => ip.trim())
+        .filter(Boolean);
+      if (ips.length > 0) {
+        const idx = Math.max(0, ips.length - trustProxy);
+        return ips[idx];
+      }
+    }
+  }
+  return socket.handshake?.address || socket.conn?.remoteAddress || 'unknown';
 }
 
 function normalizeOrigin(candidate: string): string | null {
@@ -189,11 +340,13 @@ export class SlidingWindowRateLimiter {
   private readonly maxRequests: number;
   private readonly maxTrackedKeys: number;
 
-  constructor(options: {
-    windowMs?: number;
-    maxRequests?: number;
-    maxTrackedKeys?: number;
-  } = {}) {
+  constructor(
+    options: {
+      windowMs?: number;
+      maxRequests?: number;
+      maxTrackedKeys?: number;
+    } = {}
+  ) {
     this.windowMs =
       options.windowMs && options.windowMs > 0
         ? options.windowMs
@@ -334,7 +487,7 @@ export function timingSafeTokenMatches(
 function getConfiguredTokens(env: NodeJS.ProcessEnv): string[] {
   const tokens: string[] = [];
   const primary = env.API_AUTH_TOKEN?.trim();
-  if (primary) {
+  if (primary && primary.length >= MIN_AUTH_TOKEN_LENGTH) {
     tokens.push(primary);
   }
   const extra = env.SERVICE_API_KEYS?.trim();
@@ -345,8 +498,11 @@ function getConfiguredTokens(env: NodeJS.ProcessEnv): string[] {
         continue;
       }
       const colonIdx = trimmed.indexOf(':');
-      const secret = colonIdx >= 0 ? trimmed.slice(colonIdx + 1).trim() : trimmed;
-      if (secret) {
+      if (colonIdx === 0) {
+        continue;
+      }
+      const secret = colonIdx > 0 ? trimmed.slice(colonIdx + 1).trim() : trimmed;
+      if (secret && secret.length >= MIN_AUTH_TOKEN_LENGTH) {
         tokens.push(secret);
       }
     }
@@ -368,68 +524,157 @@ function extractBearerToken(authorizationHeader: string | undefined): {
   return { token: match[1], malformed: false };
 }
 
-function hasValidIapIdentity(
+function decodeBase64UrlJson(segment: string): Record<string, unknown> | null {
+  try {
+    const raw = Buffer.from(segment, 'base64url').toString('utf8');
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function verifyIapJwtAssertion(
   headers: Record<string, string | string[] | undefined>,
-  env: NodeJS.ProcessEnv
-): boolean {
+  env: NodeJS.ProcessEnv,
+  jwksProvider: IapJwksProvider = defaultIapJwksProvider,
+  nowSeconds: number = Math.floor(Date.now() / 1000)
+): Promise<boolean> {
   if (env.TRUST_IAP_HEADERS !== 'true') {
     return false;
   }
-  const emailHeader = headers['x-goog-authenticated-user-email'];
-  const idHeader = headers['x-goog-authenticated-user-id'];
-  const email = Array.isArray(emailHeader) ? emailHeader[0] : emailHeader;
-  const userId = Array.isArray(idHeader) ? idHeader[0] : idHeader;
-  return Boolean(email && email.trim().length > 0 && userId && userId.trim().length > 0);
+  const expectedAudience = env.IAP_AUDIENCE?.trim();
+  if (!expectedAudience) {
+    return false;
+  }
+
+  const rawJwt = headers['x-goog-iap-jwt-assertion'];
+  const jwt = (Array.isArray(rawJwt) ? rawJwt[0] : rawJwt)?.trim();
+  if (!jwt) {
+    return false;
+  }
+
+  const parts = jwt.split('.');
+  if (parts.length !== 3) {
+    return false;
+  }
+  const [headerB64, payloadB64, sigB64] = parts;
+  const header = decodeBase64UrlJson(headerB64);
+  const payload = decodeBase64UrlJson(payloadB64);
+  if (!header || !payload) {
+    return false;
+  }
+
+  // Strictly enforce ES256 (rejects alg=none, HS256, RS256, etc.)
+  if (header.alg !== 'ES256' || typeof header.kid !== 'string' || !header.kid) {
+    return false;
+  }
+
+  if (payload.iss !== IAP_ISSUER) {
+    return false;
+  }
+  if (payload.aud !== expectedAudience) {
+    return false;
+  }
+  if (
+    typeof payload.exp !== 'number' ||
+    typeof payload.iat !== 'number' ||
+    nowSeconds > payload.exp + IAP_CLOCK_SKEW_SECONDS ||
+    payload.iat > nowSeconds + IAP_CLOCK_SKEW_SECONDS
+  ) {
+    return false;
+  }
+  if (
+    typeof payload.email !== 'string' ||
+    !payload.email.trim() ||
+    typeof payload.sub !== 'string' ||
+    !payload.sub.trim()
+  ) {
+    return false;
+  }
+
+  try {
+    const keys = await jwksProvider();
+    const matchingKey = keys.find(
+      (k) => k.kid === header.kid && k.kty === 'EC' && k.crv === 'P-256'
+    );
+    if (!matchingKey) {
+      return false;
+    }
+    const publicKey = createPublicKey({ key: matchingKey, format: 'jwk' });
+    const signingInput = Buffer.from(`${headerB64}.${payloadB64}`, 'ascii');
+    const signature = Buffer.from(sigB64, 'base64url');
+    return cryptoVerify(
+      'sha256',
+      signingInput,
+      { key: publicKey, dsaEncoding: 'ieee-p1363' },
+      signature
+    );
+  } catch {
+    return false;
+  }
 }
 
 export function createApiAuthMiddleware(
-  envGetter: () => NodeJS.ProcessEnv = () => process.env
+  envGetter: () => NodeJS.ProcessEnv = () => process.env,
+  iapJwksProvider: IapJwksProvider = defaultIapJwksProvider
 ): RequestHandler {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const env = envGetter();
-    const requestOrigin = req.headers.origin;
-    if (requestOrigin) {
-      const normalizedOrigin = normalizeOrigin(requestOrigin);
-      const allowedOrigins = getAllowedOrigins(env);
-      if (!normalizedOrigin || !allowedOrigins.has(normalizedOrigin)) {
-        res.status(403).json({ error: 'Origin not allowed' });
+    void (async () => {
+      const env = envGetter();
+      const requestOrigin = req.headers.origin;
+      if (requestOrigin) {
+        const normalizedOrigin = normalizeOrigin(requestOrigin);
+        const allowedOrigins = getAllowedOrigins(env);
+        if (!normalizedOrigin || !allowedOrigins.has(normalizedOrigin)) {
+          res.status(403).json({ error: 'Origin not allowed' });
+          return;
+        }
+      }
+
+      const configuredTokens = getConfiguredTokens(env);
+      const iapEnabled =
+        env.TRUST_IAP_HEADERS === 'true' && Boolean(env.IAP_AUDIENCE?.trim());
+
+      if (configuredTokens.length === 0 && !iapEnabled) {
+        res
+          .status(503)
+          .json({ error: 'Service authentication is not configured' });
         return;
       }
-    }
 
-    const configuredTokens = getConfiguredTokens(env);
-    const trustIap = env.TRUST_IAP_HEADERS === 'true';
+      if (
+        iapEnabled &&
+        (await verifyIapJwtAssertion(req.headers, env, iapJwksProvider))
+      ) {
+        next();
+        return;
+      }
 
-    if (configuredTokens.length === 0 && !trustIap) {
-      res.status(503).json({ error: 'Service authentication is not configured' });
-      return;
-    }
+      const { token: bearerToken, malformed } = extractBearerToken(
+        req.headers.authorization
+      );
+      const rawApiKey = req.headers['x-api-key'];
+      const apiKey =
+        (Array.isArray(rawApiKey) ? rawApiKey[0] : rawApiKey)?.trim() || null;
 
-    if (hasValidIapIdentity(req.headers, env)) {
+      if (malformed && !apiKey) {
+        res.setHeader('WWW-Authenticate', 'Bearer');
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      const candidate = bearerToken || apiKey;
+      if (!candidate || !timingSafeTokenMatches(candidate, configuredTokens)) {
+        res.setHeader('WWW-Authenticate', 'Bearer');
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
       next();
-      return;
-    }
-
-    const { token: bearerToken, malformed } = extractBearerToken(
-      req.headers.authorization
-    );
-    const rawApiKey = req.headers['x-api-key'];
-    const apiKey = (Array.isArray(rawApiKey) ? rawApiKey[0] : rawApiKey)?.trim() || null;
-
-    if (malformed && !apiKey) {
-      res.setHeader('WWW-Authenticate', 'Bearer');
+    })().catch(() => {
       res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-
-    const candidate = bearerToken || apiKey;
-    if (!candidate || !timingSafeTokenMatches(candidate, configuredTokens)) {
-      res.setHeader('WWW-Authenticate', 'Bearer');
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-
-    next();
+    });
   };
 }
 
@@ -439,12 +684,14 @@ export function attachSocketSecurity<TSocket extends SocketLike = SocketLike>(
     envGetter?: () => NodeJS.ProcessEnv;
     connectionLimiter?: SlidingWindowRateLimiter;
     eventLimiter?: SlidingWindowRateLimiter;
+    iapJwksProvider?: IapJwksProvider;
   } = {}
 ): {
   connectionLimiter: SlidingWindowRateLimiter;
   eventLimiter: SlidingWindowRateLimiter;
 } {
   const envGetter = options.envGetter ?? (() => process.env);
+  const iapJwksProvider = options.iapJwksProvider ?? defaultIapJwksProvider;
   const env = envGetter();
   const windowMs = parsePositiveInt(
     env.RATE_LIMIT_WINDOW_MS,
@@ -471,10 +718,7 @@ export function attachSocketSecurity<TSocket extends SocketLike = SocketLike>(
 
   // Rate limit incoming Socket.IO handshakes per client IP
   io.use((socket: TSocket, next: (err?: Error) => void) => {
-    const clientIp =
-      socket.handshake?.address ||
-      socket.conn?.remoteAddress ||
-      'unknown';
+    const clientIp = resolveSocketClientIp(socket, envGetter());
     const verdict = connectionLimiter.check(`conn:${clientIp}`);
     if (!verdict.allowed) {
       next(new Error('Too many connections'));
@@ -485,50 +729,59 @@ export function attachSocketSecurity<TSocket extends SocketLike = SocketLike>(
 
   // Authenticate incoming Socket.IO handshakes fail-closed
   io.use((socket: TSocket, next: (err?: Error) => void) => {
-    const currentEnv = envGetter();
-    const configuredTokens = getConfiguredTokens(currentEnv);
-    const trustIap = currentEnv.TRUST_IAP_HEADERS === 'true';
+    void (async () => {
+      const currentEnv = envGetter();
+      const configuredTokens = getConfiguredTokens(currentEnv);
+      const iapEnabled =
+        currentEnv.TRUST_IAP_HEADERS === 'true' &&
+        Boolean(currentEnv.IAP_AUDIENCE?.trim());
 
-    if (configuredTokens.length === 0 && !trustIap) {
-      next(new Error('Service authentication is not configured'));
-      return;
-    }
+      if (configuredTokens.length === 0 && !iapEnabled) {
+        next(new Error('Service authentication is not configured'));
+        return;
+      }
 
-    const headers = (socket.handshake?.headers ?? {}) as Record<
-      string,
-      string | string[] | undefined
-    >;
+      const headers = (socket.handshake?.headers ?? {}) as Record<
+        string,
+        string | string[] | undefined
+      >;
 
-    if (hasValidIapIdentity(headers, currentEnv)) {
+      if (
+        iapEnabled &&
+        (await verifyIapJwtAssertion(headers, currentEnv, iapJwksProvider))
+      ) {
+        next();
+        return;
+      }
+
+      const authPayloadToken =
+        typeof socket.handshake?.auth?.token === 'string'
+          ? socket.handshake.auth.token.trim()
+          : null;
+      const rawAuthHeader = headers.authorization;
+      const authHeaderStr = Array.isArray(rawAuthHeader)
+        ? rawAuthHeader[0]
+        : rawAuthHeader;
+      const { token: bearerToken, malformed } = extractBearerToken(authHeaderStr);
+      const rawApiKey = headers['x-api-key'];
+      const apiKey =
+        (Array.isArray(rawApiKey) ? rawApiKey[0] : rawApiKey)?.trim() || null;
+
+      if (malformed && !authPayloadToken && !apiKey) {
+        next(new Error('Unauthorized'));
+        return;
+      }
+
+      const candidate = authPayloadToken || bearerToken || apiKey;
+      if (!candidate || !timingSafeTokenMatches(candidate, configuredTokens)) {
+        next(new Error('Unauthorized'));
+        return;
+      }
+
       next();
-      return;
-    }
-
-    const authPayloadToken =
-      typeof socket.handshake?.auth?.token === 'string'
-        ? socket.handshake.auth.token.trim()
-        : null;
-    const rawAuthHeader = headers.authorization;
-    const authHeaderStr = Array.isArray(rawAuthHeader)
-      ? rawAuthHeader[0]
-      : rawAuthHeader;
-    const { token: bearerToken, malformed } = extractBearerToken(authHeaderStr);
-    const rawApiKey = headers['x-api-key'];
-    const apiKey =
-      (Array.isArray(rawApiKey) ? rawApiKey[0] : rawApiKey)?.trim() || null;
-
-    if (malformed && !authPayloadToken && !apiKey) {
+    })().catch(() => {
       next(new Error('Unauthorized'));
-      return;
-    }
-
-    const candidate = authPayloadToken || bearerToken || apiKey;
-    if (!candidate || !timingSafeTokenMatches(candidate, configuredTokens)) {
-      next(new Error('Unauthorized'));
-      return;
-    }
-
-    next();
+    });
   });
 
   return { connectionLimiter, eventLimiter };
@@ -536,10 +789,10 @@ export function attachSocketSecurity<TSocket extends SocketLike = SocketLike>(
 
 export function attachPerSocketEventRateLimit(
   socket: SocketLike,
-  eventLimiter: SlidingWindowRateLimiter
+  eventLimiter: SlidingWindowRateLimiter,
+  envGetter: () => NodeJS.ProcessEnv = () => process.env
 ): void {
-  const clientIp =
-    socket.handshake?.address || socket.conn?.remoteAddress || 'unknown';
+  const clientIp = resolveSocketClientIp(socket, envGetter());
   socket.use((_packet, next) => {
     const socketVerdict = eventLimiter.check(`sock:${socket.id}`);
     const ipVerdict = eventLimiter.check(`ip:${clientIp}`);

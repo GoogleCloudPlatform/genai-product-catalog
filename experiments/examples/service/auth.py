@@ -32,7 +32,11 @@ from google.cloud.ml.applied.images import image_to_text
 
 logger = logging.getLogger(__name__)
 
-TENANT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
+# Tenant IDs may not start/end with '_' or contain '__' so f"{tenant}__{product}"
+# is injective and cannot collide across tenants.
+TENANT_ID_PATTERN = re.compile(
+    r"^[A-Za-z0-9](?:[A-Za-z0-9-]|_(?!_)){0,62}[A-Za-z0-9]$|^[A-Za-z0-9]$"
+)
 PRODUCT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 CATEGORY_VALUE_PATTERN = re.compile(r"^[A-Za-z0-9 _&/.,+-]{1,128}$")
 TENANT_NAMESPACE_SEPARATOR = "__"
@@ -134,12 +138,19 @@ def _match_api_key(
 
 
 def _sanitize_oidc_tenant(raw_identifier: str) -> str:
-    cleaned = re.sub(r"[^A-Za-z0-9_-]", "_", raw_identifier).replace("__", "_")
-    cleaned = cleaned.strip("_")[:48]
+    cleaned = re.sub(r"[^A-Za-z0-9-]", "_", raw_identifier)
+    cleaned = re.sub(r"_+", "_", cleaned)[:48].strip("_")
     if not cleaned:
         digest = hashlib.sha256(raw_identifier.encode("utf-8")).hexdigest()[:16]
         return f"oidc_{digest}"
     return f"oidc_{cleaned}"
+
+
+def _load_allowed_oidc_emails() -> set[str]:
+    raw = os.environ.get("ALLOWED_OIDC_EMAILS", "").strip()
+    if not raw:
+        return set()
+    return {e.strip().lower() for e in raw.split(",") if e.strip()}
 
 
 def _verify_oidc_bearer_token(
@@ -147,6 +158,16 @@ def _verify_oidc_bearer_token(
 ) -> Optional[AuthenticatedPrincipal]:
     if not token or not allowed_audiences:
         return None
+
+    allowed_emails = _load_allowed_oidc_emails()
+    if not allowed_emails:
+        logger.error(
+            "ALLOWED_OIDC_AUDIENCE is configured without ALLOWED_OIDC_EMAILS; failing closed."
+        )
+        raise HTTPException(
+            status_code=503,
+            detail="OIDC identity allowlist is not configured",
+        )
 
     request_adapter = google_auth_requests.Request()
     claims: Optional[dict] = None
@@ -173,16 +194,11 @@ def _verify_oidc_bearer_token(
     if not subject:
         return None
 
-    allowed_emails_raw = os.environ.get("ALLOWED_OIDC_EMAILS", "").strip()
-    if allowed_emails_raw:
-        allowed_emails = {
-            e.strip().lower() for e in allowed_emails_raw.split(",") if e.strip()
-        }
-        email = str(claims.get("email") or "").strip().lower()
-        if not claims.get("email_verified") or email not in allowed_emails:
-            raise HTTPException(
-                status_code=403, detail="Authenticated identity is not authorized"
-            )
+    email = str(claims.get("email") or "").strip().lower()
+    if not claims.get("email_verified") or email not in allowed_emails:
+        raise HTTPException(
+            status_code=403, detail="Authenticated identity is not authorized"
+        )
 
     if os.environ.get("TRUST_OIDC_TENANT_CLAIM", "").strip().lower() == "true":
         claim_tenant = str(claims.get("tenant_id") or "").strip()
@@ -334,41 +350,40 @@ def scope_product_id_for_upsert(
     is_update: bool = False,
 ) -> str:
     clean_id = _parse_and_verify_product_id(raw_product_id, principal)
+    scoped_id = f"{principal.tenant_id}{TENANT_NAMESPACE_SEPARATOR}{clean_id}"
     with _ownership_lock:
-        owners = _product_owners.get(clean_id)
-        if is_update and owners and principal.tenant_id not in owners:
-            raise HTTPException(
-                status_code=403,
-                detail="Cross-tenant product update is forbidden",
-            )
-        if owners is None:
+        owner = _product_owners.get(scoped_id)
+        if owner is None:
             if len(_product_owners) >= _MAX_TRACKED_PRODUCTS:
                 _product_owners.popitem(last=False)
-            _product_owners[clean_id] = {principal.tenant_id}
+            _product_owners[scoped_id] = {principal.tenant_id}
         else:
-            owners.add(principal.tenant_id)
-            _product_owners.move_to_end(clean_id)
+            if principal.tenant_id not in owner:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Cross-tenant product update is forbidden",
+                )
+            _product_owners.move_to_end(scoped_id)
 
-    return f"{principal.tenant_id}{TENANT_NAMESPACE_SEPARATOR}{clean_id}"
+    return scoped_id
 
 
 def scope_product_id_for_delete(
     raw_product_id: Optional[str], principal: AuthenticatedPrincipal
 ) -> str:
     clean_id = _parse_and_verify_product_id(raw_product_id, principal)
+    scoped_id = f"{principal.tenant_id}{TENANT_NAMESPACE_SEPARATOR}{clean_id}"
     with _ownership_lock:
-        owners = _product_owners.get(clean_id)
-        if owners and principal.tenant_id not in owners:
-            raise HTTPException(
-                status_code=403,
-                detail="Cross-tenant product deletion is forbidden",
-            )
-        if owners and principal.tenant_id in owners:
-            owners.discard(principal.tenant_id)
-            if not owners:
-                _product_owners.pop(clean_id, None)
+        owner = _product_owners.get(scoped_id)
+        if owner is not None:
+            if principal.tenant_id not in owner:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Cross-tenant product deletion is forbidden",
+                )
+            _product_owners.pop(scoped_id, None)
 
-    return f"{principal.tenant_id}{TENANT_NAMESPACE_SEPARATOR}{clean_id}"
+    return scoped_id
 
 
 def validate_product_categories(categories: Optional[list[str]]) -> list[str]:

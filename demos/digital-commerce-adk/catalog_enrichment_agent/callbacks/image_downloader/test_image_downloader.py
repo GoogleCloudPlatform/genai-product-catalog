@@ -159,6 +159,8 @@ class ImageDownloaderSSRFTest(unittest.TestCase):
             "https://[::1]/secret.png",
             "https://[::ffff:127.0.0.1]/secret.png",
             "https://[::ffff:169.254.169.254]/latest/meta-data/",
+            "https://[2002:7f00:0001::1]/secret.png",
+            "https://[64:ff9b::169.254.169.254]/computeMetadata/v1/",
             "https://service.internal/img.jpg",
             "https://example.com/img.jpg\r\nX-Injected: 1",
         ]
@@ -200,17 +202,40 @@ class ImageDownloaderSSRFTest(unittest.TestCase):
                     "https://evil-cdn.example.com/prod_1.jpg"
                 )
 
-    def test_blocks_redirects(self):
-        handler = image_downloader._NoRedirectHandler()
+    def test_blocks_redirects_and_http_errors_via_opener_pipeline(self):
+        import email.message
+        import urllib.error
+        import urllib.request
+
+        opener = image_downloader._build_safe_https_opener(
+            "cdn.example.com",
+            [(socket.AF_INET, socket.SOCK_STREAM, 6, ("93.184.216.34", 443))],
+        )
+        processor_types = [type(h) for h in opener.handlers]
+        self.assertIn(urllib.request.HTTPErrorProcessor, processor_types)
+
+        # Verify HTTPErrorProcessor routes 302 into _NoRedirectHandler (ValueError)
+        # and 404/500 into HTTPDefaultErrorHandler (HTTPError)
+        req = urllib.request.Request("https://cdn.example.com/pic.png")
+        hdrs_302 = email.message.Message()
+        hdrs_302["Location"] = "http://169.254.169.254/computeMetadata/v1/"
+        resp_302 = mock.MagicMock()
+        resp_302.code = 302
+        resp_302.msg = "Found"
+        resp_302.headers = hdrs_302
+        resp_302.info.return_value = hdrs_302
         with self.assertRaises(ValueError):
-            handler.redirect_request(
-                None,
-                None,
-                302,
-                "Found",
-                {},
-                "http://169.254.169.254/computeMetadata/v1/",
-            )
+            opener.process_response["https"][0].http_response(req, resp_302)
+
+        hdrs_404 = email.message.Message()
+        hdrs_404["Content-Type"] = "image/png"
+        resp_404 = mock.MagicMock()
+        resp_404.code = 404
+        resp_404.msg = "Not Found"
+        resp_404.headers = hdrs_404
+        resp_404.info.return_value = hdrs_404
+        with self.assertRaises(urllib.error.HTTPError):
+            opener.process_response["https"][0].http_response(req, resp_404)
 
     def test_rejects_non_image_content_type_and_non_image_magic_bytes(self):
         public_addr = [

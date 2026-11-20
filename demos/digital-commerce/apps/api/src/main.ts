@@ -37,8 +37,11 @@ import {
   createApiRateLimitMiddleware,
   createExpressCorsOriginValidator,
   createSocketCorsOriginValidator,
+  resolveBindHost,
   resolveJsonBodyLimit,
+  resolveMediaJsonBodyLimit,
   resolveSocketMaxBufferBytes,
+  resolveTrustProxy,
   securityHeadersMiddleware,
 } from './security';
 
@@ -46,6 +49,7 @@ config();
 
 export const app: Express = express();
 app.disable('x-powered-by');
+app.set('trust proxy', resolveTrustProxy());
 
 app.use(securityHeadersMiddleware);
 
@@ -58,7 +62,6 @@ const corsOptions: cors.CorsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.use(json({ limit: resolveJsonBodyLimit() }));
 
 export const httpServer = createServer(app);
 
@@ -75,14 +78,18 @@ const { eventLimiter } = attachSocketSecurity(io);
 
 app.use('/', defaults);
 
+// Enforce rate limiting and authentication BEFORE parsing any JSON request bodies.
 app.use('/api', createApiRateLimitMiddleware(), createApiAuthMiddleware());
-app.use('/api', defaults);
 
-app.use('/api/registration', registrationHandler);
-app.use('/api/text', textHandlers);
-app.use('/api/images', imageHandlers);
-app.use('/api/video', videoHandlers);
-app.use('/api/batch', batchHandlers);
+const standardJsonParser = json({ limit: resolveJsonBodyLimit() });
+const mediaJsonParser = json({ limit: resolveMediaJsonBodyLimit() });
+
+app.use('/api', standardJsonParser, defaults);
+app.use('/api/registration', standardJsonParser, registrationHandler);
+app.use('/api/text', standardJsonParser, textHandlers);
+app.use('/api/batch', standardJsonParser, batchHandlers);
+app.use('/api/images', mediaJsonParser, imageHandlers);
+app.use('/api/video', mediaJsonParser, videoHandlers);
 
 app.use(centralErrorHandler);
 
@@ -94,7 +101,7 @@ io.on('connection', (socket: Socket) => {
 });
 
 const port = Number(process.env.PORT) || 3000;
-const host = process.env.HOST || '127.0.0.1';
+const host = resolveBindHost();
 if (require.main === module) {
   httpServer.listen(port, host, () => {
     console.log(`[server]: Server is running at http://${host}:${port}`);

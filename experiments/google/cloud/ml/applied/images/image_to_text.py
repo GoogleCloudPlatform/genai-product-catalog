@@ -37,6 +37,13 @@ DEFAULT_MAX_IMAGE_BYTES = 10 * 1024 * 1024  # 10 MiB
 
 _CGNAT_NETWORK = ipaddress.ip_network("100.64.0.0/10")
 _LINK_LOCAL_V4_NETWORK = ipaddress.ip_network("169.254.0.0/16")
+_DISALLOWED_V6_NETWORKS = (
+    ipaddress.ip_network("2002::/16"),       # 6to4 (encapsulates arbitrary IPv4)
+    ipaddress.ip_network("2001::/32"),       # Teredo tunneling
+    ipaddress.ip_network("64:ff9b::/96"),    # NAT64 well-known prefix
+    ipaddress.ip_network("64:ff9b:1::/48"),  # NAT64 local-use prefix
+    ipaddress.ip_network("::/96"),           # Deprecated IPv4-compatible IPv6
+)
 _FORBIDDEN_HOSTNAMES = frozenset(
     {
         "localhost",
@@ -91,6 +98,10 @@ def _check_single_ip(
         addr in _CGNAT_NETWORK or addr in _LINK_LOCAL_V4_NETWORK
     ):
         raise ValueError("Image URL resolves to a disallowed reserved IP address")
+    if isinstance(addr, ipaddress.IPv6Address) and any(
+        addr in net for net in _DISALLOWED_V6_NETWORKS
+    ):
+        raise ValueError("Image URL resolves to a disallowed transitional IPv6 address")
 
 
 def _validate_ip_address(
@@ -176,8 +187,8 @@ def validate_https_image_url(
         port = parsed.port if parsed.port is not None else 443
     except ValueError as exc:
         raise ValueError("Invalid port in image URL") from exc
-    if port < 1 or port > 65535:
-        raise ValueError("Invalid port in image URL")
+    if port != 443:
+        raise ValueError("Only standard HTTPS port 443 is allowed for image URLs")
 
     validated_addrs = _resolve_and_validate_host(parsed.hostname, port)
     return image_url, parsed.hostname, port, validated_addrs
@@ -277,6 +288,7 @@ def _build_safe_https_opener(
     opener.add_handler(_PinnedHTTPSHandler(expected_host, validated_addrs))
     opener.add_handler(_NoRedirectHandler())
     opener.add_handler(urllib.request.HTTPDefaultErrorHandler())
+    opener.add_handler(urllib.request.HTTPErrorProcessor())
     return opener
 
 
