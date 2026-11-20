@@ -391,5 +391,5 @@ def validate_optional_product_image_uri(image_uri: Optional[str]) -> Optional[st
         raise ValueError("Invalid image_uri value")
     if not image_uri.startswith("gs://"):
         raise ValueError("Product image_uri must be a valid gs:// URI")
-    image_to_text.validate_gcs_uri(image_uri, require_allowlist=False)
+    image_to_text.validate_gcs_uri(image_uri, require_allowlist=True)
     return image_uri

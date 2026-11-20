@@ -47,7 +47,9 @@ def suggest_categories(product: Product) -> CategoryList:
         raise
     except ValueError as e:
         logger.warning("Invalid category suggestion request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Product Category Retrieve and Ranking Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e

@@ -39,7 +39,9 @@ def generate_attributes(image_request: ImageRequest) -> ProductAttributes:
         raise HTTPException(status_code=500, detail="Internal server error") from e
     except ValueError as e:
         logger.warning("Invalid image attribute request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Image Attribute Generation Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e
@@ -58,7 +60,9 @@ def generate_description(image_request: ImageRequest) -> TextValue:
         raise
     except ValueError as e:
         logger.warning("Invalid image description request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Image Description Generation Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e

@@ -27,3 +27,11 @@ py_test(
     imports = ["."],
     deps = [":embeddings"] + PY_DEPS,
 )
+
+py_test(
+    name = "embeddings_security_test",
+    size = "small",
+    srcs = ["embeddings_security_test.py"],
+    imports = ["."],
+    deps = [":embeddings"] + PY_DEPS,
+)

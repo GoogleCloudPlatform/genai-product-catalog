@@ -62,7 +62,9 @@ def suggest_attributes(product: Product) -> ProductAttributes:
         raise
     except ValueError as e:
         logger.warning("Invalid product attribute request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Product Retrieval & Generation Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e
@@ -82,7 +84,9 @@ def generate_marketing_copy(marketing_request: MarketingRequest) -> TextValue:
         raise
     except ValueError as e:
         logger.warning("Invalid product marketing request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Product Marketing Copy Generation Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e
@@ -112,7 +116,9 @@ def product_create_index(
         raise
     except ValueError as e:
         logger.warning("Invalid product create index request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Product Index Create Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e
@@ -149,7 +155,9 @@ def update_vector_search_index(
         raise
     except ValueError as e:
         logger.warning("Invalid product index update request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Product Index Update Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e
@@ -178,7 +186,9 @@ def remove_product_from_vector_search(
         raise
     except ValueError as e:
         logger.warning("Invalid product index delete request: %s", e)
-        raise HTTPException(status_code=400, detail=str(e)) from e
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
         logger.error("Product Index Delete Error: %s", e)
         raise HTTPException(status_code=500, detail="Internal server error") from e

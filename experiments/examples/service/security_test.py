@@ -37,6 +37,7 @@ with (
     mock.patch("google.cloud.aiplatform.MatchingEngineIndexEndpoint", autospec=True),
 ):
     from fastapi.routing import APIRoute
+    from fastapi.security.base import SecurityBase
     from fastapi.testclient import TestClient
     import auth
     import main
@@ -57,6 +58,9 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
             "TRUST_OIDC_TENANT_CLAIM",
             "DEFAULT_TENANT_ID",
             "ALLOWED_CORS_ORIGINS",
+            "ALLOWED_IMAGE_GCS_BUCKETS",
+            "ALLOWED_GCS_BUCKETS",
+            "ALLOWED_IMAGE_GCS_PREFIXES",
         ):
             os.environ.pop(key, None)
         auth.reset_product_ownership_registry()
@@ -67,12 +71,17 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
         self._env_patcher.stop()
 
     def test_route_security_requirements_and_dependencies_are_enforced(self):
+        def _iter_api_routes(routes):
+            for route in routes:
+                if isinstance(route, APIRoute):
+                    yield route
+                elif hasattr(route, "effective_route_contexts"):
+                    yield from route.effective_route_contexts()
+
         protected_prefixes = ("/products", "/images", "/categories")
         openapi_paths = main.app.openapi().get("paths", {})
         checked = 0
-        for route in main.app.routes:
-            if not isinstance(route, APIRoute):
-                continue
+        for route in _iter_api_routes(main.app.routes):
             if route.path.startswith(protected_prefixes):
                 checked += 1
                 self.assertGreater(
@@ -85,10 +94,17 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
                     "security_requirements",
                     getattr(route.dependant, "_security_dependencies", []),
                 )
+                if not sec_reqs:
+                    sec_reqs = [
+                        d
+                        for d in getattr(route.dependant, "dependencies", ())
+                        if getattr(d, "security_scheme", None) is not None
+                        or isinstance(getattr(d, "call", None), SecurityBase)
+                    ]
                 self.assertGreater(
                     len(sec_reqs),
                     0,
-                    f"Expected OpenAPI security requirements on {route.path}",
+                    f"Expected security requirements on {route.path}",
                 )
                 for method in route.methods or ():
                     op = openapi_paths.get(route.path, {}).get(method.lower(), {})
@@ -157,6 +173,7 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
 
     def test_per_tenant_namespacing_and_cross_tenant_delete_protection(self):
         os.environ["SERVICE_API_KEYS"] = "tenantA:secret-token-a,tenantB:secret-token-b"
+        os.environ["ALLOWED_IMAGE_GCS_BUCKETS"] = "catalog-bucket"
         headers_a = {"Authorization": "Bearer secret-token-a"}
         headers_b = {"X-API-Key": "secret-token-b"}
 
@@ -368,6 +385,57 @@ class FastAPIServiceSecurityTest(unittest.TestCase):
             self.assertEqual(len(job_cfg.query_parameters), 1)
             self.assertEqual(job_cfg.query_parameters[0].name, "ids")
             self.assertEqual(list(job_cfg.query_parameters[0].values), malicious_ids)
+
+    def test_routers_reject_unallowlisted_gcs_buckets_and_never_leak_exceptions(self):
+        os.environ["API_AUTH_TOKEN"] = "single-service-secret"
+        headers = {"Authorization": "Bearer single-service-secret"}
+
+        # Cross-bucket / unconfigured GCS allowlist rejected with generic 400 detail
+        with mock.patch.object(category, "retrieve_and_rank") as mock_cat:
+            resp = self.client.post(
+                "/categories/api/v1/genai/categories",
+                json={
+                    "id": "prod-1",
+                    "description": "Shirt",
+                    "image_uri": "gs://attacker-bucket/secret.jpg",
+                },
+                headers=headers,
+            )
+            self.assertEqual(resp.status_code, 400)
+            self.assertEqual(resp.json(), {"detail": "Invalid request parameters"})
+            self.assertNotIn("attacker-bucket", resp.text)
+            mock_cat.assert_not_called()
+
+        # Downstream FileNotFoundError / RuntimeError / ValueError details are never echoed
+        secret_path = "/var/run/secrets/gcp/service-account-key.json"
+        internal_host = "http://10.128.0.5:8443/metadata"
+        with mock.patch.object(
+            category,
+            "retrieve_and_rank",
+            side_effect=FileNotFoundError(f"No such file: {secret_path}"),
+        ):
+            r_500 = self.client.post(
+                "/categories/api/v1/genai/categories",
+                json={"id": "prod-1", "description": "Shirt"},
+                headers=headers,
+            )
+            self.assertEqual(r_500.status_code, 500)
+            self.assertEqual(r_500.json(), {"detail": "Internal server error"})
+            self.assertNotIn(secret_path, r_500.text)
+
+        with mock.patch.object(
+            search,
+            "upsert_dp",
+            side_effect=ValueError(f"Internal backend failure at {internal_host}"),
+        ):
+            r_400 = self.client.post(
+                "/products/api/v1/genai/products",
+                json={"id": "prod-1", "description": "Shirt"},
+                headers=headers,
+            )
+            self.assertEqual(r_400.status_code, 400)
+            self.assertEqual(r_400.json(), {"detail": "Invalid request parameters"})
+            self.assertNotIn(internal_host, r_400.text)
 
 
 if __name__ == "__main__":

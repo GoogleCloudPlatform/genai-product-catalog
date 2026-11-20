@@ -14,16 +14,103 @@
 
 """Invoke Vertex Embedding API."""
 
-import base64
+import base64 as base64_lib
+import binascii
 from functools import cache
-import time
 import logging
+import os
+import re
+import time
 from typing import NamedTuple, Optional, Sequence
+import urllib.parse
 
 from google.cloud import aiplatform
 from google.protobuf import struct_pb2
 
 import config
+
+_GCS_BUCKET_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{1,220}[a-z0-9]$")
+_MAX_BASE64_IMAGE_CHARS = 20 * 1024 * 1024  # ~15 MiB decoded
+
+
+def validate_gcs_uri(
+    image_uri: str, *, require_allowlist: bool = True
+) -> tuple[str, str]:
+  """Validate a gs:// URI and enforce bucket/prefix allowlists."""
+  if not isinstance(image_uri, str) or not image_uri:
+    raise ValueError("GCS URI must be a non-empty string")
+  if any(ch in image_uri for ch in ("\r", "\n", "\x00", "\\", "?", "#")):
+    raise ValueError("GCS URI contains disallowed characters")
+  if not image_uri.startswith("gs://"):
+    raise ValueError("GCS URI must start with gs://")
+
+  remainder = image_uri[len("gs://") :]
+  if "/" not in remainder:
+    raise ValueError("GCS URI must have format gs://<bucket>/<object>")
+
+  bucket, object_path = remainder.split("/", 1)
+  if (
+      not _GCS_BUCKET_PATTERN.match(bucket)
+      or ".." in bucket
+      or bucket.startswith("goog")
+  ):
+    raise ValueError("Invalid GCS bucket name in URI")
+
+  if not object_path or object_path.startswith("/"):
+    raise ValueError("Invalid GCS object path in URI")
+
+  unquoted_path = urllib.parse.unquote(object_path)
+  if "\\" in unquoted_path or "\x00" in unquoted_path:
+    raise ValueError("Invalid characters in GCS object path")
+
+  for path_variant in (object_path, unquoted_path):
+    segments = path_variant.split("/")
+    if any(seg in ("", ".", "..") for seg in segments):
+      raise ValueError("Path traversal or empty segment is not allowed in GCS URI")
+
+  raw_buckets = os.environ.get("ALLOWED_IMAGE_GCS_BUCKETS", "").strip()
+  if not raw_buckets:
+    raw_buckets = os.environ.get("ALLOWED_GCS_BUCKETS", "").strip()
+  allowed_buckets = {b.strip() for b in raw_buckets.split(",") if b.strip()}
+
+  if require_allowlist or allowed_buckets:
+    if not allowed_buckets:
+      raise ValueError(
+          "GCS image access denied: ALLOWED_IMAGE_GCS_BUCKETS is not configured"
+      )
+    if bucket not in allowed_buckets:
+      raise ValueError("GCS bucket is not in the allowlist")
+
+  raw_prefixes = os.environ.get("ALLOWED_IMAGE_GCS_PREFIXES", "").strip()
+  if raw_prefixes:
+    allowed_prefixes = [
+        p.strip().lstrip("/") for p in raw_prefixes.split(",") if p.strip().lstrip("/")
+    ]
+    if allowed_prefixes:
+      matched = False
+      for prefix in allowed_prefixes:
+        normalized_prefix = prefix.rstrip("/") + "/"
+        if object_path.startswith(normalized_prefix) or object_path == prefix.rstrip("/"):
+          matched = True
+          break
+      if not matched:
+        raise ValueError("GCS object path is outside allowed prefixes")
+
+  return bucket, object_path
+
+
+def _validate_base64_image(encoded_image: str) -> str:
+  if not isinstance(encoded_image, str) or not encoded_image.strip():
+    raise ValueError("Base64 image payload must be a non-empty string")
+  if len(encoded_image) > _MAX_BASE64_IMAGE_CHARS:
+    raise ValueError("Base64 image payload exceeds maximum allowed size")
+  try:
+    decoded = base64_lib.b64decode(encoded_image, validate=True)
+  except (binascii.Error, ValueError) as exc:
+    raise ValueError("Invalid base64 image payload") from exc
+  if not decoded:
+    raise ValueError("Base64 image payload must not be empty")
+  return encoded_image
 
 class EmbeddingResponse(NamedTuple):
   text_embedding: Sequence[float]
@@ -72,14 +159,12 @@ class EmbeddingPredictionClient:
     if image:
       image_struct = instance.fields['image'].struct_value
       if base64:
-        image_struct.fields['bytesBase64Encoded'].string_value = image
-      elif image.lower().startswith('gs://'):
-        image_struct.fields['gcsUri'].string_value = image
+        image_struct.fields['bytesBase64Encoded'].string_value = (
+            _validate_base64_image(image)
+        )
       else:
-        with open(image, "rb") as f:
-          image_bytes = f.read()
-        encoded_content = base64.b64encode(image_bytes).decode("utf-8")
-        image_struct.fields['bytesBase64Encoded'].string_value = encoded_content
+        validate_gcs_uri(image, require_allowlist=True)
+        image_struct.fields['gcsUri'].string_value = image
 
     instances = [instance]
     endpoint = (f"projects/{self.project}/locations/{self.location}"
