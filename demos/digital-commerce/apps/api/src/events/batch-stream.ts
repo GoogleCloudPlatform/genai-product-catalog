@@ -151,6 +151,10 @@ const generate_product = ({
 export default (socket: Socket) =>
   async ({ sessionID, values }: BatchPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
+    if (!session?.ai || !Array.isArray(values)) {
+      socket.emit('batch:error', { message: 'Invalid session or batch request' });
+      return;
+    }
 
     const exampleOutput = {
       language: 'EN-US',

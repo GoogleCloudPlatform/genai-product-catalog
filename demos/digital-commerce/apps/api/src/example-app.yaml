@@ -23,6 +23,14 @@ env: flex
 
 # Add your storage bucket names, and firebase DB information here.
 env_variables:
+  HOST: "0.0.0.0"
+  TRUST_PROXY: "1"
+  ALLOWED_ORIGINS: "https://<YOUR_DEMO_ORIGIN>"
+  # Enable IAP JWT verification when deployed behind Cloud IAP (recommended for browser clients):
+  # TRUST_IAP_HEADERS: "true"
+  # IAP_AUDIENCE: "/projects/<PROJECT_NUMBER>/apps/<PROJECT_ID>"
+  # Or provide a high-entropy bearer/API key (>=16 chars) via Secret Manager for server-to-server callers:
+  # API_AUTH_TOKEN: "<SECRET_FROM_SECRET_MANAGER>"
   STORAGE_BUCKET: ""
   FIRESTORE_DB_ID: "default"
   FIRESTORE_COLLECTION: "shared-retail-demos-firestore"

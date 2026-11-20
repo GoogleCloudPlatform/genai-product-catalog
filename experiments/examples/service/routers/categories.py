@@ -12,12 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from fastapi import APIRouter, HTTPException
+from auth import (
+    ROUTER_AUTH_DEPENDENCIES,
+    validate_optional_product_image_uri,
+    validate_product_categories,
+)
 from models.common_model import Product, CategoryList
 
 from google.cloud.ml.applied.categories import category
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
+router = APIRouter(dependencies=ROUTER_AUTH_DEPENDENCIES)
 
 
 @router.post("/api/v1/genai/categories")
@@ -27,14 +35,23 @@ def suggest_categories(product: Product) -> CategoryList:
     and image (if present).
     """
     try:
+        validated_categories = validate_product_categories(product.category)
+        validated_image = validate_optional_product_image_uri(product.image_uri)
         response = category.retrieve_and_rank(
             desc=product.description,
-            image=product.image_uri,
+            image=validated_image,
             base64=False,
-            filters=product.category,
+            filters=validated_categories,
         )
+    except HTTPException:
+        raise
+    except ValueError as e:
+        logger.warning("Invalid category suggestion request: %s", e)
+        raise HTTPException(
+            status_code=400, detail="Invalid request parameters"
+        ) from e
     except Exception as e:
-        print(f"ERROR: Product Category Retrieve and Ranking Error: -> {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Product Category Retrieve and Ranking Error: %s", e)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
     return response

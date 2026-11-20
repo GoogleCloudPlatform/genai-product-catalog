@@ -1,5 +1,5 @@
 load("@python_deps//:requirements.bzl", "requirement")
-load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_python//python:defs.bzl", "py_binary", "py_test")
 
 
 PY_DEPS = [
@@ -11,10 +11,34 @@ PY_DEPS = [
 py_binary(
     name = "run",
     srcs = [
+        "auth.py",
         "main.py",
         "run.py",
+        "models/__init__.py",
+        "models/checks_model.py",
+        "models/common_model.py",
+        "routers/__init__.py",
+        "routers/categories.py",
+        "routers/checks.py",
+        "routers/images.py",
+        "routers/products.py",
     ],
     imports = [".", "..", "../..", "../../third_party"],
     visibility = ["//visibility:public"],
     deps = PY_DEPS + ["//google/cloud/ml/applied"],
+)
+
+py_test(
+    name = "security_test",
+    size = "small",
+    srcs = ["security_test.py"],
+    imports = [".", "..", "../..", "../../third_party"],
+    deps = PY_DEPS + [
+        "//google/cloud/ml/applied",
+        "//google/cloud/ml/applied/attributes",
+        "//google/cloud/ml/applied/categories",
+        "//google/cloud/ml/applied/embeddings",
+        "//google/cloud/ml/applied/images",
+        "//google/cloud/ml/applied/marketing",
+    ],
 )

@@ -16,13 +16,30 @@ import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL_BASE;
 
-console.log(API_BASE)
+// Authentication is handled via IAP / session cookies (`withCredentials: true`)
+// or an ephemeral in-memory bearer token passed at runtime via `setApiAuthToken`.
+// Static API secrets must never be inlined into the public Vite bundle via `VITE_*`.
+let runtimeBearerToken: string | null = null;
+
+export function setApiAuthToken(token: string | null): void {
+  runtimeBearerToken = token?.trim() || null;
+  if (runtimeBearerToken) {
+    AxiosInstance.defaults.headers.common['Authorization'] =
+      `Bearer ${runtimeBearerToken}`;
+  } else {
+    delete AxiosInstance.defaults.headers.common['Authorization'];
+  }
+}
+
+export function getApiAuthToken(): string | null {
+  return runtimeBearerToken;
+}
 
 const AxiosInstance = axios.create({
   baseURL: API_BASE,
   timeout: 60000,
+  withCredentials: true,
 });
 AxiosInstance.defaults.headers.common['Content-Type'] = 'application/json';
-
 
 export default AxiosInstance;

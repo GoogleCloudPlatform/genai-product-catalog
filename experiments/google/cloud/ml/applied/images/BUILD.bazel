@@ -19,9 +19,10 @@ py_library(
     deps = PY_DEPS,
 )
 
-# py_test(
-#     name = "embeddings_test",
-#     srcs = ["embeddings_test.py"],
-#     imports = ["."],
-#     deps = [":embeddings"],
-# )
+py_test(
+    name = "image_to_text_test",
+    size = "small",
+    srcs = ["image_to_text_test.py"],
+    imports = ["."],
+    deps = [":images"] + PY_DEPS,
+)

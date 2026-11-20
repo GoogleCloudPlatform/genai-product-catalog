@@ -18,6 +18,8 @@ import logging
 import re
 from typing import Optional
 
+from google.cloud import bigquery
+
 import config
 import embeddings
 import nearest_neighbors
@@ -40,6 +42,8 @@ def join_categories(
         dict mapping product IDs to category name. The category name will be
         a list of strings e.g. ['level 1 category', 'level 2 category']
     """
+    if not ids:
+        return defaultdict(list)
     query = f"""
     SELECT
         {config.COLUMN_ID},
@@ -47,9 +51,14 @@ def join_categories(
     FROM
         `{config.PRODUCT_REFERENCE_TABLE}`
     WHERE
-        {config.COLUMN_ID} IN {str(ids).replace('[','(').replace(']',')')}
+        {config.COLUMN_ID} IN UNNEST(@ids)
     """
-    query_job = bq_client.query(query)
+    job_config = bigquery.QueryJobConfig(
+        query_parameters=[
+            bigquery.ArrayQueryParameter("ids", "STRING", [str(item) for item in ids]),
+        ]
+    )
+    query_job = bq_client.query(query, job_config=job_config)
     rows = query_job.result()
     categories = defaultdict(list) 
     for row in rows:

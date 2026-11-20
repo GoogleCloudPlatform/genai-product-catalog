@@ -29,44 +29,81 @@ import batchHandlers from './routes/batch';
 import textAgent from './events/text-agent';
 import voiceAgent from './events/voice-agent';
 import batchStream from './events/batch-stream';
+import {
+  attachPerSocketEventRateLimit,
+  attachSocketSecurity,
+  centralErrorHandler,
+  createApiAuthMiddleware,
+  createApiRateLimitMiddleware,
+  createExpressCorsOriginValidator,
+  createSocketCorsOriginValidator,
+  resolveBindHost,
+  resolveJsonBodyLimit,
+  resolveMediaJsonBodyLimit,
+  resolveSocketMaxBufferBytes,
+  resolveTrustProxy,
+  securityHeadersMiddleware,
+} from './security';
 
 config();
 
-const app: Express = express();
+export const app: Express = express();
+app.disable('x-powered-by');
+app.set('trust proxy', resolveTrustProxy());
 
-app.use(json({ limit: '50mb' }));
-const corsOptions = {
-  origin: '*',
-  methods: ['GET', 'PUT', 'POST', 'DELETE'],
+app.use(securityHeadersMiddleware);
+
+const corsOptions: cors.CorsOptions = {
+  origin: createExpressCorsOriginValidator(),
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Authorization', 'Content-Type', 'X-API-Key'],
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 
-const httpServer = createServer(app);
+export const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
-  cors: { origin: '*', methods: ['GET', 'PUT', 'POST', 'DELETE'] },
-  maxHttpBufferSize: 2e7,
+export const io = new Server(httpServer, {
+  cors: {
+    origin: createSocketCorsOriginValidator(),
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+    credentials: true,
+  },
+  maxHttpBufferSize: resolveSocketMaxBufferBytes(),
 });
+
+const { eventLimiter } = attachSocketSecurity(io);
 
 app.use('/', defaults);
 
-app.use('/api', defaults);
+// Enforce rate limiting and authentication BEFORE parsing any JSON request bodies.
+app.use('/api', createApiRateLimitMiddleware(), createApiAuthMiddleware());
 
-app.use('/api/registration', registrationHandler);
-app.use('/api/text', textHandlers);
-app.use('/api/images', imageHandlers);
-app.use('/api/video', videoHandlers);
-app.use('/api/batch', batchHandlers);
+const standardJsonParser = json({ limit: resolveJsonBodyLimit() });
+const mediaJsonParser = json({ limit: resolveMediaJsonBodyLimit() });
+
+app.use('/api', standardJsonParser, defaults);
+app.use('/api/registration', standardJsonParser, registrationHandler);
+app.use('/api/text', standardJsonParser, textHandlers);
+app.use('/api/batch', standardJsonParser, batchHandlers);
+app.use('/api/images', mediaJsonParser, imageHandlers);
+app.use('/api/video', mediaJsonParser, videoHandlers);
+
+app.use(centralErrorHandler);
 
 io.on('connection', (socket: Socket) => {
+  attachPerSocketEventRateLimit(socket, eventLimiter);
   socket.on('agent:text', textAgent(socket));
   socket.on('agent:voice', voiceAgent(socket));
   socket.on('batch:request', batchStream(socket));
 });
 
-const port = process.env.PORT || 3000;
-httpServer.listen(port, () => {
-  console.log(`[server]: Server is running at http://127.0.0.1:${port}`);
-});
+const port = Number(process.env.PORT) || 3000;
+const host = resolveBindHost();
+if (require.main === module) {
+  httpServer.listen(port, host, () => {
+    console.log(`[server]: Server is running at http://${host}:${port}`);
+  });
+}

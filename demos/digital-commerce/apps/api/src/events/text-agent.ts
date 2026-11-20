@@ -19,8 +19,12 @@ import { extractTextCandidates } from "../utils";
 
 export default (socket: Socket) => async ({sessionID, prompt, value}: ChatPromptRequest) => {
     const session = sessionManager.getSession(sessionID);
+    if (!session?.ai) {
+        socket.emit('agent:error', { message: 'Invalid session' });
+        return;
+    }
 
-    const {ai, groundedModelParams} = sessionManager.getSession(sessionID);
+    const {ai, groundedModelParams} = session;
 
     const chatPrompt = prompt + `\nProduct Data JSON: ${prompt}\nExample JSON output: {prompt: '${value}', response: 'Some generated response'} where the response value is in markdown format.`;
     

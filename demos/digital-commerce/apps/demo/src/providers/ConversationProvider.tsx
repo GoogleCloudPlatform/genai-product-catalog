@@ -17,10 +17,16 @@ import {Interlocutor} from "../domain";
 import {io, Socket} from "socket.io-client";
 import {ConversationContext} from "../contexts";
 
-const SOCKET_BASE = import.meta.env.VITE_SOCKET_URL_BASE
+import { getApiAuthToken } from "../utils/WebClient";
+
+const SOCKET_BASE = import.meta.env.VITE_SOCKET_URL_BASE;
 
 const getSocket = (): Socket => {
-    return io(SOCKET_BASE);
+    const token = getApiAuthToken();
+    return io(SOCKET_BASE, {
+        withCredentials: true,
+        ...(token ? { auth: { token } } : {}),
+    });
 }
 
 const ConversationProvider = ({children}: { children: ReactElement | ReactElement[] }) => {

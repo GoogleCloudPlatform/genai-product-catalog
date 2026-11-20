@@ -3,6 +3,7 @@ load("@python_deps//:requirements.bzl", "requirement")
 
 PY_DEPS = [
     requirement("google-cloud-aiplatform"),
+    requirement("google-cloud-bigquery"),
     "//google/cloud/ml/applied",
     "//google/cloud/ml/applied/model",
     "//google/cloud/ml/applied/utils",

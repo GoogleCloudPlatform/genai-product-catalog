@@ -26,8 +26,7 @@ export const AUDIO_EXTENSION = 'webm';
 export default (socket: Socket) =>
     async ({sessionID, type, prompt, value}: api.AudioPromptRequest) => {
         const session = sessionManager.getSession(sessionID);
-
-        const ai = session.ai;
+        const ai = session?.ai;
 
         const handleFile = async (filUri: string) => {
             const [resp] = await speechClient.recognize({

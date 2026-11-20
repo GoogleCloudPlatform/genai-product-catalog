@@ -21,8 +21,9 @@ const router = Router();
 
 router.post('/', (req: Request, resp: Response) => {
     const {sessionID, prompt} = req.body as api.TextPromptRequest;
-    const {ai, config, groundedModelParams} = sessionManager.getSession(sessionID);
-    if (ai) {
+    const session = sessionManager.getSession(sessionID);
+    if (session?.ai) {
+        const {ai, config, groundedModelParams} = session;
         ai.models
             .generateContent({
                 model: config.modelName,
